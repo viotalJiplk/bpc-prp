@@ -1,5 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include "RosExampleClass.hpp"
+#include "io_node.hpp"
 
 int main(int argc, char* argv[]) {
     rclcpp::init(argc, argv);
@@ -7,6 +8,7 @@ int main(int argc, char* argv[]) {
     // Create an executor (for handling multiple nodes)
     auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
 
+    /*
     // Create multiple nodes
     auto node1 = std::make_shared<rclcpp::Node>("node1");
     auto node2 = std::make_shared<rclcpp::Node>("node2");
@@ -18,6 +20,10 @@ int main(int argc, char* argv[]) {
     // Add nodes to the executor
     executor->add_node(node1);
     executor->add_node(node2);
+    */
+
+    auto example_class1 = std::make_shared<nodes::IoNode>();
+    executor->add_node(example_class1);
 
     // Run the executor (handles callbacks for both nodes)
     executor->spin();
