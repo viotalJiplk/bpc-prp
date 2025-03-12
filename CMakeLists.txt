@@ -16,14 +16,16 @@ find_package(SDL2 REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
 set(SRC
-        src/example.cpp
-        include/io_node.hpp
-        src/nodes/io_node.cpp
-        src/nodes/encoders.cpp
-        src/nodes/motors.cpp
-        include/helper.hpp
-        include/encoders.hpp
-        include/motors.hpp
+        ${CMAKE_SOURCE_DIR}/src/example.cpp
+        ${CMAKE_SOURCE_DIR}/include/io_node.hpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/io_node.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/encoders.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/motors.cpp
+        ${CMAKE_SOURCE_DIR}/include/helper.hpp
+        ${CMAKE_SOURCE_DIR}/include/encoders.hpp
+        ${CMAKE_SOURCE_DIR}/include/motors.hpp
+        ${CMAKE_SOURCE_DIR}/include/kinematics.hpp
+        ${CMAKE_SOURCE_DIR}/src/algorithms/kinematics.cpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)
