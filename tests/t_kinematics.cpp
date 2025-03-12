@@ -2,6 +2,8 @@
 #include "../include/kinematics.hpp"
 #include <cmath>
 
+#include "encoders.hpp"
+
 using namespace algorithms;
 
 constexpr float ERROR = 0.001;
@@ -55,7 +57,7 @@ TEST(KinematicsTest, ForwardZeroWheelSpeedSI) {
     const float expected_a= 0;
 
     Kinematics kin(WHEEL_RADIUS, WHEEL_BASE, PULSES_PER_ROTATION);
-    auto result = kin.forward(WheelSpeed {wheel_l,wheel_r});
+    auto result = kin.forward(WheelAngularSpeed {wheel_l,wheel_r});
     EXPECT_NEAR(result.v, expected_l, ERROR);
     EXPECT_NEAR(result.w, expected_a, ERROR);
 }
@@ -67,7 +69,7 @@ TEST(KinematicsTest, ForwardEqualWheelSpeedsSI) {
     const float expected_a= 0;
 
     Kinematics kin(WHEEL_RADIUS, WHEEL_BASE, PULSES_PER_ROTATION);
-    auto result = kin.forward(WheelSpeed {wheel_l,wheel_r});
+    auto result = kin.forward(WheelAngularSpeed {wheel_l,wheel_r});
     EXPECT_NEAR(result.v, expected_l, ERROR);
     EXPECT_NEAR(result.w, expected_a, ERROR);
 }
@@ -79,7 +81,7 @@ TEST(KinematicsTest, ForwardOppositeWheelSpeedsSI) {
     const float expected_a= (WHEEL_RADIUS / (0.5 * WHEEL_BASE));
 
     Kinematics kin(WHEEL_RADIUS, WHEEL_BASE, PULSES_PER_ROTATION);
-    auto result = kin.forward(WheelSpeed {wheel_l,wheel_r});
+    auto result = kin.forward(WheelAngularSpeed {wheel_l,wheel_r});
     EXPECT_NEAR(result.v, expected_l, ERROR);
     EXPECT_NEAR(result.w, expected_a, ERROR);;
 }
@@ -89,7 +91,7 @@ TEST(KinematicsTest, ForwardAndBackwardSI) {
     const float wheel_r = -0.5;
 
     Kinematics kin(WHEEL_RADIUS, WHEEL_BASE, PULSES_PER_ROTATION);
-    auto lin_ang = kin.forward(WheelSpeed {wheel_l,wheel_r});
+    auto lin_ang = kin.forward(WheelAngularSpeed {wheel_l,wheel_r});
     auto result = kin.inverse(lin_ang);
     EXPECT_NEAR(result.l, wheel_l, ERROR);
     EXPECT_NEAR(result.r, wheel_r, ERROR);

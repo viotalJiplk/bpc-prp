@@ -10,7 +10,7 @@ namespace algorithms {
         float w; //angluar
     };
 
-    struct WheelSpeed{ //depends on you in what units
+    struct WheelAngularSpeed{ //depends on you in what units
         float l; //left
         float r; //right
     };
@@ -27,13 +27,14 @@ namespace algorithms {
     class Kinematics{
     public:
         Kinematics(double wheel_radius, double wheel_base, int ticks_revolution);
-        RobotSpeed forward(WheelSpeed x) const;
-        WheelSpeed inverse(RobotSpeed x) const;
+        RobotSpeed forward(WheelAngularSpeed x) const;
+        WheelAngularSpeed inverse(RobotSpeed x) const;
         Coordinates forward(Encoders x) const;
         Encoders inverse(Coordinates x) const;
     private:
         double wheel_radius_;
         double wheel_base_;
+        double wheel_circumference;
         int ticks_revolution_;
     };
 }
