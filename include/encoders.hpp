@@ -1,0 +1,27 @@
+#pragma once
+
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/u_int8.hpp>
+#include <std_msgs/msg/u_int32_multi_array.hpp>
+
+namespace nodes {
+    class Encoder : public rclcpp::Node {
+    public:
+        // Constructor
+        Encoder();
+        // Destructor (default)
+        ~Encoder() override = default;
+        uint32_t getRightEncoderState();
+        uint32_t getLeftEncoderState();
+    private:
+        std::atomic<uint32_t> left;
+        std::atomic<uint32_t> right;
+        std::shared_ptr<rclcpp::Subscription<std_msgs::msg::UInt32MultiArray_<std::allocator<void>>>> UInt8MultiArray_;
+
+        // Subscriber for button press messages
+        rclcpp::Subscription<std_msgs::msg::UInt32MultiArray>::SharedPtr encoderSubscriber;
+
+        // Callback - preprocess received message
+        void on_encoder_callback(std_msgs::msg::UInt32MultiArray_<std::allocator<void>>::SharedPtr msg);
+    };
+}

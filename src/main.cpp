@@ -1,6 +1,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include "RosExampleClass.hpp"
 #include "io_node.hpp"
+#include "encoders.hpp"
+#include "motors.hpp"
 
 int main(int argc, char* argv[]) {
     rclcpp::init(argc, argv);
@@ -22,8 +24,14 @@ int main(int argc, char* argv[]) {
     executor->add_node(node2);
     */
 
-    auto example_class1 = std::make_shared<nodes::IoNode>();
-    executor->add_node(example_class1);
+    auto encoder = std::make_shared<nodes::Encoder>();
+    executor->add_node(encoder);
+
+    auto motor = std::make_shared<nodes::Motors>();
+    executor->add_node(motor);
+
+    auto ioNode = std::make_shared<nodes::IoNode>(motor);
+    executor->add_node(ioNode);
 
     // Run the executor (handles callbacks for both nodes)
     executor->spin();

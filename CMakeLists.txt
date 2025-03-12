@@ -19,7 +19,11 @@ set(SRC
         src/example.cpp
         include/io_node.hpp
         src/nodes/io_node.cpp
+        src/nodes/encoders.cpp
+        src/nodes/motors.cpp
         include/helper.hpp
+        include/encoders.hpp
+        include/motors.hpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)
