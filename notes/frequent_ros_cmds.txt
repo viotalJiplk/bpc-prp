@@ -1,0 +1,50 @@
+FREQUENTLY USED ROS2 COMMANDS
+=============================
+
+Initialisation: source ROS enviroment and export robot domain ID
+----------------------------------------------------------------
+
+	source /opt/ros/humble/setup.bash
+	export ROS_DOMAIN_ID=4
+	
+	( ID 4 corresponds to yellow robot )
+
+
+Connect to the robot via ssh
+----------------------------
+
+	ssh robot@prp-yellow
+	
+	( works only if connected to wifi with ssid UAMT-SD-1051-V-1 or by wire )
+	( yellow is color of our robot; ssh password: milujemematlab )
+	
+
+List all topics
+---------------
+
+	ros2 topic list
+
+
+Get data type of specific topic / all topics
+--------------------------------------------
+
+	ros2 topic type /encoders
+
+	ros2 topic list | xargs -I % sh -c 'echo % :" " | tr -d "\n" && ros2 topic type %'
+
+
+Listen for encoder states
+-------------------------
+	
+	ros2 topic echo /bpc_prp_robot/encoders std_msgs/msg/UInt32MultiArray
+
+
+Set motors speed
+----------------
+	
+	ros2 topic pub /bpc_prp_robot/set_motor_speeds std_msgs/msg/UInt8MultiArray "{data: [100,100]}"
+
+	( 0-127 backward, 128 stop, 129-255 forward; bigger difference from 128 --> faster movement )
+
+
+
