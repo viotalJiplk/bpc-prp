@@ -1,0 +1,94 @@
+ROBOT DIMENSIONS AND EXPERIMENTALLY MEASURED DATA FOR KINEMATICS
+================================================================
+
+Copied from example tests
+-------------------------
+
+	WHEEL_BASE = 0.12;
+	WHEEL_RADIUS = 0.033;
+	WHEEL_CIRCUMFERENCE = 2 * M_PI * WHEEL_RADIUS;
+	PULSES_PER_ROTATION = 550;
+
+
+Copied from slides
+------------------
+
+	3 periods per motor rotation
+	1:48 gear ratio
+	2 channels
+	2 edges
+	3 * 48 * 2 * 2 = 576 pulses per single output axis rotation rotation
+
+
+Measured dimensions (yellow robot)
+----------------------------------
+
+	wheel diameter: 66 mm
+	wheel radius: 33 mm
+	
+	measured wheel circumference: 21 mm
+	computed wheel circumference: 20,73 mm
+	
+	wheel base (distance of wheels, midle-to-middle): 128 mm
+	wheel width (touching ground): 6 mm
+
+
+Encoder ticks per wheel rotation
+--------------------------------
+
+	before: 4294913198
+			41364
+			
+	after:  4294912622
+			41364
+	
+	difference: 576
+			    0
+			    
+	result: Ticks per rotation: 576
+			Measured the same value as computed. 
+
+
+Velocity measurements
+---------------------
+
+	Motors set to 120:
+		1) ran for 1 second, travelled 6,5 cm	--> velocity: 0,065 m/s	(MORE ACCURATE VALUE)
+		2) for 1 m distance needed 18 seconds	--> velocity: 0,055 m/s
+
+	Motors set to 100:
+		1) ran for 1 second, travelled 23 cm	--> velocity: 0,230 m/s	(MORE ACCURATE VALUE)
+		2) for 1 m distance needed 5 seconds	--> velocity: 0,200 m/s
+	
+	Motors set to 50:
+		1) ran for 1 second, travelled 50 cm	--> velocity: 0,500 m/s	(MORE ACCURATE VALUE)
+		2) for 1 m distance needed 2,5 seconds	--> velocity: 0,400 m/s
+
+
+Relations between wheel rotation and encoder ticks
+--------------------------------------------------
+
+	1 wheel rotation = 21 mm distance
+	1 wheel rotation = 576 encoder ticks
+	1 wheel rotation = 360 °
+	
+	1° rotation = 1,6 encoder ticks
+	5° rotation = 8 encoder ticks
+	1° rotation = 
+	
+	1 mm distance = 27,4 encoder ticks
+	5 mm distance = 137 encoder ticks
+	1 mm distance =  17,1 °
+	
+	1 encoder tick = 0,625 ˚
+	1 encoder tick = 0,036 mm distance 
+	
+
+
+
+
+	
+
+
+
+
