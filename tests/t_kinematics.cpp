@@ -7,10 +7,10 @@
 using namespace algorithms;
 
 constexpr double ERROR = 0.001;
-constexpr double WHEEL_BASE = 0.12;
+constexpr double WHEEL_BASE = 0.128;
 constexpr double WHEEL_RADIUS = 0.033;
 constexpr double WHEEL_CIRCUMFERENCE = 2 * M_PI * WHEEL_RADIUS;
-constexpr int32_t PULSES_PER_ROTATION = 550;
+constexpr int32_t PULSES_PER_ROTATION = 576;
 
 
 
@@ -100,7 +100,7 @@ TEST(KinematicsTest, ForwardAndBackwardSI) {
 
 TEST(KinematicsTest, ForwardAndBackwardEncoderDiff) {
     const int encoder_l = 0;
-    const int encoder_r = 550;
+    const int encoder_r = 576;
 
     Kinematics kin(WHEEL_RADIUS, WHEEL_BASE, PULSES_PER_ROTATION);
     auto d_robot_pose = kin.forward(Encoders {encoder_l,encoder_r});
