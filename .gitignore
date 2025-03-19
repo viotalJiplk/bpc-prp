@@ -60,3 +60,6 @@ __pycache__/
 # Miscellaneous
 .DS_Store
 Thumbs.db
+
+# Added later by students
+/.cache
