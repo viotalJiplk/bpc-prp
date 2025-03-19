@@ -26,6 +26,8 @@ set(SRC
         ${CMAKE_SOURCE_DIR}/include/motors.hpp
         ${CMAKE_SOURCE_DIR}/include/kinematics.hpp
         ${CMAKE_SOURCE_DIR}/src/algorithms/kinematics.cpp
+        ${CMAKE_SOURCE_DIR}/include/line_node.hpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/line.cpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)

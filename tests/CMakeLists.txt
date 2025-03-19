@@ -13,4 +13,5 @@ macro(make_units_test name)
 endmacro()
 
 # make_units_test(example)
-make_units_test(kinematics)
+# make_units_test(kinematics)
+make_units_test(lineEstimator)
