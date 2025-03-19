@@ -1,6 +1,13 @@
 DESCRIPTION OF ALL OUR NODES & NODES USED BY US
 ===============================================
 
+Our program consists of several nodes with unique roles.
+The main node is responsible for overall state of the robot and
+all the other nodes are handling various robot subsystems.
+Main node listens for events and changing values from sensors and changes
+the state of our robot which is represented by LED lights and position. 
+
+
 MAIN NODE
 ---------
 
