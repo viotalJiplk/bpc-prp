@@ -1,0 +1,59 @@
+DESCRIPTION OF ALL OUR NODES & NODES USED BY US
+===============================================
+
+MAIN NODE
+---------
+
+- publishes     requested LED colors    (for IO node)
+- publishes     speed values            (for motors node)
+
+- subscribes    current encoder values  (from encoders node)
+- subscribes    discr. line position    (from line node)
+- subscribes    contin. line position   (from line node)
+- subscribes    pressed button number   (from io node)
+
+
+- will maybe publish in better units for motors node
+
+
+MOTORS NODE
+-----------
+
+- publishes     speed values    (for hardware motors)
+
+- subscribes    speed values    (from main node)
+
+
+- will maybe use kinematics to translate another values from main node to speeds ?
+
+
+ENCODERS NODE
+-------------
+
+- publishes     current encoder values      (for main node)
+
+- subscribes    current encoder values      (from hardware encoders)
+
+
+- will maybe use kinematics to translate encoder tics to another values ?
+
+
+LINE NODE
+---------
+
+- publishes     discrete line position      (for main node)
+- publishes     continuous line position    (for main node)
+
+- subscribes    reflected light intensity   (from hardware sensors)
+
+
+IO NODE
+-------
+
+- publishes     pressed button number   (for main node)
+- publishes     RGB color values        (for hardware LEDs)
+
+- subscribes    requested LED colors    (from main node)
+- subscribes    pressed button number   (from hardware buttons)
+
+
