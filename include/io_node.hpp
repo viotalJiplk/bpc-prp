@@ -3,13 +3,14 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 #include "motors.hpp"
+#include "line_node.hpp"
 #include <std_msgs/msg/u_int8_multi_array.hpp>
 
 namespace nodes {
     class IoNode : public rclcpp::Node {
     public:
         // Constructor
-        IoNode(std::shared_ptr<Motors> motor);
+        IoNode(std::shared_ptr<Motors> motor, std::shared_ptr<LineNode> line);
         // Destructor (default)
         ~IoNode() override = default;
 
@@ -17,6 +18,7 @@ namespace nodes {
         int get_button_pressed() const;
 
     private:
+        std::shared_ptr<LineNode> line_;
         std::shared_ptr<Motors> motors_;
         std::shared_ptr<rclcpp::Subscription<std_msgs::msg::UInt8_<std::allocator<void>>>> subscriber;
         // Variable to store the last received button press value

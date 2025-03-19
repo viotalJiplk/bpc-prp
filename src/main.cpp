@@ -3,6 +3,8 @@
 #include "io_node.hpp"
 #include "encoders.hpp"
 #include "motors.hpp"
+#include "line_node.hpp"
+#include "main_node.hpp"
 
 int main(int argc, char* argv[]) {
     rclcpp::init(argc, argv);
@@ -30,8 +32,14 @@ int main(int argc, char* argv[]) {
     auto motor = std::make_shared<nodes::Motors>();
     executor->add_node(motor);
 
-    auto ioNode = std::make_shared<nodes::IoNode>(motor);
+    auto line = std::make_shared<nodes::LineNode>();
+    executor->add_node(line);
+
+    auto ioNode = std::make_shared<nodes::IoNode>(motor, line);
     executor->add_node(ioNode);
+
+    auto mainNode = std::make_shared<nodes::MainNode>();
+    executor->add_node(mainNode);
 
     // Run the executor (handles callbacks for both nodes)
     executor->spin();

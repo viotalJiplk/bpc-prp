@@ -3,9 +3,10 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 #include <std_msgs/msg/u_int32_multi_array.hpp>
+#include "generalNode.hpp"
 
 namespace nodes {
-    class Encoder : public rclcpp::Node {
+    class Encoder : public GeneralNode {
     public:
         // Constructor
         Encoder();

@@ -28,6 +28,10 @@ set(SRC
         ${CMAKE_SOURCE_DIR}/src/algorithms/kinematics.cpp
         ${CMAKE_SOURCE_DIR}/include/line_node.hpp
         ${CMAKE_SOURCE_DIR}/src/nodes/line.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/main_node.cpp
+        ${CMAKE_SOURCE_DIR}/include/main_node.hpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/generalNode.cpp
+        ${CMAKE_SOURCE_DIR}/include/generalNode.hpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)

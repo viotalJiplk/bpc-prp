@@ -10,6 +10,7 @@ namespace Topic {
     const std::string set_motor_speeds = "/bpc_prp_robot/set_motor_speeds";
     const std::string encoders = "/bpc_prp_robot/encoders";
     const std::string line_sensors = "/bpc_prp_robot/line_sensors";
+    const std::string mainNode = "/bpc_prp_internal/mainNode";
 };
 
 namespace Frame {
