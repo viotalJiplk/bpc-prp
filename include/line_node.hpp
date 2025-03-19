@@ -1,7 +1,3 @@
-//
-// Created by root on 3/19/25.
-//
-
 #ifndef LINE_NODE_HPP
 #define LINE_NODE_HPP
 

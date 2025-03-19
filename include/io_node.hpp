@@ -27,7 +27,6 @@ namespace nodes {
         // For experiments launched from button callback function
         std::shared_ptr<LineNode> line_;
         std::shared_ptr<Motors> motors_;
-        std::shared_ptr<rclcpp::Subscription<std_msgs::msg::UInt8_<std::allocator<void>>>> subscriber;
 
         // Variable to store the last received button press value
         int button_pressed_ = -1;

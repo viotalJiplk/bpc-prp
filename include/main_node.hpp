@@ -1,7 +1,3 @@
-//
-// Created by student on 19.3.25.
-//
-
 #ifndef MAIN_NODE_HPP
 #define MAIN_NODE_HPP
 

@@ -1,7 +1,3 @@
-//
-// Created by student on 19.3.25.
-//
-
 #ifndef GENERALNODE_HPP
 #define GENERALNODE_HPP
 

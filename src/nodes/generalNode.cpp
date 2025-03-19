@@ -1,7 +1,3 @@
-//
-// Created by student on 19.3.25.
-//
-
 #include "generalNode.hpp"
 #include "helper.hpp"
 

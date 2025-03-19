@@ -1,6 +1,3 @@
-//
-// Created by root on 3/19/25.
-//
 #include "line_node.hpp"
 #include "helper.hpp"
 

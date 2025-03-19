@@ -1,7 +1,3 @@
-//
-// Created by student on 12.3.25.
-//
-
 #ifndef KINEMATICS_HPP
 #define KINEMATICS_HPP
 namespace algorithms {

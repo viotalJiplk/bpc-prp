@@ -2,8 +2,7 @@
 
 #include <cmath>
 #define PI 3.14159265358979323846
-// Created by student on 12.3.25.
-//
+
 namespace algorithms {
     Kinematics::Kinematics(double wheel_radius, double wheel_base, int ticks_revolution) {
         wheel_radius_ = wheel_radius;
