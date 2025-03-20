@@ -11,6 +11,7 @@ namespace Topic {
     const std::string encoders = "/bpc_prp_robot/encoders";
     const std::string line_sensors = "/bpc_prp_robot/line_sensors";
     const std::string mainNode = "/bpc_prp_internal/mainNode";
+    const std::string ionode_buttons = "/bpc_prp_internal/ionode_buttons";
 };
 
 namespace Frame {
