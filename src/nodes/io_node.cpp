@@ -10,6 +10,9 @@ namespace nodes {
 
         // Initialize the publisher for LEDs
         led_publisher_ = this->create_publisher<std_msgs::msg::UInt8MultiArray>(Topic::set_rgb_leds, 1);
+
+        // Initialize the publisher of buttons for main node
+        button_publisher_ = this->create_publisher<std_msgs::msg::UInt8>(Topic::ionode_buttons, 1);
     }
 
     int IoNode::get_button_pressed() const {

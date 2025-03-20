@@ -40,6 +40,9 @@ namespace nodes {
         // Publisher for LED RGB values
         rclcpp::Publisher<std_msgs::msg::UInt8MultiArray>::SharedPtr led_publisher_;
 
+        // Publisher for button values
+        rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr button_publisher_;
+
         // Callback - preprocess received message
         void on_button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg);
     };
