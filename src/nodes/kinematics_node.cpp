@@ -51,10 +51,10 @@ namespace nodes {
         std::function<void(bool)> localCallback = [&](bool) {};
         if ((!plan_.hasFinished)) {
             localCallback = plan_.callback;
-            localFinished = true;
             bool leftFinished = hasFinished(plan_.start.l, leftMotor, plan_.change.l);
             bool rightFinished = hasFinished(plan_.start.r, rightMotor, plan_.change.r);
             if (leftFinished || rightFinished) {
+                localFinished = true;
                 motors_->setMotorsSpeed(0,0);
                 plan_.hasFinished = true;
                 plan_.lMotor = 0;
