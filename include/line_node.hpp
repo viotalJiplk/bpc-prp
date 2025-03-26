@@ -35,7 +35,7 @@ namespace nodes
         float get_continuous_line_pose() const;
 
         DiscreteLinePose get_discrete_line_pose() const;
-        static DiscreteLinePose estimate_descrete_line_pose(float l_norm, float r_norm);
+        void estimate_descrete_line_pose(float l_norm, float r_norm);
 
         uint16_t left_max;
         uint16_t left_min;

@@ -3,7 +3,8 @@
 #include "line_node.hpp"
 #include "helper.hpp"
 
-#define LINE_READING_DEVIATION 0.3
+#define LINE_READING_DEVIATION 0.2
+#define EXTREME_LINE_READING_DEVIATION 0.4
 
 namespace nodes {
     LineNode::LineNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode): GeneralNode("LineNode", 1) {
@@ -92,16 +93,8 @@ namespace nodes {
             std::cout << "right: " << right_min << "/" << right_max << std::endl;*/
         } else if (mode == SensorsMode::Feedback) {
             normalize(msg->data[0], msg->data[1]);
-            DiscreteLinePose pose = estimate_descrete_line_pose(left_sensor, right_sensor);
-            if (pose == DiscreteLinePose::LineBoth) {
-                kinematics_->forward(10, 7, [](bool sucess){});
-            } else if (pose == DiscreteLinePose::LineOnLeft) {
-                kinematics_->angle(1, 5, [](bool sucess){});
-            } else if (pose == DiscreteLinePose::LineOnRight) {
-                kinematics_->angle(-1, 5, [](bool sucess){});
-            }else {
-                kinematics_->forward(0, 10, [](bool sucess){});
-            }
+            estimate_descrete_line_pose(left_sensor, right_sensor);
+
         }
         publish();
     }
@@ -114,16 +107,20 @@ namespace nodes {
         return mode;
     }
 
-    DiscreteLinePose LineNode::estimate_descrete_line_pose(float l_norm, float r_norm) {
+    void LineNode::estimate_descrete_line_pose(float l_norm, float r_norm) {
         float result = l_norm - r_norm;
-        if(result > LINE_READING_DEVIATION){
-            return DiscreteLinePose::LineOnLeft;
+        if(result > EXTREME_LINE_READING_DEVIATION){
+            kinematics_->angle(1, 2, [](bool sucess){});
+        }else if(result < -EXTREME_LINE_READING_DEVIATION){
+            kinematics_->angle(-1, 2, [](bool sucess){});
+        }else if(result > LINE_READING_DEVIATION){
+            kinematics_->angle(1, 5, [](bool sucess){});
         }else if(result < -LINE_READING_DEVIATION){
-            return DiscreteLinePose::LineOnRight;
+            kinematics_->angle(-1, 5, [](bool sucess){});
         }else if(l_norm > LINE_READING_DEVIATION && r_norm > LINE_READING_DEVIATION){
-            return DiscreteLinePose::LineBoth;
+            kinematics_->motorSpeed();
         }else{
-            return DiscreteLinePose::LineNone;
+            kinematics_->forward(0, 10, [](bool sucess){});
         }
     }
 }
