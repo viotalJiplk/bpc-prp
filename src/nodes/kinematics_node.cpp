@@ -117,7 +117,7 @@ namespace nodes {
         }
     }
 
-    void KinematicsNode::motorSpeed(int speedL, int16_t speedR, std::function<void(bool)> callback){
+    void KinematicsNode::motorSpeed(int16_t speedL, int16_t speedR, std::function<void(bool)> callback){
         // TODO implement
         planMutex.lock();
         plan_.start.l = encoders_->getLeftEncoderState();
