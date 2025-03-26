@@ -116,4 +116,23 @@ namespace nodes {
             localCallback(false);
         }
     }
+
+    void KinematicsNode::motorSpeed(int speedL, int16_t speedR, std::function<void(bool)> callback){
+        // TODO implement
+        planMutex.lock();
+        plan_.start.l = encoders_->getLeftEncoderState();
+        plan_.start.r = encoders_->getRightEncoderState();
+        plan_.change.l = 100;
+        plan_.change.r = 100;
+        plan_.lMotor = speedL;
+        plan_.rMotor = speedR;
+        std::function<void(bool)> localCallback = plan_.callback;
+        bool localFinished = plan_.hasFinished;
+        plan_.hasFinished = false;
+        plan_.callback = callback;
+        planMutex.unlock();
+        if (!localFinished) {
+            localCallback(false);
+        }
+    }
 }

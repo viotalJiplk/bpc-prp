@@ -94,13 +94,13 @@ namespace nodes {
             normalize(msg->data[0], msg->data[1]);
             DiscreteLinePose pose = estimate_descrete_line_pose(left_sensor, right_sensor);
             if (pose == DiscreteLinePose::LineBoth) {
-                kinematics_->forward(10, [](bool sucess){});
+                kinematics_->forward(10, 7, [](bool sucess){});
             } else if (pose == DiscreteLinePose::LineOnLeft) {
-                kinematics_->angle(1, [](bool sucess){});
+                kinematics_->angle(1, 5, [](bool sucess){});
             } else if (pose == DiscreteLinePose::LineOnRight) {
-                kinematics_->angle(-1, [](bool sucess){});
+                kinematics_->angle(-1, 5, [](bool sucess){});
             }else {
-                kinematics_->forward(0, [](bool sucess){});
+                kinematics_->forward(0, 10, [](bool sucess){});
             }
         }
         publish();

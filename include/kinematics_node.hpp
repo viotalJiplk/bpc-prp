@@ -31,6 +31,7 @@ namespace nodes {
         ~KinematicsNode() override = default;
         void forward(uint32_t length, int16_t speed, std::function<void(bool)> callback);
         void angle(double angle, int16_t speed, std::function<void(bool)> callback);
+        void motorSpeed(int speedL, int16_t speedR, std::function<void(bool)> callback);
     private:
         Plan plan_;
         algorithms::Kinematics* algo_;

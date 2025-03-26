@@ -46,6 +46,7 @@ namespace nodes {
                 }
                 break;
             case 2:
+                kinematics_->motorSpeed(7, 15, [](bool result) {});
                 break;
             default: break;
         }
