@@ -29,11 +29,11 @@ int main(int argc, char* argv[]) {
     auto kinematics = std::make_shared<nodes::KinematicsNode>(executor);
     executor->add_node(kinematics);
 
-    auto line = std::make_shared<nodes::LineNode>();
-    executor->add_node(line);
-
-    auto ioNode = std::make_shared<nodes::IoNode>(kinematics, line);
+    auto ioNode = std::make_shared<nodes::IoNode>();
     executor->add_node(ioNode);
+
+    auto line = std::make_shared<nodes::LineNode>(kinematics, ioNode);
+    executor->add_node(line);
 
     auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics);
     executor->add_node(mainNode);

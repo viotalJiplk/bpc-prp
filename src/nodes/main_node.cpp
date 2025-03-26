@@ -25,19 +25,25 @@ namespace nodes {
     void MainNode::button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg) {
         switch(msg->data) {
             case 0:
-                kinematics_->forward(100, [](bool result) {
+                kinematics_->forward(100, 10, [](bool result) {
                     std::cout << "Finished moving forward" << std::endl;
                 });
                 break;
                 //MainNode::FollowLine(); break;
             case 1:
-                line_->calibrationStart();
-                kinematics_->angle(1, [this](bool result) {
-                    this->line_->calibrationEnd();
-                    this->kinematics_->angle(-1, [](bool result) {
-                        std::cout << "Finished moving forward" << std::endl;
+                if (this->line_->get_sensors_mode() == SensorsMode::None) {
+                    line_->calibrationStart();
+                    kinematics_->angle(1, 5,  [this](bool result) {
+                        this->kinematics_->angle(-2, 5, [this](bool result) {
+                            this->kinematics_->angle(1, 10,  [this](bool result) {
+                                this->line_->calibrationEnd();
+                                std::cout << "Finished moving forward" << std::endl;
+                            });
+                        });
                     });
-                });
+                } else {
+                    this->line_->stop();
+                }
                 break;
             case 2:
                 break;

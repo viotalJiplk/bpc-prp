@@ -2,7 +2,7 @@
 #include "helper.hpp"
 
 namespace nodes {
-    IoNode::IoNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<LineNode> line): Node("buttonsReader") {
+    IoNode::IoNode(): Node("buttonsReader") {
         // Initialize the subscriber for buttons
         button_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
             Topic::buttons, 1, std::bind(&IoNode::on_button_callback, this, std::placeholders::_1)
@@ -13,8 +13,6 @@ namespace nodes {
 
         // Initialize the publisher of buttons for main node
         button_publisher_ = this->create_publisher<std_msgs::msg::UInt8>(Topic::ionode_buttons, 1);
-        kinematics_ = kinematics;
-        line_ = line;
     }
 
     int IoNode::get_button_pressed() const {
@@ -52,7 +50,7 @@ namespace nodes {
 
         std::cout << msg->data << std::endl;
 
-        if (msg->data == 0) {
+        /*if (msg->data == 0) {
             // 1st button + red light
             set_all_leds_color(255, 0, 0);
             line_->calibrationStart();
@@ -62,7 +60,7 @@ namespace nodes {
         } else {
             // 3rd button + blue light
             set_all_leds_color(0, 0, 255);
-        }
+        }*/
 
         // ------------------------
         // END OF TEMPORARY SECTION

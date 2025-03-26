@@ -29,8 +29,8 @@ namespace nodes {
         KinematicsNode(std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor);
         // Destructor (default)
         ~KinematicsNode() override = default;
-        void forward(uint32_t length, std::function<void(bool)> callback);
-        void angle(double angle, std::function<void(bool)> callback);
+        void forward(uint32_t length, int16_t speed, std::function<void(bool)> callback);
+        void angle(double angle, int16_t speed, std::function<void(bool)> callback);
     private:
         Plan plan_;
         algorithms::Kinematics* algo_;

@@ -70,7 +70,7 @@ namespace nodes {
             localCallback(true);
         }
     }
-    void KinematicsNode::forward(uint32_t length, std::function<void(bool)> callback){
+    void KinematicsNode::forward(uint32_t length, int16_t speed, std::function<void(bool)> callback){
         algorithms::Coordinates coordinates;
         coordinates.x = length;
         coordinates.y = 0;
@@ -78,8 +78,8 @@ namespace nodes {
         plan_.start.l = encoders_->getLeftEncoderState();
         plan_.start.r = encoders_->getRightEncoderState();
         plan_.change = algo_->inverse(coordinates);
-        plan_.lMotor = 20;
-        plan_.rMotor = 20;
+        plan_.lMotor = speed;
+        plan_.rMotor = speed;
         std::function<void(bool)> localCallback = plan_.callback;
         bool localFinished = plan_.hasFinished;
         plan_.hasFinished = false;
@@ -90,22 +90,22 @@ namespace nodes {
         }
     }
 
-    void KinematicsNode::angle(double angle, std::function<void(bool)> callback){
+    void KinematicsNode::angle(double angle, int16_t speed, std::function<void(bool)> callback){
         // TODO implement
-        algorithms::RobotSpeed speed;
-        speed.v = 0;
-        speed.w = angle;
-        algorithms::WheelAngularSpeed ws = algo_->inverse(speed);
+        algorithms::RobotSpeed calculatedSpeed;
+        calculatedSpeed.v = 0;
+        calculatedSpeed.w = angle;
+        algorithms::WheelAngularSpeed ws = algo_->inverse(calculatedSpeed);
         planMutex.lock();
         plan_.start.l = encoders_->getLeftEncoderState();
         plan_.start.r = encoders_->getRightEncoderState();
         plan_.change = algo_->convertEnc(ws);
         if (angle > 0) {
-            plan_.lMotor = -20;
-            plan_.rMotor = 20;
+            plan_.lMotor = -speed;
+            plan_.rMotor = speed;
         }else {
-            plan_.lMotor = 20;
-            plan_.rMotor = -20;
+            plan_.lMotor = speed;
+            plan_.rMotor = -speed;
         }
         std::function<void(bool)> localCallback = plan_.callback;
         bool localFinished = plan_.hasFinished;

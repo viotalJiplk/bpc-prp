@@ -3,15 +3,13 @@
 #include <cstdint>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int8.hpp>
-#include "kinematics_node.hpp"
-#include "line_node.hpp"
 #include <std_msgs/msg/u_int8_multi_array.hpp>
 
 namespace nodes {
     class IoNode : public rclcpp::Node {
     public:
         // Constructor
-        IoNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<LineNode> line);
+        IoNode();
 
         // Destructor (default)
         ~IoNode() override = default;
@@ -24,9 +22,6 @@ namespace nodes {
         void set_all_leds_color(uint8_t R, uint8_t G, uint8_t B);
 
     private:
-        // For experiments launched from button callback function
-        std::shared_ptr<LineNode> line_;
-        std::shared_ptr<KinematicsNode> kinematics_;
 
         // Variable to store the last received button press value
         int button_pressed_ = -1;

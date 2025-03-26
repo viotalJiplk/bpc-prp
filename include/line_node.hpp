@@ -5,6 +5,8 @@
 #include <std_msgs/msg/u_int16_multi_array.hpp>
 #include <std_msgs/msg/u_int16.hpp>
 #include "generalNode.hpp"
+#include "kinematics_node.hpp"
+#include "io_node.hpp"
 
 enum class DiscreteLinePose {
     LineOnLeft,
@@ -14,16 +16,18 @@ enum class DiscreteLinePose {
 };
 
 enum class SensorsMode {
+    None,
     Calibration,
     Feedback,
 };
 
 namespace nodes
 {
+
     class LineNode : public GeneralNode {
     public:
 
-        LineNode();
+        LineNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<nodes::IoNode> ioNode);
 
         ~LineNode();
 
@@ -37,14 +41,17 @@ namespace nodes
         uint16_t left_min;
         uint16_t right_max;
         uint16_t right_min;
+        SensorsMode get_sensors_mode();
 
         void calibrationStart();
-
+        void stop();
         void calibrationEnd();
     private:
+        std::shared_ptr<IoNode> ioNode_;
         SensorsMode mode;
         double left_sensor;
         double right_sensor;
+        std::shared_ptr<KinematicsNode> kinematics_;
         void normalize(uint16_t dataLeft, uint16_t dataRight);
         void calibrate(uint16_t dataLeft, uint16_t dataRight);
         rclcpp::Subscription<std_msgs::msg::UInt16MultiArray>::SharedPtr line_sensors_subscriber_;

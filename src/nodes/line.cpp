@@ -1,17 +1,21 @@
+#include <io_node.hpp>
+
 #include "line_node.hpp"
 #include "helper.hpp"
 
-#define LINE_READING_DEVIATION 0.2
+#define LINE_READING_DEVIATION 0.3
 
 namespace nodes {
-    LineNode::LineNode(): GeneralNode("LineNode", 1) {
+    LineNode::LineNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode): GeneralNode("LineNode", 1) {
         line_sensors_subscriber_ = this->create_subscription<std_msgs::msg::UInt16MultiArray>(
                   Topic::line_sensors, 1, std::bind(&LineNode::on_line_sensors_msg, this, std::placeholders::_1));
         left_min = 0;
         left_max = 1024;
         right_min = 0;
         right_max = 1024;
-        mode = SensorsMode::Calibration;
+        ioNode_ = ioNode;
+        mode = SensorsMode::None;
+        kinematics_ = kinematics;
         mainPublisher_ = this->create_publisher<std_msgs::msg::UInt16>(Topic::mainNode, 1);
     }
 
@@ -60,6 +64,7 @@ namespace nodes {
     }
 
     void LineNode::calibrationStart() {
+        ioNode_->set_all_leds_color(255, 255, 0);
         left_min = 1024;
         left_max = 0;
         right_min = 1024;
@@ -68,9 +73,15 @@ namespace nodes {
     }
 
     void LineNode::calibrationEnd() {
+        ioNode_->set_all_leds_color(0, 255, 0);
         mode = SensorsMode::Feedback;
         std::cout << "Calibrated max: " << left_max << ", " << right_max << std::endl;
         std::cout << "Calibrated min: " << left_min << ", " << right_min << std::endl;
+    }
+
+    void LineNode::stop() {
+        mode = SensorsMode::None;
+        ioNode_->set_all_leds_color(255, 0, 0);
     }
 
     void LineNode::on_line_sensors_msg(std::shared_ptr<std_msgs::msg::UInt16MultiArray> msg){
@@ -79,17 +90,28 @@ namespace nodes {
             /* std::cout << "calibrate:" << std::endl;
             std::cout << "left: " << left_min << "/" << left_max << std::endl;
             std::cout << "right: " << right_min << "/" << right_max << std::endl;*/
-        } else {
+        } else if (mode == SensorsMode::Feedback) {
             normalize(msg->data[0], msg->data[1]);
-            /* std::cout << "Normalize:" << std::endl;
-            std::cout << "left: " << left_sensor << std::endl;
-            std::cout << "right: " << right_sensor << std::endl;*/
+            DiscreteLinePose pose = estimate_descrete_line_pose(left_sensor, right_sensor);
+            if (pose == DiscreteLinePose::LineBoth) {
+                kinematics_->forward(10, [](bool sucess){});
+            } else if (pose == DiscreteLinePose::LineOnLeft) {
+                kinematics_->angle(1, [](bool sucess){});
+            } else if (pose == DiscreteLinePose::LineOnRight) {
+                kinematics_->angle(-1, [](bool sucess){});
+            }else {
+                kinematics_->forward(0, [](bool sucess){});
+            }
         }
         publish();
     }
 
     float LineNode::estimate_continuous_line_pose(float left_value, float right_value){
         return 0.0;
+    }
+
+    SensorsMode LineNode::get_sensors_mode() {
+        return mode;
     }
 
     DiscreteLinePose LineNode::estimate_descrete_line_pose(float l_norm, float r_norm) {
