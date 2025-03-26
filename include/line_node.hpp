@@ -7,6 +7,7 @@
 #include "generalNode.hpp"
 #include "kinematics_node.hpp"
 #include "io_node.hpp"
+#include "pid.hpp"
 
 enum class DiscreteLinePose {
     LineOnLeft,
@@ -59,6 +60,8 @@ namespace nodes
         void on_line_sensors_msg(std::shared_ptr<std_msgs::msg::UInt16MultiArray> msg);
 
         float estimate_continuous_line_pose(float left_value, float right_value);
+
+        algorithms::Pid* algo_;
 
         // DiscreteLinePose estimate_descrete_line_pose(float l_norm, float r_norm) const;
     };

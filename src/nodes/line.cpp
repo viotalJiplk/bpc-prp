@@ -2,9 +2,14 @@
 
 #include "line_node.hpp"
 #include "helper.hpp"
+#include "pid.hpp"
 
 #define LINE_READING_DEVIATION 0.2
 #define EXTREME_LINE_READING_DEVIATION 0.4
+
+#define KP 1
+#define KI 0.1
+#define KD 0.1
 
 namespace nodes {
     LineNode::LineNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode): GeneralNode("LineNode", 1) {
@@ -18,6 +23,7 @@ namespace nodes {
         mode = SensorsMode::None;
         kinematics_ = kinematics;
         mainPublisher_ = this->create_publisher<std_msgs::msg::UInt16>(Topic::mainNode, 1);
+        algo_ = new algorithms::Pid(KP, KI, KD);
     }
 
     LineNode::~LineNode() {
@@ -100,6 +106,8 @@ namespace nodes {
     }
 
     float LineNode::estimate_continuous_line_pose(float left_value, float right_value){
+        float result = left_value - right_value;
+        
         return 0.0;
     }
 
