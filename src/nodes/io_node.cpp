@@ -2,7 +2,7 @@
 #include "helper.hpp"
 
 namespace nodes {
-    IoNode::IoNode(std::shared_ptr<Motors> motor, std::shared_ptr<LineNode> line): Node("buttonsReader") {
+    IoNode::IoNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<LineNode> line): Node("buttonsReader") {
         // Initialize the subscriber for buttons
         button_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
             Topic::buttons, 1, std::bind(&IoNode::on_button_callback, this, std::placeholders::_1)
@@ -13,6 +13,8 @@ namespace nodes {
 
         // Initialize the publisher of buttons for main node
         button_publisher_ = this->create_publisher<std_msgs::msg::UInt8>(Topic::ionode_buttons, 1);
+        kinematics_ = kinematics;
+        line_ = line;
     }
 
     int IoNode::get_button_pressed() const {
@@ -40,6 +42,10 @@ namespace nodes {
         // processing message to button number - main purpose of this function
         IoNode::button_pressed_ = msg->data;
 
+        std_msgs::msg::UInt8 newMsg = std_msgs::msg::UInt8();
+        newMsg.data = msg->data;
+
+        button_publisher_->publish(newMsg);
 
         // TEMPORARY: LAUNCHING EXPERIMENTS VIA BUTTONS
         // --------------------------------------------
@@ -50,16 +56,12 @@ namespace nodes {
             // 1st button + red light
             set_all_leds_color(255, 0, 0);
             line_->calibrationStart();
-            motors_->setMotorsSpeed(120, 136);
-            // motors_->setMotorsSpeed(140, 0);
         } else if (msg->data == 1) {
             // 2nd button + green light
             set_all_leds_color(0, 255, 0);
-            // motors_->setMotorsSpeed(140, 140);
         } else {
             // 3rd button + blue light
             set_all_leds_color(0, 0, 255);
-            // motors_->setMotorsSpeed(0, 140);
         }
 
         // ------------------------

@@ -5,9 +5,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int16.hpp>
 #include "io_node.hpp"
-#include "motors.hpp"
+#include "kinematics_node.hpp"
 #include "line_node.hpp"
-#include "encoders.hpp"
 #include "std_msgs/msg/u_int8_multi_array.hpp"
 
 namespace nodes
@@ -16,10 +15,9 @@ namespace nodes
     public:
         // Constructor (takes pointers to existing nodes)
         MainNode(
-            std::shared_ptr<Motors> motors, 
+            std::shared_ptr<IoNode> ionode,
             std::shared_ptr<LineNode> line, 
-            std::shared_ptr<Encoder> encoders,
-            std::shared_ptr<IoNode> ionode
+            std::shared_ptr<KinematicsNode> kinematics
         );
 
         // Destructor
@@ -33,8 +31,7 @@ namespace nodes
         // From these variables it is possible to call methods of nodes they contain
         std::shared_ptr<Motors> motors_;
         std::shared_ptr<LineNode> line_;
-        std::shared_ptr<Encoder> encoders_;
-        std::shared_ptr<IoNode> ionode_;
+        std::shared_ptr<KinematicsNode> kinematics_;
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr button_subscriber_;

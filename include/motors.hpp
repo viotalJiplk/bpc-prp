@@ -11,7 +11,7 @@ namespace nodes {
         // Destructor (default)
         ~Motors() override = default;
 
-        void setMotorsSpeed(uint8_t left, uint8_t right);
+        void setMotorsSpeed(int16_t left, int16_t right);
 
     private:
         rclcpp::Publisher<std_msgs::msg::UInt8MultiArray>::SharedPtr motors_publisher_;

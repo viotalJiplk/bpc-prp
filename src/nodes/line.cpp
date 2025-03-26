@@ -69,6 +69,8 @@ namespace nodes {
 
     void LineNode::calibrationEnd() {
         mode = SensorsMode::Feedback;
+        std::cout << "Calibrated max: " << left_max << ", " << right_max << std::endl;
+        std::cout << "Calibrated min: " << left_min << ", " << right_min << std::endl;
     }
 
     void LineNode::on_line_sensors_msg(std::shared_ptr<std_msgs::msg::UInt16MultiArray> msg){

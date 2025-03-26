@@ -4,7 +4,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int16.hpp>
 
-
 namespace nodes {
     class GeneralNode : public rclcpp::Node {
      public:

@@ -4,15 +4,12 @@
 
 namespace nodes {
     MainNode::MainNode(
-        std::shared_ptr<Motors> motors, 
-        std::shared_ptr<LineNode> line, 
-        std::shared_ptr<Encoder> encoders, 
-        std::shared_ptr<IoNode> ionode
+        std::shared_ptr<IoNode> ionode,
+        std::shared_ptr<LineNode> line,
+        std::shared_ptr<KinematicsNode> kinematics
     ): Node("MainNode") {
-       motors_= motors;
        line_= line;
-       encoders_= encoders;
-       ionode_= ionode;
+       kinematics_ = kinematics;
        MainNode::button_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
         Topic::ionode_buttons, 1, std::bind(&MainNode::button_callback, this, std::placeholders::_1));
     }
@@ -25,11 +22,25 @@ namespace nodes {
         // TODO
     }
 
-    void button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg) {
+    void MainNode::button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg) {
         switch(msg->data) {
-            case 0: MainNode::FollowLine(); break;
-            case 1: break;
-            case 2: break;
+            case 0:
+                kinematics_->forward(100, [](bool result) {
+                    std::cout << "Finished moving forward" << std::endl;
+                });
+                break;
+                //MainNode::FollowLine(); break;
+            case 1:
+                line_->calibrationStart();
+                kinematics_->angle(1, [this](bool result) {
+                    this->line_->calibrationEnd();
+                    this->kinematics_->angle(-1, [](bool result) {
+                        std::cout << "Finished moving forward" << std::endl;
+                    });
+                });
+                break;
+            case 2:
+                break;
             default: break;
         }
     }

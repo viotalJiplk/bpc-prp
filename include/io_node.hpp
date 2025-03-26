@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int8.hpp>
-#include "motors.hpp"
+#include "kinematics_node.hpp"
 #include "line_node.hpp"
 #include <std_msgs/msg/u_int8_multi_array.hpp>
 
@@ -11,7 +11,7 @@ namespace nodes {
     class IoNode : public rclcpp::Node {
     public:
         // Constructor
-        IoNode(std::shared_ptr<Motors> motor, std::shared_ptr<LineNode> line);
+        IoNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<LineNode> line);
 
         // Destructor (default)
         ~IoNode() override = default;
@@ -26,7 +26,7 @@ namespace nodes {
     private:
         // For experiments launched from button callback function
         std::shared_ptr<LineNode> line_;
-        std::shared_ptr<Motors> motors_;
+        std::shared_ptr<KinematicsNode> kinematics_;
 
         // Variable to store the last received button press value
         int button_pressed_ = -1;

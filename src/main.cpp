@@ -26,19 +26,16 @@ int main(int argc, char* argv[]) {
     executor->add_node(node2);
     */
 
-    auto encoder = std::make_shared<nodes::Encoder>();
-    executor->add_node(encoder);
-
-    auto motor = std::make_shared<nodes::Motors>();
-    executor->add_node(motor);
+    auto kinematics = std::make_shared<nodes::KinematicsNode>(executor);
+    executor->add_node(kinematics);
 
     auto line = std::make_shared<nodes::LineNode>();
     executor->add_node(line);
 
-    auto ioNode = std::make_shared<nodes::IoNode>(motor, line);
+    auto ioNode = std::make_shared<nodes::IoNode>(kinematics, line);
     executor->add_node(ioNode);
 
-    auto mainNode = std::make_shared<nodes::MainNode>();
+    auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics);
     executor->add_node(mainNode);
 
     // Run the executor (handles callbacks for both nodes)

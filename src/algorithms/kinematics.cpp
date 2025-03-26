@@ -40,7 +40,7 @@ namespace algorithms {
      * @param enc
      * @return
      */
-    Coordinates Kinematics::forward(Encoders enc) const {
+    Coordinates Kinematics::forward(EncodersChange enc) const {
         WheelAngularSpeed ws = convertEnc(enc);
         RobotSpeed rs = forward(ws);
         Coordinates c;
@@ -54,7 +54,7 @@ namespace algorithms {
      * @param enc
      * @return
      */
-    CoordinatesWithDirectionChange Kinematics::forwardDirection(Encoders enc) const {
+    CoordinatesWithDirectionChange Kinematics::forwardDirection(EncodersChange enc) const {
         WheelAngularSpeed ws = convertEnc(enc);
         RobotSpeed rs = forward(ws);
         CoordinatesWithDirectionChange c;
@@ -69,7 +69,7 @@ namespace algorithms {
      * @param coords
      * @return
      */
-    Encoders Kinematics::inverse(Coordinates coords) const {
+    EncodersChange Kinematics::inverse(Coordinates coords) const {
         RobotSpeed rs;
         rs.v = sqrt(coords.x*coords.x + coords.y*coords.y);
         rs.w = atan2(coords.y, coords.x);
@@ -87,7 +87,7 @@ namespace algorithms {
         rs.v = sqrt(coords.x*coords.x + coords.y*coords.y);
         rs.w = atan2(coords.y, coords.x);
         WheelAngularSpeed ws = inverse(rs);
-        Encoders enc = convertEnc(ws);
+        EncodersChange enc = convertEnc(ws);
         EncodersWithDirectionChange encChange ={enc.l, enc.r, rs.w};
         return encChange;
     }
@@ -97,7 +97,7 @@ namespace algorithms {
      * @param enc
      * @return
      */
-    WheelAngularSpeed Kinematics::convertEnc(Encoders enc) const { // this is not really a speed (there is no time)
+    WheelAngularSpeed Kinematics::convertEnc(EncodersChange enc) const { // this is not really a speed (there is no time)
         WheelAngularSpeed ws;
         ws.l = static_cast<double>(enc.l)/static_cast<double>(ticks_revolution_)*2.0*PI;
         ws.r = static_cast<double>(enc.r)/static_cast<double>(ticks_revolution_)*2.0*PI;
@@ -109,8 +109,8 @@ namespace algorithms {
      * @param x
      * @return
      */
-    Encoders Kinematics::convertEnc(WheelAngularSpeed x) const { //
-        Encoders enc;
+    EncodersChange Kinematics::convertEnc(WheelAngularSpeed x) const { //
+        EncodersChange enc;
         enc.l = static_cast<int>((x.l/(2.0*PI))*static_cast<double>(ticks_revolution_));
         enc.r = static_cast<int>((x.r/(2.0*PI))*static_cast<double>(ticks_revolution_));
         return enc;

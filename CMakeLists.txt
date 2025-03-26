@@ -17,21 +17,14 @@ find_package(visualization_msgs REQUIRED)
 
 set(SRC
         ${CMAKE_SOURCE_DIR}/src/example.cpp
-        ${CMAKE_SOURCE_DIR}/include/io_node.hpp
         ${CMAKE_SOURCE_DIR}/src/nodes/io_node.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/encoders.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/motors.cpp
-        ${CMAKE_SOURCE_DIR}/include/helper.hpp
-        ${CMAKE_SOURCE_DIR}/include/encoders.hpp
-        ${CMAKE_SOURCE_DIR}/include/motors.hpp
-        ${CMAKE_SOURCE_DIR}/include/kinematics.hpp
         ${CMAKE_SOURCE_DIR}/src/algorithms/kinematics.cpp
-        ${CMAKE_SOURCE_DIR}/include/line_node.hpp
         ${CMAKE_SOURCE_DIR}/src/nodes/line.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/main_node.cpp
-        ${CMAKE_SOURCE_DIR}/include/main_node.hpp
         ${CMAKE_SOURCE_DIR}/src/nodes/generalNode.cpp
-        ${CMAKE_SOURCE_DIR}/include/generalNode.hpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/kinematics_node.cpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)

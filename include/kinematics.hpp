@@ -16,7 +16,7 @@ namespace algorithms {
         double r; //right
     };
 
-    struct Encoders{
+    struct EncodersChange{
         int l; //left
         int r; //right
     };
@@ -43,13 +43,13 @@ namespace algorithms {
         Kinematics(double wheel_radius, double wheel_base, int ticks_revolution);
         RobotSpeed forward(WheelAngularSpeed x) const;
         WheelAngularSpeed inverse(RobotSpeed x) const;
-        Coordinates forward(Encoders coords) const;
-        Encoders inverse(Coordinates enc) const;
-        CoordinatesWithDirectionChange forwardDirection(Encoders enc) const;
+        Coordinates forward(EncodersChange coords) const;
+        EncodersChange inverse(Coordinates enc) const;
+        CoordinatesWithDirectionChange forwardDirection(EncodersChange enc) const;
         EncodersWithDirectionChange inverseDirection(Coordinates coords) const;
+        WheelAngularSpeed convertEnc(EncodersChange x) const;
+        EncodersChange convertEnc(WheelAngularSpeed x) const;
     private:
-        WheelAngularSpeed convertEnc(Encoders x) const;
-        Encoders convertEnc(WheelAngularSpeed x) const;
         double wheel_radius_;
         double wheel_base_;
         double wheel_circumference;

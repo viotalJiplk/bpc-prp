@@ -20,7 +20,8 @@ namespace nodes {
         std::shared_ptr<rclcpp::Subscription<std_msgs::msg::UInt32MultiArray_<std::allocator<void>>>> UInt8MultiArray_;
 
         // Subscriber for button press messages
-        rclcpp::Subscription<std_msgs::msg::UInt32MultiArray>::SharedPtr encoderSubscriber;
+        rclcpp::Subscription<std_msgs::msg::UInt32MultiArray>::SharedPtr encoderSubscriber_;
+        rclcpp::Publisher<std_msgs::msg::UInt32MultiArray>::SharedPtr encoderPublisher_;
 
         // Callback - preprocess received message
         void on_encoder_callback(std_msgs::msg::UInt32MultiArray_<std::allocator<void>>::SharedPtr msg);
