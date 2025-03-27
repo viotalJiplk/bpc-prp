@@ -11,6 +11,7 @@ namespace nodes {
         // Destructor (default)
         ~Motors() override = default;
 
+
         void setMotorsSpeed(int16_t left, int16_t right);
 
     private:

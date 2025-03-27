@@ -4,8 +4,8 @@
 #include "helper.hpp"
 #include "pid.hpp"
 
-#define LINE_READING_DEVIATION 0.2
-#define EXTREME_LINE_READING_DEVIATION 0.4
+#define LINE_READING_DEVIATION 0.1
+#define EXTREME_LINE_READING_DEVIATION 0.2
 
 #define KP 1
 #define KI 0.1
@@ -23,7 +23,7 @@ namespace nodes {
         mode = SensorsMode::None;
         kinematics_ = kinematics;
         mainPublisher_ = this->create_publisher<std_msgs::msg::UInt16>(Topic::mainNode, 1);
-        algo_ = new algorithms::Pid(KP, KI, KD);
+        //algo_ = new algorithms::Pid(KP, KI, KD);
     }
 
     LineNode::~LineNode() {
@@ -118,17 +118,17 @@ namespace nodes {
     void LineNode::estimate_descrete_line_pose(float l_norm, float r_norm) {
         float result = l_norm - r_norm;
         if(result > EXTREME_LINE_READING_DEVIATION){
-            kinematics_->angle(1, 2, [](bool sucess){});
+            kinematics_->angle(3, 3, [](bool sucess){});
         }else if(result < -EXTREME_LINE_READING_DEVIATION){
-            kinematics_->angle(-1, 2, [](bool sucess){});
+            kinematics_->angle(-3, 3, [](bool sucess){});
         }else if(result > LINE_READING_DEVIATION){
-            kinematics_->angle(1, 5, [](bool sucess){});
+            kinematics_->motorSpeed(2, 5, [](bool sucess){});
         }else if(result < -LINE_READING_DEVIATION){
-            kinematics_->angle(-1, 5, [](bool sucess){});
+            kinematics_->motorSpeed(5, 2, [](bool sucess){});
         }else if(l_norm > LINE_READING_DEVIATION && r_norm > LINE_READING_DEVIATION){
-            kinematics_->motorSpeed();
+            kinematics_->forward(10, 5, [](bool sucess){});
         }else{
-            kinematics_->forward(0, 10, [](bool sucess){});
+            kinematics_->forward(10, 5, [](bool sucess){});
         }
     }
 }

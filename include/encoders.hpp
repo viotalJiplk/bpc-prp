@@ -15,6 +15,7 @@ namespace nodes {
         uint32_t getRightEncoderState();
         uint32_t getLeftEncoderState();
     private:
+        uint32_t count;
         std::atomic<uint32_t> left;
         std::atomic<uint32_t> right;
         std::shared_ptr<rclcpp::Subscription<std_msgs::msg::UInt32MultiArray_<std::allocator<void>>>> UInt8MultiArray_;

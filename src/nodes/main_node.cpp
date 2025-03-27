@@ -33,9 +33,9 @@ namespace nodes {
             case 1:
                 if (this->line_->get_sensors_mode() == SensorsMode::None) {
                     line_->calibrationStart();
-                    kinematics_->angle(1, 5,  [this](bool result) {
-                        this->kinematics_->angle(-2, 5, [this](bool result) {
-                            this->kinematics_->angle(1, 10,  [this](bool result) {
+                    kinematics_->angle(0.5, 5,  [this](bool result) {
+                        this->kinematics_->angle(-1, 5, [this](bool result) {
+                            this->kinematics_->angle(0.5, 5,  [this](bool result) {
                                 this->line_->calibrationEnd();
                                 std::cout << "Finished moving forward" << std::endl;
                             });

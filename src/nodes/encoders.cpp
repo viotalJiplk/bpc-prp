@@ -14,9 +14,15 @@ namespace nodes {
         right.store(msg->data[1]);
         publish();
         // TODO add filtration
-        auto encoders = std_msgs::msg::UInt32MultiArray();
-        encoders.data = {left.load(), right.load()};
-        encoderPublisher_->publish(encoders);
+        if (count > 2) {
+            auto encoders = std_msgs::msg::UInt32MultiArray();
+            encoders.data = {left.load(), right.load()};
+            encoderPublisher_->publish(encoders);
+            count = 0;
+        }else {
+            count++;
+        }
+
     }
 
     uint32_t Encoder::getRightEncoderState() {
