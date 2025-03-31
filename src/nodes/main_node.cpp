@@ -36,7 +36,7 @@ namespace nodes {
                     kinematics_->angle(0.5, 5,  [this](bool result) {
                         this->kinematics_->angle(-1, 5, [this](bool result) {
                             this->kinematics_->angle(0.5, 5,  [this](bool result) {
-                                this->line_->calibrationEnd();
+                                this->line_->calibrationEnd(false);
                                 std::cout << "Finished moving forward" << std::endl;
                             });
                         });
@@ -46,7 +46,19 @@ namespace nodes {
                 }
                 break;
             case 2:
-                kinematics_->motorSpeed(7, 15, [](bool result) {});
+                if (this->line_->get_sensors_mode() == SensorsMode::None) {
+                    line_->calibrationStart();
+                    kinematics_->angle(0.5, 5,  [this](bool result) {
+                        this->kinematics_->angle(-1, 5, [this](bool result) {
+                            this->kinematics_->angle(0.5, 5,  [this](bool result) {
+                                this->line_->calibrationEnd(true);
+                                std::cout << "Finished moving forward" << std::endl;
+                            });
+                        });
+                    });
+                } else {
+                    this->line_->stop();
+                }
                 break;
             default: break;
         }

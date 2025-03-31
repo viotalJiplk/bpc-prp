@@ -4,12 +4,41 @@
 #include "helper.hpp"
 #include "pid.hpp"
 
-#define LINE_READING_DEVIATION 0.1
-#define EXTREME_LINE_READING_DEVIATION 0.2
+struct descrete {
+    double lineReadingDeviation;
+    double extremeLineReadingDeviation;
+    uint16_t maxDifferentialSpeed;
+    uint16_t minDifferentialSpeed;
+    double angleAngle;
+    uint16_t angleSpeed;
+    uint16_t forwardSpeed;
+};
 
-#define KP 1
-#define KI 0.1
-#define KD 0.1
+struct descrete descreteValues = {
+    .lineReadingDeviation = 0.05,
+    .extremeLineReadingDeviation = 0.2,
+    .maxDifferentialSpeed = 8,
+    .minDifferentialSpeed = 4,
+    .angleAngle = 3,
+    .angleSpeed = 3,
+    .forwardSpeed = 7,
+}; //tested for orange robot
+
+struct pid {
+    double kp;
+    double ki;
+    double kd;
+    double mid;
+    double deviation;
+};
+
+struct pid pidValues = {
+    .kp = 1.0,
+    .ki = 0.001,
+    .kd = 0.1,
+    .mid = 7.0,
+    .deviation = 7.0,
+};
 
 namespace nodes {
     LineNode::LineNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode): GeneralNode("LineNode", 1) {
@@ -23,7 +52,7 @@ namespace nodes {
         mode = SensorsMode::None;
         kinematics_ = kinematics;
         mainPublisher_ = this->create_publisher<std_msgs::msg::UInt16>(Topic::mainNode, 1);
-        //algo_ = new algorithms::Pid(KP, KI, KD);
+        algo_ = new algorithms::Pid(pidValues.kp, pidValues.ki, pidValues.kd);
     }
 
     LineNode::~LineNode() {
@@ -79,9 +108,13 @@ namespace nodes {
         mode = SensorsMode::Calibration;
     }
 
-    void LineNode::calibrationEnd() {
+    void LineNode::calibrationEnd(bool continous) {
         ioNode_->set_all_leds_color(0, 255, 0);
-        mode = SensorsMode::Feedback;
+        if (continous) {
+            mode = SensorsMode::FeedbackPID;
+        }else {
+            mode = SensorsMode::FeedbackBang;
+        }
         std::cout << "Calibrated max: " << left_max << ", " << right_max << std::endl;
         std::cout << "Calibrated min: " << left_min << ", " << right_min << std::endl;
     }
@@ -97,17 +130,28 @@ namespace nodes {
             /* std::cout << "calibrate:" << std::endl;
             std::cout << "left: " << left_min << "/" << left_max << std::endl;
             std::cout << "right: " << right_min << "/" << right_max << std::endl;*/
-        } else if (mode == SensorsMode::Feedback) {
+        } else if (mode == SensorsMode::FeedbackBang) {
             normalize(msg->data[0], msg->data[1]);
             estimate_descrete_line_pose(left_sensor, right_sensor);
 
+        } else if (mode == SensorsMode::FeedbackPID) {
+            normalize(msg->data[0], msg->data[1]);
+            estimate_continuous_line_pose(left_sensor, right_sensor);
         }
         publish();
     }
 
     float LineNode::estimate_continuous_line_pose(float left_value, float right_value){
-        float result = left_value - right_value;
-        
+        double result = left_value - right_value;
+        float diff = algo_->step(result, 1);
+        if (diff > 1) {
+            diff = 1.0;
+        }else if (diff < -1) {
+            diff = -1.0;
+        }
+        int leftMotor = (-diff)*pidValues.deviation+pidValues.mid;
+        int rightMotor = (diff)*pidValues.deviation+pidValues.mid;
+        kinematics_->motorSpeed(leftMotor, rightMotor, [](bool sucess){});
         return 0.0;
     }
 
@@ -117,18 +161,19 @@ namespace nodes {
 
     void LineNode::estimate_descrete_line_pose(float l_norm, float r_norm) {
         float result = l_norm - r_norm;
-        if(result > EXTREME_LINE_READING_DEVIATION){
-            kinematics_->angle(3, 3, [](bool sucess){});
-        }else if(result < -EXTREME_LINE_READING_DEVIATION){
-            kinematics_->angle(-3, 3, [](bool sucess){});
-        }else if(result > LINE_READING_DEVIATION){
-            kinematics_->motorSpeed(2, 5, [](bool sucess){});
-        }else if(result < -LINE_READING_DEVIATION){
-            kinematics_->motorSpeed(5, 2, [](bool sucess){});
-        }else if(l_norm > LINE_READING_DEVIATION && r_norm > LINE_READING_DEVIATION){
-            kinematics_->forward(10, 5, [](bool sucess){});
+        // std::cout << "result: " <<result  << std::endl;
+        if(result > descreteValues.extremeLineReadingDeviation){
+            kinematics_->angle(descreteValues.angleAngle, descreteValues.angleSpeed, [](bool sucess){});
+        }else if(result < -descreteValues.extremeLineReadingDeviation){
+            kinematics_->angle(-descreteValues.angleAngle, descreteValues.angleSpeed, [](bool sucess){});
+        }else if(result > descreteValues.lineReadingDeviation){
+            kinematics_->motorSpeed(descreteValues.minDifferentialSpeed, descreteValues.maxDifferentialSpeed, [](bool sucess){});
+        }else if(result < -descreteValues.lineReadingDeviation){
+            kinematics_->motorSpeed(descreteValues.maxDifferentialSpeed, descreteValues.minDifferentialSpeed, [](bool sucess){});
+        }else if(l_norm > descreteValues.lineReadingDeviation && r_norm > descreteValues.lineReadingDeviation){
+            kinematics_->forward(10, descreteValues.forwardSpeed, [](bool sucess){});
         }else{
-            kinematics_->forward(10, 5, [](bool sucess){});
+            kinematics_->forward(10, descreteValues.forwardSpeed, [](bool sucess){});
         }
     }
 }

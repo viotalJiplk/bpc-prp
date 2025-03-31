@@ -10,6 +10,7 @@ namespace algorithms {
         float derivative = (error - prev_error_) / dt;
         float output = kp_ * error + ki_ * integral_ + kd_ * derivative;
         prev_error_ = error;
+        // std::cout << "error: " << error << "output: " << output << std::endl;
         return output;
     }
 

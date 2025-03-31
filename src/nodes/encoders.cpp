@@ -14,14 +14,14 @@ namespace nodes {
         right.store(msg->data[1]);
         publish();
         // TODO add filtration
-        if (count > 2) {
+        //if (count > 1) {
             auto encoders = std_msgs::msg::UInt32MultiArray();
             encoders.data = {left.load(), right.load()};
             encoderPublisher_->publish(encoders);
-            count = 0;
-        }else {
-            count++;
-        }
+        //    count = 0;
+        //}else {
+        //    count++;
+        //}
 
     }
 

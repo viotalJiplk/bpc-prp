@@ -21,6 +21,7 @@ set(SRC
         ${CMAKE_SOURCE_DIR}/src/nodes/encoders.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/motors.cpp
         ${CMAKE_SOURCE_DIR}/src/algorithms/kinematics.cpp
+        ${CMAKE_SOURCE_DIR}/src/algorithms/pid.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/line.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/main_node.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/generalNode.cpp

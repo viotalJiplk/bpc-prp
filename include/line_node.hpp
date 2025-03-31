@@ -19,7 +19,8 @@ enum class DiscreteLinePose {
 enum class SensorsMode {
     None,
     Calibration,
-    Feedback,
+    FeedbackBang,
+    FeedbackPID,
 };
 
 namespace nodes
@@ -46,7 +47,7 @@ namespace nodes
 
         void calibrationStart();
         void stop();
-        void calibrationEnd();
+        void calibrationEnd(bool continous);
     private:
         std::shared_ptr<IoNode> ioNode_;
         SensorsMode mode;
