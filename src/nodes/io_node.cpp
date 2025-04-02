@@ -23,16 +23,19 @@ namespace nodes {
         if(led_number >= 3) return; // we have only 3 LEDs on our robot
         std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
         switch(led_number) {
-            case 0: leds.data = {R, G, B, IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], IoNode::leds[6], IoNode::leds[7], IoNode::leds[8]}; break;
-            case 1: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], R, G, B, IoNode::leds[6], IoNode::leds[7], IoNode::leds[8]}; break;
-            case 2: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], R, G, B}; break;
+            case 0: leds.data = {R, G, B, IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], IoNode::leds[6], IoNode::leds[7], IoNode::leds[8], IoNode::leds[9], IoNode::leds[10], IoNode::leds[11]}; break;
+            case 1: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], R, G, B, IoNode::leds[6], IoNode::leds[7], IoNode::leds[8], IoNode::leds[9], IoNode::leds[10], IoNode::leds[11]}; break;
+            case 2: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], R, G, B, IoNode::leds[9], IoNode::leds[10], IoNode::leds[11]}; break;
+            case 3: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], IoNode::leds[6], IoNode::leds[7], IoNode::leds[8], R, G, B}; break;
+            default:
+                break;
         }
         led_publisher_->publish(leds);
     }
 
     void IoNode::set_all_leds_color(uint8_t R, uint8_t G, uint8_t B) {
         std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
-        leds.data = {R, G, B, R, G, B, R, G , B};
+        leds.data = {R, G, B, R, G, B, R, G , B, R, G, B};
         led_publisher_->publish(leds);
     }
 

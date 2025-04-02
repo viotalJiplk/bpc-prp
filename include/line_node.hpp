@@ -50,7 +50,7 @@ namespace nodes
         void calibrationEnd(bool continous);
     private:
         std::shared_ptr<IoNode> ioNode_;
-        SensorsMode mode;
+        std::atomic<SensorsMode> mode;
         double left_sensor;
         double right_sensor;
         std::shared_ptr<KinematicsNode> kinematics_;

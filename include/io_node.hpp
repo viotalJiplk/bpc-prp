@@ -27,7 +27,7 @@ namespace nodes {
         int button_pressed_ = -1;
 
         // Variable to store current LEDs state
-        uint8_t leds[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+        uint8_t leds[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0};
 
         // Subscriber for button press messages
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr button_subscriber_;

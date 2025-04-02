@@ -36,8 +36,8 @@ struct pid pidValues = {
     .kp = 1.0,
     .ki = 0.001,
     .kd = 0.1,
-    .mid = 7.0,
-    .deviation = 7.0,
+    .mid = 2.0,
+    .deviation = 4.0,
 };
 
 namespace nodes {
@@ -105,36 +105,36 @@ namespace nodes {
         left_max = 0;
         right_min = 1024;
         right_max = 0;
-        mode = SensorsMode::Calibration;
+        mode.store(SensorsMode::Calibration);
     }
 
     void LineNode::calibrationEnd(bool continous) {
         ioNode_->set_all_leds_color(0, 255, 0);
         if (continous) {
-            mode = SensorsMode::FeedbackPID;
+            mode.store(SensorsMode::FeedbackPID);
         }else {
-            mode = SensorsMode::FeedbackBang;
+            mode.store(SensorsMode::FeedbackBang);
         }
         std::cout << "Calibrated max: " << left_max << ", " << right_max << std::endl;
         std::cout << "Calibrated min: " << left_min << ", " << right_min << std::endl;
     }
 
     void LineNode::stop() {
-        mode = SensorsMode::None;
+        mode.store(SensorsMode::None);
         ioNode_->set_all_leds_color(255, 0, 0);
     }
 
     void LineNode::on_line_sensors_msg(std::shared_ptr<std_msgs::msg::UInt16MultiArray> msg){
-        if (mode == SensorsMode::Calibration) {
+        if (mode.load() == SensorsMode::Calibration) {
             calibrate(msg->data[0], msg->data[1]);
             /* std::cout << "calibrate:" << std::endl;
             std::cout << "left: " << left_min << "/" << left_max << std::endl;
             std::cout << "right: " << right_min << "/" << right_max << std::endl;*/
-        } else if (mode == SensorsMode::FeedbackBang) {
+        } else if (mode.load() == SensorsMode::FeedbackBang) {
             normalize(msg->data[0], msg->data[1]);
             estimate_descrete_line_pose(left_sensor, right_sensor);
 
-        } else if (mode == SensorsMode::FeedbackPID) {
+        } else if (mode.load() == SensorsMode::FeedbackPID) {
             normalize(msg->data[0], msg->data[1]);
             estimate_continuous_line_pose(left_sensor, right_sensor);
         }
@@ -156,7 +156,7 @@ namespace nodes {
     }
 
     SensorsMode LineNode::get_sensors_mode() {
-        return mode;
+        return mode.load();
     }
 
     void LineNode::estimate_descrete_line_pose(float l_norm, float r_norm) {
