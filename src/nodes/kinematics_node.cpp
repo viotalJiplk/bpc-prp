@@ -10,7 +10,7 @@ std::mutex planMutex;
 bool hasFinished(uint32_t start, uint32_t actual,  int expectedChange) {
     // TODO catch overflow and underflow
     if (expectedChange > 0) {
-        if (UINT32_MAX - start < expectedChange) {
+        if (UINT32_MAX - start > expectedChange) {
             return  actual > (start + expectedChange);
         } else if ( actual > (UINT32_MAX/2)) {
             return false;
@@ -122,8 +122,8 @@ namespace nodes {
         planMutex.lock();
         plan_.start.l = encoders_->getLeftEncoderState();
         plan_.start.r = encoders_->getRightEncoderState();
-        plan_.change.l = 100;
-        plan_.change.r = 100;
+        plan_.change.l = 200;
+        plan_.change.r = 200;
         plan_.lMotor = speedL;
         plan_.rMotor = speedR;
         std::function<void(bool)> localCallback = plan_.callback;

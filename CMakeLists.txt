@@ -23,9 +23,11 @@ set(SRC
         ${CMAKE_SOURCE_DIR}/src/algorithms/kinematics.cpp
         ${CMAKE_SOURCE_DIR}/src/algorithms/pid.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/line.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/ultrasound.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/main_node.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/generalNode.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/kinematics_node.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/ultrasound_sensor.cpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)

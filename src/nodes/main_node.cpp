@@ -6,10 +6,12 @@ namespace nodes {
     MainNode::MainNode(
         std::shared_ptr<IoNode> ionode,
         std::shared_ptr<LineNode> line,
-        std::shared_ptr<KinematicsNode> kinematics
+        std::shared_ptr<KinematicsNode> kinematics,
+        std::shared_ptr<UltrasoundNode> ultrasound
     ): Node("MainNode") {
        line_= line;
        kinematics_ = kinematics;
+        ultrasound_ = ultrasound;
        MainNode::button_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
         Topic::ionode_buttons, 1, std::bind(&MainNode::button_callback, this, std::placeholders::_1));
     }
@@ -25,11 +27,13 @@ namespace nodes {
     void MainNode::button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg) {
         switch(msg->data) {
             case 0:
-                kinematics_->forward(100, 10, [](bool result) {
-                    std::cout << "Finished moving forward" << std::endl;
-                });
+                if (this->ultrasound_->get_sensors_mode() == UltrasoundMode::None) {
+                    this->ultrasound_->calibrationStart();
+                    this->ultrasound_->calibrationEnd(true);
+                }else {
+                    this->ultrasound_->stop();
+                }
                 break;
-                //MainNode::FollowLine(); break;
             case 1:
                 if (this->line_->get_sensors_mode() == SensorsMode::None) {
                     line_->calibrationStart();

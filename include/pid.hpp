@@ -10,16 +10,16 @@ namespace algorithms {
 
     class Pid {
     public:
-        Pid(float kp, float ki, float kd);
-        float step(float error, float dt);
+        Pid(double kp, double ki, double kd);
+        double step(double error, double dt);
         void reset();
 
     private:
-        float kp_;
-        float ki_;
-        float kd_;
-        float prev_error_;
-        float integral_;
+        double kp_;
+        double ki_;
+        double kd_;
+        double prev_error_;
+        double integral_;
     };
 }
 

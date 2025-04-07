@@ -100,7 +100,7 @@ namespace nodes {
     }
 
     void LineNode::calibrationStart() {
-        ioNode_->set_all_leds_color(255, 255, 0);
+        ioNode_->set_led_color(1, 255, 255, 0);
         left_min = 1024;
         left_max = 0;
         right_min = 1024;
@@ -109,7 +109,7 @@ namespace nodes {
     }
 
     void LineNode::calibrationEnd(bool continous) {
-        ioNode_->set_all_leds_color(0, 255, 0);
+        ioNode_->set_led_color(1, 0, 255, 0);
         if (continous) {
             mode.store(SensorsMode::FeedbackPID);
         }else {
@@ -121,7 +121,7 @@ namespace nodes {
 
     void LineNode::stop() {
         mode.store(SensorsMode::None);
-        ioNode_->set_all_leds_color(255, 0, 0);
+        ioNode_->set_led_color(1, 255, 0, 0);
     }
 
     void LineNode::on_line_sensors_msg(std::shared_ptr<std_msgs::msg::UInt16MultiArray> msg){

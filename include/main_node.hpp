@@ -7,6 +7,7 @@
 #include "io_node.hpp"
 #include "kinematics_node.hpp"
 #include "line_node.hpp"
+#include "ultrasound_node.hpp"
 #include "std_msgs/msg/u_int8_multi_array.hpp"
 
 namespace nodes
@@ -17,7 +18,8 @@ namespace nodes
         MainNode(
             std::shared_ptr<IoNode> ionode,
             std::shared_ptr<LineNode> line, 
-            std::shared_ptr<KinematicsNode> kinematics
+            std::shared_ptr<KinematicsNode> kinematics,
+            std::shared_ptr<UltrasoundNode> ultrasound
         );
 
         // Destructor
@@ -32,6 +34,7 @@ namespace nodes
         std::shared_ptr<Motors> motors_;
         std::shared_ptr<LineNode> line_;
         std::shared_ptr<KinematicsNode> kinematics_;
+        std::shared_ptr<UltrasoundNode> ultrasound_;
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr button_subscriber_;

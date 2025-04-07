@@ -2,15 +2,15 @@
 
 namespace algorithms {
 
-    Pid::Pid(float kp, float ki, float kd)
+    Pid::Pid(double kp, double ki, double kd)
         : kp_(kp), ki_(ki), kd_(kd), prev_error_(0), integral_(0) {}
 
-    float Pid::step(float error, float dt) {
+    double Pid::step(double error, double dt) {
         integral_ += error * dt;
-        float derivative = (error - prev_error_) / dt;
-        float output = kp_ * error + ki_ * integral_ + kd_ * derivative;
+        double derivative = (error - prev_error_) / dt;
+        double output = kp_ * error + ki_ * integral_ + kd_ * derivative;
         prev_error_ = error;
-        // std::cout << "error: " << error << "output: " << output << std::endl;
+        // std::cout << "error: " << error << " derivation: " << derivative << " integral: " << integral_ << std::endl;
         return output;
     }
 

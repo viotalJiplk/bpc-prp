@@ -1,9 +1,8 @@
 #include <rclcpp/rclcpp.hpp>
-#include "RosExampleClass.hpp"
 #include "io_node.hpp"
-#include "encoders.hpp"
-#include "motors.hpp"
 #include "line_node.hpp"
+#include "ultrasound_node.hpp"
+#include "ultrasound_sensor_node.hpp"
 #include "main_node.hpp"
 
 int main(int argc, char* argv[]) {
@@ -35,7 +34,13 @@ int main(int argc, char* argv[]) {
     auto line = std::make_shared<nodes::LineNode>(kinematics, ioNode);
     executor->add_node(line);
 
-    auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics);
+    auto ultrasound = std::make_shared<nodes::UltrasoundNode>(kinematics, ioNode);
+    executor->add_node(ultrasound);
+
+    auto ultrasoundSensor = std::make_shared<nodes::UltrasoundSensorNode>();
+    executor->add_node(ultrasoundSensor);
+
+    auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound);
     executor->add_node(mainNode);
 
     // Run the executor (handles callbacks for both nodes)

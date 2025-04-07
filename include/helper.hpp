@@ -9,10 +9,12 @@ namespace Topic {
     const std::string set_rgb_leds = "/bpc_prp_robot/rgb_leds";
     const std::string set_motor_speeds = "/bpc_prp_robot/set_motor_speeds";
     const std::string encoders = "/bpc_prp_robot/encoders";
+    const std::string ultrasound = "/bpc_prp_robot/ultrasounds";
     const std::string line_sensors = "/bpc_prp_robot/line_sensors";
     const std::string mainNode = "/bpc_prp_internal/mainNode";
     const std::string ionode_buttons = "/bpc_prp_internal/ionode_buttons";
     const std::string encoders_publisher = "/bpc_prp_internal/encoders_publisher";
+    const std::string ultrasoundFiltered = "/bpc_prp_internal/ultrasoundsFiltered";
 };
 
 namespace Frame {
