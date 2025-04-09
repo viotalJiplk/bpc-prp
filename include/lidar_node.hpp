@@ -16,10 +16,14 @@ enum class LidarMode {
 };
 
 struct lidarResult{
-    double left;
     double front;
-    double right;
+    double front_left;
+    double front_right;
     double back;
+    double back_left;
+    double back_right;
+    double left;
+    double right;
 };
 
 namespace nodes
@@ -42,6 +46,14 @@ namespace nodes
         uint8_t right_min;
         uint8_t back_max;
         uint8_t back_min;
+        uint8_t back_left_min;
+        uint8_t back_left_max;
+        uint8_t back_right_min;
+        uint8_t back_right_max;
+        uint8_t front_left_min;
+        uint8_t front_left_max;
+        uint8_t front_right_min;
+        uint8_t front_right_max;
         LidarMode get_sensors_mode();
 
         void stop();
@@ -51,14 +63,15 @@ namespace nodes
         std::shared_ptr<IoNode> ioNode_;
         std::atomic<LidarMode> mode;
         std::shared_ptr<KinematicsNode> kinematics_;
-        struct lidarResult normalize(float dataLeft, float dataFront, float dataRight, float dataBack);
+        struct lidarResult normalize(float dataLeft, float dataFrontLeft, float dataFront, float dataFrontRight, float dataRight, 
+            float dataBackRight, float dataBack, float dataBackLeft);
         std::atomic<long> prevT_;
-        void calibrate(uint8_t dataLeft, uint8_t dataMiddle, uint8_t dataRight);
         rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr lidar_sensors_subscriber_;
         double normalizeData(float data, float min, float max) const;
         void on_lidar_sensors_msg(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg);
 
-        double estimate_continuous_lidar_pose(double left_value, double front, double right_value, double back);
+        double estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
+            double valueBackRight, double valueBack, double valueBackLeft);
 
         algorithms::Pid* algo_;
 

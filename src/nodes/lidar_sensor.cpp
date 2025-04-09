@@ -18,7 +18,16 @@ namespace nodes{
     void LidarSensorNode::lidarCallback(std::shared_ptr<sensor_msgs::msg::LaserScan> msg) {
         algorithms::LidarFiltrResults result = algo_->apply_filter(msg->ranges, msg->angle_min, msg->angle_max);
         std_msgs::msg::Float32MultiArray lidar = std_msgs::msg::Float32MultiArray();
-        lidar.data = {result.left, result.front, result.right, result.back};
+        lidar.data = {
+            result.front,
+            result.front_left,
+            result.front_right,
+            result.back,
+            result.back_left,
+            result.back_right,
+            result.left,
+            result.right
+        };
         lidar_filtered_publisher_->publish(lidar);
     }
 }

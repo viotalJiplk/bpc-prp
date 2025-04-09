@@ -61,6 +61,14 @@ namespace nodes {
         right_max = 3.0;
         back_min = 0.0;
         back_max = 3.0;
+        back_left_min = 0.0;
+        back_left_max = 3.0;
+        back_right_min = 0.0;
+        back_right_max = 3.0;
+        front_left_min = 0.0;
+        front_left_max = 3.0;
+        front_right_min = 0.0;
+        front_right_max = 3.0;
         ioNode_ = ioNode;
         mode = LidarMode::None;
         kinematics_ = kinematics;
@@ -85,12 +93,17 @@ namespace nodes {
         }
     }
 
-    struct lidarResult LidarNode::normalize(float dataLeft, float dataFront, float dataRight, float dataBack) {
+    struct lidarResult LidarNode::normalize(float dataLeft, float dataFrontLeft, float dataFront, float dataFrontRight, float dataRight, 
+        float dataBackRight, float dataBack, float dataBackLeft) {
         return {
-            .left = normalizeData(dataLeft, left_min, left_max),
             .front = normalizeData(dataFront, front_min, front_max),
-            .right = normalizeData(dataRight, right_min, right_max),
+            .front_left = normalizeData(dataFrontLeft, front_left_min, front_left_max),
+            .front_right = normalizeData(dataFrontRight, front_right_min, front_right_max),
             .back = normalizeData(dataBack, back_min, back_max),
+            .back_left = normalizeData(dataBackLeft, back_left_min, back_left_max),
+            .back_right = normalizeData(dataBackRight, back_right_min, back_right_max),
+            .left = normalizeData(dataLeft, left_min, left_max),
+            .right = normalizeData(dataRight, right_min, right_max),
         };
     }
 
@@ -111,18 +124,34 @@ namespace nodes {
 
     void LidarNode::on_lidar_sensors_msg(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg){
         if (mode.load() == LidarMode::FeedbackBang) {
-            struct lidarResult normalResult = normalize(msg->data[0], msg->data[1], msg->data[2], msg->data[3]);
+            struct lidarResult normalResult = normalize(
+                msg->data[0], msg->data[1], msg->data[2], msg->data[3], 
+                msg->data[4], msg->data[5], msg->data[6], msg->data[7]
+            );
             estimate_descrete_lidar_pose(normalResult.left, normalResult.right);
 
         } else if (mode.load() == LidarMode::FeedbackPID) {
             // std::cout << "Raw: " << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[2]) << std::endl;
-            struct lidarResult normalResult = normalize(msg->data[0], msg->data[1], msg->data[2], msg->data[3]);
+            struct lidarResult normalResult = normalize(
+                msg->data[0], msg->data[1], msg->data[2], msg->data[3],
+                msg->data[4], msg->data[5], msg->data[6], msg->data[7]
+            );
             // std::cout << "'Normalized: '" << normalResult.left << ", " << normalResult.right << std::endl;
-            estimate_continuous_lidar_pose(normalResult.left, normalResult.front, normalResult.right, normalResult.back);
+            estimate_continuous_lidar_pose(
+                normalResult.left,
+                normalResult.front_left,
+                normalResult.front,
+                normalResult.front_right,
+                normalResult.right,
+                normalResult.back_right,
+                normalResult.back,
+                normalResult.back_left
+            );
         }
     }
 
-    double LidarNode::estimate_continuous_lidar_pose(double left_value, double front, double right_value, double back) {
+    double LidarNode::estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
+        double valueBackRight, double valueBack, double valueBackLeft) {
         // std::cout << "Lidar values " << left_value << ", " << right_value << std::endl;
         auto timeStamp = std::chrono::high_resolution_clock::now();
         long timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -132,7 +161,7 @@ namespace nodes {
         long oldTime = prevT_.exchange(timeNow);
 
         if (oldTime != 0) {
-            double result = left_value - right_value;
+            double result = valueLeft - valueRight;
             if (abs(result) < pidLidarValues.error) {
                 result = 0.0;
             }

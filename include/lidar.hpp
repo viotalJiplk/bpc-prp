@@ -11,7 +11,11 @@
 namespace algorithms {
     struct LidarFiltrResults {
         float front;
+        float front_left;
+        float front_right;
         float back;
+        float back_left;
+        float back_right;
         float left;
         float right;
     };
