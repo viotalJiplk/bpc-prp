@@ -29,6 +29,9 @@ set(SRC
         ${CMAKE_SOURCE_DIR}/src/nodes/kinematics_node.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/ultrasound_sensor.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/keyboard.cpp
+        ${CMAKE_SOURCE_DIR}/src/algorithms/lidar.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/lidar_sensor.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/lidar.cpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)
