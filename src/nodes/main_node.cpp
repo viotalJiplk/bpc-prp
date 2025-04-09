@@ -7,13 +7,17 @@ namespace nodes {
         std::shared_ptr<IoNode> ionode,
         std::shared_ptr<LineNode> line,
         std::shared_ptr<KinematicsNode> kinematics,
-        std::shared_ptr<UltrasoundNode> ultrasound
+        std::shared_ptr<UltrasoundNode> ultrasound,
+        std::shared_ptr<KeyboardInputNode> keyboard_input
     ): Node("MainNode") {
        line_= line;
        kinematics_ = kinematics;
         ultrasound_ = ultrasound;
-       MainNode::button_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
+        keyboard_input_ = keyboard_input;
+        button_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
         Topic::ionode_buttons, 1, std::bind(&MainNode::button_callback, this, std::placeholders::_1));
+        keyboard_subscriber_ = this->create_subscription<std_msgs::msg::Char>(
+        Topic::keyboardIn, 1, std::bind(&MainNode::keyboard_callback, this, std::placeholders::_1));
     }
 
     MainNode::~MainNode() {
@@ -22,6 +26,26 @@ namespace nodes {
 
     void MainNode::FollowLine() {
         // TODO
+    }
+
+    void MainNode::keyboard_callback(std_msgs::msg::Char_<std::allocator<void>>::SharedPtr msg) {
+        switch(msg->data) {
+            case 'w':
+                this->kinematics_->motorSpeed(10, 10, true, [](bool success){});
+                break;
+            case 's':
+                this->kinematics_->motorSpeed(-10, -10, true, [](bool success){});
+                break;
+            case 'a':
+                this->kinematics_->motorSpeed(0, 10, true, [](bool success){});
+                break;
+            case 'd':
+                this->kinematics_->motorSpeed(10, 0, true, [](bool success){});
+                break;
+            case ' ':
+                this->kinematics_->motorSpeed(0, 0, true, [](bool success){});
+                break;
+        }
     }
 
     void MainNode::button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg) {

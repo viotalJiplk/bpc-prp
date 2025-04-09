@@ -49,7 +49,9 @@ namespace nodes {
         planMutex.lock();
         bool localFinished = false;
         std::function<void(bool)> localCallback = [&](bool) {};
-        if ((!plan_.hasFinished)) {
+        if (plan_.isInfinite) {
+            motors_->setMotorsSpeed(plan_.lMotor, plan_.rMotor);
+        }else if ((!plan_.hasFinished)) {
             localCallback = plan_.callback;
             bool leftFinished = hasFinished(plan_.start.l, leftMotor, plan_.change.l);
             bool rightFinished = hasFinished(plan_.start.r, rightMotor, plan_.change.r);
@@ -117,7 +119,11 @@ namespace nodes {
         }
     }
 
-    void KinematicsNode::motorSpeed(int16_t speedL, int16_t speedR, std::function<void(bool)> callback){
+    void KinematicsNode::motorSpeed(int16_t speedL, int16_t speedR, std::function<void(bool)> callback) {
+        motorSpeed(speedL, speedR, false, callback);
+    }
+
+    void KinematicsNode::motorSpeed(int16_t speedL, int16_t speedR, bool isInfinite, std::function<void(bool)> callback){
         // TODO implement
         planMutex.lock();
         plan_.start.l = encoders_->getLeftEncoderState();
@@ -126,6 +132,7 @@ namespace nodes {
         plan_.change.r = 200;
         plan_.lMotor = speedL;
         plan_.rMotor = speedR;
+        plan_.isInfinite = isInfinite;
         std::function<void(bool)> localCallback = plan_.callback;
         bool localFinished = plan_.hasFinished;
         plan_.hasFinished = false;

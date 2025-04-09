@@ -136,6 +136,7 @@ namespace nodes {
 
     void UltrasoundNode::stop() {
         mode.store(UltrasoundMode::None);
+        kinematics_->motorSpeed(0,0, [](bool sucess){});
         ioNode_->set_led_color(0, 255, 0, 0);
     }
 
@@ -158,7 +159,7 @@ namespace nodes {
     }
 
     double UltrasoundNode::estimate_continuous_ultrasound_pose(double left_value, double middle, double right_value){
-        std::cout << "Ultrasound values " << left_value << ", " << right_value << std::endl;
+        // std::cout << "Ultrasound values " << left_value << ", " << right_value << std::endl;
         if ((middle > pidUltrasoundValues.middleError) and (((middle > pidUltrasoundValues.leftRightMiddleError) and (left_value > pidUltrasoundValues.leftRightError)) or ((middle > pidUltrasoundValues.leftRightMiddleError) and (right_value > pidUltrasoundValues.leftRightError)))) {
             auto timeStamp = std::chrono::high_resolution_clock::now();
             long timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(

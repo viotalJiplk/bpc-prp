@@ -15,6 +15,7 @@ namespace Topic {
     const std::string ionode_buttons = "/bpc_prp_internal/ionode_buttons";
     const std::string encoders_publisher = "/bpc_prp_internal/encoders_publisher";
     const std::string ultrasoundFiltered = "/bpc_prp_internal/ultrasoundsFiltered";
+    const std::string keyboardIn = "/bpc_prp_internal/keyboardIn";
 };
 
 namespace Frame {

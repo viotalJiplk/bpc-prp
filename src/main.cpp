@@ -4,6 +4,7 @@
 #include "ultrasound_node.hpp"
 #include "ultrasound_sensor_node.hpp"
 #include "main_node.hpp"
+#include "keyboard_node.hpp"
 
 int main(int argc, char* argv[]) {
     rclcpp::init(argc, argv);
@@ -40,7 +41,10 @@ int main(int argc, char* argv[]) {
     auto ultrasoundSensor = std::make_shared<nodes::UltrasoundSensorNode>();
     executor->add_node(ultrasoundSensor);
 
-    auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound);
+    auto keyboard = std::make_shared<nodes::KeyboardInputNode>();
+    executor->add_node(keyboard);
+
+    auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound, keyboard);
     executor->add_node(mainNode);
 
     // Run the executor (handles callbacks for both nodes)

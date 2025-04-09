@@ -18,6 +18,7 @@ struct Plan {
     int16_t lMotor;
     int16_t rMotor;
     bool hasFinished;
+    bool isInfinite;
     Encoders start;
     algorithms::EncodersChange change;
 };
@@ -32,6 +33,7 @@ namespace nodes {
         void forward(uint32_t length, int16_t speed, std::function<void(bool)> callback);
         void angle(double angle, int16_t speed, std::function<void(bool)> callback);
         void motorSpeed(int16_t speedL, int16_t speedR, std::function<void(bool)> callback);
+        void motorSpeed(int16_t speedL, int16_t speedR, bool isInfinite, std::function<void(bool)> callback);
     private:
         Plan plan_;
         algorithms::Kinematics* algo_;

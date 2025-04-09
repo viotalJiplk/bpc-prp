@@ -9,6 +9,8 @@
 #include "line_node.hpp"
 #include "ultrasound_node.hpp"
 #include "std_msgs/msg/u_int8_multi_array.hpp"
+#include "keyboard_node.hpp"
+#include "std_msgs/msg/char.hpp"
 
 namespace nodes
 {
@@ -19,7 +21,8 @@ namespace nodes
             std::shared_ptr<IoNode> ionode,
             std::shared_ptr<LineNode> line, 
             std::shared_ptr<KinematicsNode> kinematics,
-            std::shared_ptr<UltrasoundNode> ultrasound
+            std::shared_ptr<UltrasoundNode> ultrasound,
+            std::shared_ptr<KeyboardInputNode> keyboard_input
         );
 
         // Destructor
@@ -35,9 +38,12 @@ namespace nodes
         std::shared_ptr<LineNode> line_;
         std::shared_ptr<KinematicsNode> kinematics_;
         std::shared_ptr<UltrasoundNode> ultrasound_;
+        std::shared_ptr<KeyboardInputNode> keyboard_input_;
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr button_subscriber_;
+        rclcpp::Subscription<std_msgs::msg::Char>::SharedPtr keyboard_subscriber_;
+        void keyboard_callback(std_msgs::msg::Char_<std::allocator<void>>::SharedPtr msg);
         void button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg);
     };
 }

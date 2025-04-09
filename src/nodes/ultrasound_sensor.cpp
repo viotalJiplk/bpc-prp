@@ -33,7 +33,7 @@ namespace nodes {
             count_ = 0;
         }
 
-        std::cout << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[1]) << ", " << static_cast<uint32_t>(msg->data[2])  << std::endl;
+        // std::cout << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[1]) << ", " << static_cast<uint32_t>(msg->data[2])  << std::endl;
 
         left_[count_] = msg->data[0];
         middle_[count_] = msg->data[1];

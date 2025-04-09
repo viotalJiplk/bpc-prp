@@ -28,6 +28,7 @@ set(SRC
         ${CMAKE_SOURCE_DIR}/src/nodes/generalNode.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/kinematics_node.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/ultrasound_sensor.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/keyboard.cpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)
