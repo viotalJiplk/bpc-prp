@@ -9,13 +9,15 @@ namespace nodes {
         std::shared_ptr<KinematicsNode> kinematics,
         std::shared_ptr<UltrasoundNode> ultrasound,
         std::shared_ptr<KeyboardInputNode> keyboard_input,
-        std::shared_ptr<LidarNode> lidar_node
+        std::shared_ptr<LidarNode> lidar_node,
+        std::shared_ptr<ImuNode> imu_node
         ): Node("MainNode") {
        line_= line;
        kinematics_ = kinematics;
         ultrasound_ = ultrasound;
         keyboard_input_ = keyboard_input;
         lidar_node_ = lidar_node;
+        imu_node_ = imu_node;
         button_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
         Topic::ionode_buttons, 1, std::bind(&MainNode::button_callback, this, std::placeholders::_1));
         keyboard_subscriber_ = this->create_subscription<std_msgs::msg::Char>(
@@ -82,6 +84,14 @@ namespace nodes {
                 }
 
                 break;
+            case 'i':
+                if (this->imu_node_->getMode() == ImuNodeMode::None) {
+                    this->imu_node_->start();
+                }else {
+                    this->imu_node_->stop();
+                }
+
+                break;
             case 'b':
                 this->kinematics_->backward(50, 10, [this](bool success) {});
 
@@ -94,6 +104,7 @@ namespace nodes {
                 this->kinematics_->stop();
                 this->lidar_node_->stop();
                 this->ultrasound_->stop();
+                this->imu_node_->stop();
                 break;
         }
     }

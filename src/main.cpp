@@ -7,6 +7,7 @@
 #include "keyboard_node.hpp"
 #include "lidar_sensor_node.hpp"
 #include "lidar_node.hpp"
+#include "imu_node.hpp"
 
 int main(int argc, char* argv[]) {
     rclcpp::init(argc, argv);
@@ -52,7 +53,10 @@ int main(int argc, char* argv[]) {
     auto lidar = std::make_shared<nodes::LidarNode>(kinematics, ioNode, ultrasound);
     executor->add_node(lidar);
 
-    auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound, keyboard, lidar);
+    auto imu = std::make_shared<nodes::ImuNode>(kinematics);
+    executor->add_node(imu);
+
+    auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound, keyboard, lidar, imu);
     executor->add_node(mainNode);
 
     // Run the executor (handles callbacks for both nodes)

@@ -18,6 +18,7 @@ namespace Topic {
     const std::string keyboardIn = "/bpc_prp_internal/keyboardIn";
     const std::string lidar = "/bpc_prp_robot/lidar";
     const std::string lidarFiltered = "/bpc_prp_internal/lidarFiltered";
+    const std::string imu = "/bpc_prp_robot/imu";
 };
 
 namespace Frame {

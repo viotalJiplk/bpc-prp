@@ -1,0 +1,42 @@
+#include "imu.hpp"
+#include <cmath>
+
+
+namespace algorithms {
+
+    PlanarImuIntegrator::PlanarImuIntegrator(){
+        theta_ = 0.0f;
+        gyro_offset_ = 0.0f;
+    };
+
+    PlanarImuIntegrator::~PlanarImuIntegrator(){};
+
+    float PlanarImuIntegrator::vectorMean(std::vector<float> vector){
+        float sum = 0.0f;
+        for (float num : vector) {
+            sum += num;
+        }
+        return sum/vector.size();
+    }
+
+    float PlanarImuIntegrator::update(float gyro_z, double dt) {
+        float old_theta = theta_;
+        theta_ += dt * gyro_z;
+        return theta_ - 0;
+    }
+
+    void PlanarImuIntegrator::setCalibration(std::vector<float> gyro) {
+        gyro_offset_ = vectorMean(gyro);
+    }
+
+    float PlanarImuIntegrator::getYaw() {
+      return theta_;
+    }
+
+    void PlanarImuIntegrator::reset() {
+      theta_ = 0.0f;
+      gyro_offset_ = 0.0f;
+    }
+
+
+}
