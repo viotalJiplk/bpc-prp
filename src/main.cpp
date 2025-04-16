@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     auto lidar_sensor = std::make_shared<nodes::LidarSensorNode>();
     executor->add_node(lidar_sensor);
 
-    auto lidar = std::make_shared<nodes::LidarNode>(kinematics, ioNode);
+    auto lidar = std::make_shared<nodes::LidarNode>(kinematics, ioNode, ultrasound);
     executor->add_node(lidar);
 
     auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound, keyboard, lidar);

@@ -5,6 +5,8 @@
 #include "lidar_node.hpp"
 #include <chrono>
 
+#define PI 3.14159265
+
 struct descreteLidar {
     double lineReadingDeviation;
     double extremeLineReadingDeviation;
@@ -35,46 +37,49 @@ struct pidLidar {
     double middleError;
     double leftRightError;
     double leftRightMiddleError;
+    double intersection;
 };
 
 struct pidLidar pidLidarValues = {
     .kp = 1,
     .ki = 0.00,
-    .kd = 0.7,
-    .mid = 10.0,
-    .deviation = 10.0,
+    .kd = 0.4,
+    .mid = 7.0,
+    .deviation = 7.0,
     .error = 0.005,
     .middleError = 0.04,
     .leftRightError = 0.08,
     .leftRightMiddleError = 0.08,
+    .intersection = 0.35,
 };
 
 namespace nodes {
-    LidarNode::LidarNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode): GeneralNode("LidarNode", 1) {
+    LidarNode::LidarNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode, std::shared_ptr<UltrasoundNode> ultrasoundNode): GeneralNode("LidarNode", 1) {
         lidar_sensors_subscriber_ = this->create_subscription<std_msgs::msg::Float32MultiArray>(
                   Topic::lidarFiltered, 1, std::bind(&LidarNode::on_lidar_sensors_msg, this, std::placeholders::_1));
         left_min = 0.0;
-        left_max = 3.0;
+        left_max = 2.5;
         front_min = 0.0;
-        front_max = 3.0;
+        front_max = 2.5;
         right_min = 0.0;
-        right_max = 3.0;
+        right_max = 2.5;
         back_min = 0.0;
-        back_max = 3.0;
+        back_max = 2.5;
         back_left_min = 0.0;
-        back_left_max = 3.0;
+        back_left_max = 2.5;
         back_right_min = 0.0;
-        back_right_max = 3.0;
+        back_right_max = 2.5;
         front_left_min = 0.0;
-        front_left_max = 3.0;
+        front_left_max = 2.5;
         front_right_min = 0.0;
-        front_right_max = 3.0;
+        front_right_max = 2.5;
         ioNode_ = ioNode;
         mode = LidarMode::None;
         kinematics_ = kinematics;
         algo_ = new algorithms::Pid(pidLidarValues.kp, pidLidarValues.ki, pidLidarValues.kd);
         count_.store(0);
         prevT_.store(0);
+        ultrasoundNode_ = ultrasoundNode;
     }
 
     LidarNode::~LidarNode() {
@@ -93,8 +98,8 @@ namespace nodes {
         }
     }
 
-    struct lidarResult LidarNode::normalize(float dataLeft, float dataFrontLeft, float dataFront, float dataFrontRight, float dataRight, 
-        float dataBackRight, float dataBack, float dataBackLeft) {
+    struct lidarResult LidarNode::normalize(float dataFront, float dataFrontLeft, float dataFrontRight, float dataBack, float dataBackLeft,
+        float dataBackRight, float dataLeft, float dataRight) {
         return {
             .front = normalizeData(dataFront, front_min, front_max),
             .front_left = normalizeData(dataFrontLeft, front_left_min, front_left_max),
@@ -107,22 +112,49 @@ namespace nodes {
         };
     }
 
-    void LidarNode::start(bool continous) {
+    void LidarNode::start(bool continous, std::function<void()> intersection) {
+        onIntersection_ = intersection;
         ioNode_->set_led_color(0, 0, 255, 0);
+        prevT_.exchange(0);
         if (continous) {
             mode.store(LidarMode::FeedbackPID);
         }else {
             mode.store(LidarMode::FeedbackBang);
         }
+        this->ultrasoundNode_->extremeTestingStart([this](bool intersection) {
+            this->onExtreme(intersection);
+        });
     }
 
     void LidarNode::stop() {
+        prevT_.exchange(0);
         mode.store(LidarMode::None);
-        kinematics_->motorSpeed(0,0, [](bool sucess){});
+        kinematics_->stop();
+        ultrasoundNode_->stop();
         ioNode_->set_led_color(0, 255, 0, 0);
     }
 
+    void LidarNode::onExtreme(bool intersection) {
+        LidarMode activeMode = this->mode.load();
+        this->mode.store(LidarMode::None);
+        if (intersection) {
+            this->mode.store(LidarMode::None);
+            std::function<void()> callback = this->onIntersection_;
+            onIntersection_ = [](){};
+            callback();
+        }else {
+            this->ultrasoundNode_->handleExtreme([this, activeMode]() {
+                prevT_.exchange(0);
+                this->mode.store(activeMode);
+                this->ultrasoundNode_->extremeTestingStart([this](bool intersection) {
+                    this->onExtreme(intersection);
+                });
+            });
+        }
+    }
+
     void LidarNode::on_lidar_sensors_msg(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg){
+
         if (mode.load() == LidarMode::FeedbackBang) {
             struct lidarResult normalResult = normalize(
                 msg->data[0], msg->data[1], msg->data[2], msg->data[3], 
@@ -147,38 +179,110 @@ namespace nodes {
                 normalResult.back,
                 normalResult.back_left
             );
+        }else if (mode.load() == LidarMode::Center or mode.load() == LidarMode::CenterLookup) {
+            // std::cout << "Raw: " << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[2]) << std::endl;
+            struct lidarResult normalResult = normalize(
+                msg->data[0], msg->data[1], msg->data[2], msg->data[3],
+                msg->data[4], msg->data[5], msg->data[6], msg->data[7]
+            );
+            // std::cout << "'Normalized: '" << normalResult.left << ", " << normalResult.right << std::endl;
+            centerHandler(
+                normalResult.left,
+                normalResult.front_left,
+                normalResult.front,
+                normalResult.front_right,
+                normalResult.right,
+                normalResult.back_right,
+                normalResult.back,
+                normalResult.back_left
+            );
         }
     }
 
-    double LidarNode::estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
-        double valueBackRight, double valueBack, double valueBackLeft) {
-        // std::cout << "Lidar values " << left_value << ", " << right_value << std::endl;
+    long LidarNode::getTimestamp() {
         auto timeStamp = std::chrono::high_resolution_clock::now();
         long timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(
             timeStamp.time_since_epoch()
         ).count();
+        return timeNow;
+    }
 
+    double LidarNode::estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
+        double valueBackRight, double valueBack, double valueBackLeft) {
+        long timeNow = getTimestamp();
         long oldTime = prevT_.exchange(timeNow);
-
-        if (oldTime != 0) {
-            double result = valueLeft - valueRight;
-            if (abs(result) < pidLidarValues.error) {
-                result = 0.0;
+        // if (((valueFrontLeft + valueFrontRight) > pidLidarValues.intersection) or ((valueFrontLeft + valueFront) > pidLidarValues.intersection) or ((valueFront + valueFrontRight) > pidLidarValues.intersection)) {
+        // if (((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) ) or ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)) or ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection))) {
+        //     std::function<void()> callback = this->onIntersection_;
+        //     this->onIntersection_ = [](){};
+        //     this->stop();
+        //     callback();
+        //     prevT_.exchange(0);
+        // }else {
+            if (oldTime != 0) {
+                double result =   valueFrontLeft - valueFrontRight;
+                // std::cout << result << std::endl;
+                if (abs(result) < pidLidarValues.error) {
+                    result = 0.0;
+                }
+                double dt = (timeNow-oldTime)/1000.0;
+                // std::cout << dt << std::endl;
+                double diff = algo_->step(result, dt);
+                if (diff > 1) {
+                    diff = 1.0;
+                }else if (diff < -1) {
+                    diff = -1.0;
+                }
+                int leftMotor = (-diff)*pidLidarValues.deviation+pidLidarValues.mid;
+                int rightMotor = (diff)*pidLidarValues.deviation+pidLidarValues.mid;
+                std::cout << "Lidar values " << valueFrontLeft << ", " << valueFrontRight << ", " << valueFrontLeft - valueFrontRight << std::endl;
+                // std::cout << "Motor settings " << leftMotor << ", " << rightMotor << ", " << result << std::endl;
+                kinematics_->motorSpeed(leftMotor, rightMotor, [](bool sucess){});
             }
-            double dt = (timeNow-oldTime)/1000.0;
-            // std::cout << dt << std::endl;
-            double diff = algo_->step(result, dt);
-            if (diff > 1) {
-                diff = 1.0;
-            }else if (diff < -1) {
-                diff = -1.0;
-            }
-            int leftMotor = (-diff)*pidLidarValues.deviation+pidLidarValues.mid;
-            int rightMotor = (diff)*pidLidarValues.deviation+pidLidarValues.mid;
-            // std::cout << "Motor settings " << leftMotor << ", " << rightMotor << ", " << result << std::endl;
-            kinematics_->motorSpeed(leftMotor, rightMotor, [](bool sucess){});
-        }
+        // }
         return 0.0;
+    }
+
+    void LidarNode::centerHandler(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight,
+        double valueBackRight, double valueBack, double valueBackLeft) {
+        double actual = abs(valueBackRight + valueBackLeft + valueFrontRight + valueFrontLeft);
+        std::cout << actual << std::endl;
+        if (mode.load() == LidarMode::Center) {
+            double diff = abs(actual - this->centerMin);
+            // std::cout << diff << std::endl;
+            if (diff  < 0.01) {
+                std::function<void()> callback = this->centerCallback_;
+                this->centerCallback_ = [](){};
+                this->kinematics_->stop();
+                this->stop();
+                callback();
+            }
+        }else {
+            if (actual < this->centerMin) {
+                this->centerMin = actual;
+            }
+        }
+    }
+
+    void LidarNode::center(std::function<void()> after) {
+        // does not work
+        mode.store(LidarMode::CenterLookup);
+        centerMin = std::numeric_limits<double>::max();
+        this->centerCallback_ = after;
+        this->kinematics_->angle(PI/4, 3, [this](bool success) {
+            this->kinematics_->angle(-PI/2, 3, [this](bool success) {
+                std::cout << "Center Min " << this->centerMin << std::endl;
+                mode.store(LidarMode::Center);
+                this->kinematics_->angle(PI/2, 3, [this](bool success) {
+                    if (success) {
+                        std::function<void()> callback = this->centerCallback_;
+                        this->centerCallback_ = [](){};
+                        this->stop();
+                        callback();
+                    }
+                });
+            });
+        });
     }
 
     LidarMode LidarNode::get_sensors_mode() {

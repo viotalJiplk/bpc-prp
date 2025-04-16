@@ -33,10 +33,11 @@ namespace nodes
         // Line following control
         // called by button press, will calibrate the line sensors and then follow line
         static void FollowLine();
-        
+
     private:
         // From these variables it is possible to call methods of nodes they contain
         std::shared_ptr<Motors> motors_;
+        std::function<void()> lidarCallback;
         std::shared_ptr<LineNode> line_;
         std::shared_ptr<KinematicsNode> kinematics_;
         std::shared_ptr<UltrasoundNode> ultrasound_;

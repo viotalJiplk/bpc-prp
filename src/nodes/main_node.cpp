@@ -46,14 +46,54 @@ namespace nodes {
                 break;
             case 'l':
                 if (this->lidar_node_->get_sensors_mode() == LidarMode::None) {
-                    this->lidar_node_->start(true);
+                    this->lidarCallback = [this]() {
+                        this->lidar_node_->start(true, [this]() {
+                            std::cout << "intersection" << std::endl;
+                            // kinematics_->backward(200, 10, [this](bool success) {
+                                this->lidar_node_->center([this]() {
+                                    kinematics_->forward(300, 10, [this](bool success) {
+                                        this->lidarCallback();
+                                    });
+                                });
+                            // });
+                        });
+                    };
+                    this->lidarCallback();
                 }else {
                     this->lidar_node_->stop();
                 }
 
                 break;
+            case 'c':
+                if (this->lidar_node_->get_sensors_mode() == LidarMode::None) {
+                    this->lidar_node_->center([this]() {
+                });
+                }else {
+                    this->lidar_node_->stop();
+                }
+
+                break;
+            case 'u':
+                if (this->ultrasound_->get_sensors_mode() == UltrasoundMode::None) {
+                    this->ultrasound_->calibrationStart();
+                    this->ultrasound_->calibrationEnd(true);
+                }else {
+                    this->ultrasound_->stop();
+                }
+
+                break;
+            case 'b':
+                this->kinematics_->backward(50, 10, [this](bool success) {});
+
+                break;
+            case 'f':
+                this->kinematics_->forward(50, 10, [this](bool success) {});
+
+                break;
             case ' ':
-                this->kinematics_->motorSpeed(0, 0, true, [](bool success){});
+                this->kinematics_->stop();
+                this->lidar_node_->stop();
+                this->ultrasound_->stop();
                 break;
         }
     }

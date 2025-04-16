@@ -37,27 +37,28 @@ namespace algorithms {
 
         // Compute the angular step between each range reading
         auto angle_step = (angle_end - angle_start) / points.size();
-
         for (size_t i = 0; i < points.size(); ++i) {
-            if(points[i] != std::numeric_limits<float>::infinity() and points[i] != -std::numeric_limits<float>::infinity()) {
-                auto angle = angle_start + (i * angle_step) + M_PI;
-                if ((angle < ((angle_range) + 1.0/8.0 * M_PI)) and (angle > 1.0/8.0 * M_PI)) { // 0/8 PI - 2/8 PI
-                    left.push_back(points[i]);
-                }else if (angle < ((2*angle_range) + 1.0/8.0 * M_PI)) { // 2/8 PI - 4/8 PI
-                    front_left.push_back(points[i]);
-                }else if (angle < ((3*angle_range) + 1.0/8.0 * M_PI)) { // 4/8 PI - 6/8 PI
-                    front.push_back(points[i]);
-                }else if (angle < ((4*angle_range) + 1.0/8.0 * M_PI)) { // 6/8 PI - 8/8 PI
-                    front_right.push_back(points[i]);
-                }else if (angle < ((5*angle_range) + 1.0/8.0 * M_PI)) { // 8/8 PI - 10/8 PI
-                    right.push_back(points[i]);
-                }else if (angle < ((6*angle_range) + 1.0/8.0 * M_PI)) { // 10/8 PI - 12/8 PI
-                    back_right.push_back(points[i]);
-                }else if (angle < ((7*angle_range) + 1.0/8.0 * M_PI)) { // 12/8 PI - 14/8 PI
-                    back.push_back(points[i]);
-                }else{                                                  // 14/8 PI - 16/8 PI
-                    back_left.push_back(points[i]);
-                }
+            float point = points.at(i);
+            if (point == -std::numeric_limits<float>::infinity() or point == std::numeric_limits<float>::infinity()) {
+                point = 0;
+            }
+            auto angle = angle_start + (i * angle_step) + M_PI;
+            if ((angle < ((angle_range) + 3.0/8.0 * M_PI)) and (angle > 3.0/8.0 * M_PI)) { // 0/8 PI - 2/8 PI
+                left.push_back(point);
+            }else if (angle < ((2*angle_range) + 3.0/8.0 * M_PI) and (angle > 3.0/8.0 * M_PI)) { // 2/8 PI - 4/8 PI
+                back_left.push_back(point); //
+            }else if (angle < ((3*angle_range) + 3.0/8.0 * M_PI) and (angle > 3.0/8.0 * M_PI)) { // 4/8 PI - 6/8 PI
+                back.push_back(point); //
+            }else if (angle < ((4*angle_range) + 3.0/8.0 * M_PI) and (angle > 3.0/8.0 * M_PI)) { // 6/8 PI - 8/8 PI
+                back_right.push_back(point);
+            }else if (angle < ((5*angle_range) + 3.0/8.0 * M_PI) and (angle > 3.0/8.0 * M_PI)) { // 8/8 PI - 10/8 PI
+                right.push_back(point);
+            }else if (angle < ((6*angle_range) + 3.0/8.0 * M_PI) and (angle > 3.0/8.0 * M_PI)) { // 10/8 PI - 12/8 PI
+                front_right.push_back(point);
+            }else if (angle < ((7*angle_range) + 3.0/8.0 * M_PI) and (angle > 3.0/8.0 * M_PI)) { // 12/8 PI - 14/8 PI
+                front.push_back(point);
+            }else{                                                  // 14/8 PI - 16/8 PI
+                front_left.push_back(point); //
             }
             // TODO: Skip invalid (infinite) readings
             // TODO: Sort the value into the correct directional bin based on angle

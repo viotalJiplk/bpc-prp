@@ -31,9 +31,11 @@ namespace nodes {
         // Destructor (default)
         ~KinematicsNode() override = default;
         void forward(uint32_t length, int16_t speed, std::function<void(bool)> callback);
+        void backward(uint32_t length, int16_t speed, std::function<void(bool)> callback);
         void angle(double angle, int16_t speed, std::function<void(bool)> callback);
         void motorSpeed(int16_t speedL, int16_t speedR, std::function<void(bool)> callback);
         void motorSpeed(int16_t speedL, int16_t speedR, bool isInfinite, std::function<void(bool)> callback);
+        void stop();
     private:
         Plan plan_;
         algorithms::Kinematics* algo_;

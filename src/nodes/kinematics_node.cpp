@@ -86,6 +86,29 @@ namespace nodes {
         bool localFinished = plan_.hasFinished;
         plan_.hasFinished = false;
         plan_.callback = callback;
+        plan_.isInfinite = false;
+        planMutex.unlock();
+        if (!localFinished) {
+            localCallback(false);
+        }
+    }
+    void KinematicsNode::backward(uint32_t length, int16_t speed, std::function<void(bool)> callback) {
+        algorithms::Coordinates coordinates;
+        coordinates.x = length;
+        coordinates.y = 0;
+        planMutex.lock();
+        plan_.start.l = encoders_->getLeftEncoderState();
+        plan_.start.r = encoders_->getRightEncoderState();
+        plan_.change = algo_->inverse(coordinates);
+        plan_.change.l = -plan_.change.l;
+        plan_.change.r = -plan_.change.r;
+        plan_.lMotor = -speed;
+        plan_.rMotor = -speed;
+        std::function<void(bool)> localCallback = plan_.callback;
+        bool localFinished = plan_.hasFinished;
+        plan_.hasFinished = false;
+        plan_.callback = callback;
+        plan_.isInfinite = false;
         planMutex.unlock();
         if (!localFinished) {
             localCallback(false);
@@ -102,6 +125,7 @@ namespace nodes {
         plan_.start.l = encoders_->getLeftEncoderState();
         plan_.start.r = encoders_->getRightEncoderState();
         plan_.change = algo_->convertEnc(ws);
+        plan_.isInfinite = false;
         if (angle > 0) {
             plan_.lMotor = -speed;
             plan_.rMotor = speed;
@@ -137,6 +161,25 @@ namespace nodes {
         bool localFinished = plan_.hasFinished;
         plan_.hasFinished = false;
         plan_.callback = callback;
+        planMutex.unlock();
+        if (!localFinished) {
+            localCallback(false);
+        }
+    }
+
+    void KinematicsNode::stop() {
+        planMutex.lock();
+        plan_.start.l = encoders_->getLeftEncoderState();
+        plan_.start.r = encoders_->getRightEncoderState();
+        plan_.change.l = 0;
+        plan_.change.r = 0;
+        plan_.lMotor = 0;
+        plan_.rMotor = 0;
+        plan_.isInfinite = false;
+        std::function<void(bool)> localCallback = plan_.callback;
+        bool localFinished = plan_.hasFinished;
+        plan_.hasFinished = true;
+        plan_.callback = [](bool success){};
         planMutex.unlock();
         if (!localFinished) {
             localCallback(false);

@@ -13,8 +13,10 @@
 enum class UltrasoundMode {
     None,
     Calibration,
+    ExtremeHandling,
     FeedbackBang,
     FeedbackPID,
+    ExtremeTesting,
 };
 
 struct ultrasoundResult{
@@ -23,9 +25,14 @@ struct ultrasoundResult{
     double right;
 };
 
+enum class UltrasoundDirection {
+    Front,
+    Left,
+    Right
+};
+
 namespace nodes
 {
-
     class UltrasoundNode : public GeneralNode {
     public:
 
@@ -46,11 +53,18 @@ namespace nodes
         void calibrationStart();
         void stop();
         void calibrationEnd(bool continous);
+        void extremeTestingStart(std::function<void(bool)> callback);
+        void handleExtreme(std::function<void()> callback);
     private:
+        std::function<void(bool)> extremeTestingCallback_;
+        std::function<void()> extremeHandleCallback_;
+        UltrasoundDirection previousDirection;
         std::atomic<uint32_t> count_;
         std::shared_ptr<IoNode> ioNode_;
         std::atomic<UltrasoundMode> mode;
         std::shared_ptr<KinematicsNode> kinematics_;
+        void extremeTestingCheck(double left_value, double middle, double right_value);
+        void extremeHandlerCallback(double left_value, double middle, double right_value);
         struct ultrasoundResult normalize(uint8_t dataLeft, uint8_t dataMiddle, uint8_t dataRight);
         std::atomic<long> prevT_;
         void calibrate(uint8_t dataLeft, uint8_t dataMiddle, uint8_t dataRight);
