@@ -13,6 +13,7 @@
 #include "std_msgs/msg/char.hpp"
 #include "lidar_node.hpp"
 #include "imu_node.hpp"
+#include "aruco_node.hpp"
 
 namespace nodes
 {
@@ -26,7 +27,8 @@ namespace nodes
             std::shared_ptr<UltrasoundNode> ultrasound,
             std::shared_ptr<KeyboardInputNode> keyboard_input,
             std::shared_ptr<LidarNode> lidar_node,
-            std::shared_ptr<ImuNode> imu_node
+            std::shared_ptr<ImuNode> imu_node,
+            std::shared_ptr<ArucoNode> aruco_node
         );
 
         // Destructor
@@ -46,6 +48,7 @@ namespace nodes
         std::shared_ptr<KeyboardInputNode> keyboard_input_;
         std::shared_ptr<LidarNode> lidar_node_;
         std::shared_ptr<ImuNode> imu_node_;
+        std::shared_ptr<ArucoNode> aruco_node_;
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr button_subscriber_;

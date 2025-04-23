@@ -10,7 +10,8 @@ namespace nodes {
         std::shared_ptr<UltrasoundNode> ultrasound,
         std::shared_ptr<KeyboardInputNode> keyboard_input,
         std::shared_ptr<LidarNode> lidar_node,
-        std::shared_ptr<ImuNode> imu_node
+        std::shared_ptr<ImuNode> imu_node,
+        std::shared_ptr<ArucoNode> aruco_node
         ): Node("MainNode") {
        line_= line;
        kinematics_ = kinematics;

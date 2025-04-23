@@ -19,6 +19,8 @@ namespace Topic {
     const std::string lidar = "/bpc_prp_robot/lidar";
     const std::string lidarFiltered = "/bpc_prp_internal/lidarFiltered";
     const std::string imu = "/bpc_prp_robot/imu";
+    const std::string camera = "/bpc_prp_robot/camera";
+    const std::string aruco = "/bpc_prp_internal/aruco";
 };
 
 namespace Frame {
