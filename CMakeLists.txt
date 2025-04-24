@@ -36,6 +36,8 @@ set(SRC
         ${CMAKE_SOURCE_DIR}/src/nodes/imu.cpp
         ${CMAKE_SOURCE_DIR}/src/algorithms/aruco.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/aruco.cpp
+        ${CMAKE_SOURCE_DIR}/src/nodes/maze_node.cpp
+        ${CMAKE_SOURCE_DIR}/src/helper.cpp
 )
 
 set(AMENT_LIBS rclcpp std_msgs sensor_msgs cv_bridge image_transport)

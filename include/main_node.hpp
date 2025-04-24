@@ -13,7 +13,7 @@
 #include "std_msgs/msg/char.hpp"
 #include "lidar_node.hpp"
 #include "imu_node.hpp"
-#include "aruco_node.hpp"
+#include "mazeNode.hpp"
 
 namespace nodes
 {
@@ -28,7 +28,7 @@ namespace nodes
             std::shared_ptr<KeyboardInputNode> keyboard_input,
             std::shared_ptr<LidarNode> lidar_node,
             std::shared_ptr<ImuNode> imu_node,
-            std::shared_ptr<ArucoNode> aruco_node
+            std::shared_ptr<MazeNode> maze_node
         );
 
         // Destructor
@@ -40,6 +40,7 @@ namespace nodes
 
     private:
         // From these variables it is possible to call methods of nodes they contain
+        std::shared_ptr<MazeNode> maze_node_;
         std::shared_ptr<Motors> motors_;
         std::function<void()> lidarCallback;
         std::shared_ptr<LineNode> line_;
@@ -48,7 +49,6 @@ namespace nodes
         std::shared_ptr<KeyboardInputNode> keyboard_input_;
         std::shared_ptr<LidarNode> lidar_node_;
         std::shared_ptr<ImuNode> imu_node_;
-        std::shared_ptr<ArucoNode> aruco_node_;
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr button_subscriber_;

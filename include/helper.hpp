@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef HELPER_HPP
+#define HELPER_HPP
 
 #include <iostream>
 
@@ -22,9 +24,14 @@ namespace Topic {
     const std::string camera = "/bpc_prp_robot/camera";
     const std::string aruco = "/bpc_prp_internal/aruco";
 };
+namespace helper {
+    long getTimestamp();
+}
 
 namespace Frame {
     const std::string origin = "origin";
     const std::string robot = "robot";
     const std::string lidar = "lidar";
 };
+
+#endif

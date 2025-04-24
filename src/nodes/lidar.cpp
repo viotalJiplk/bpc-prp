@@ -3,7 +3,6 @@
 #include "helper.hpp"
 #include "pid.hpp"
 #include "lidar_node.hpp"
-#include <chrono>
 
 #define PI 3.14159265
 
@@ -50,7 +49,7 @@ struct pidLidar pidLidarValues = {
     .middleError = 0.04,
     .leftRightError = 0.08,
     .leftRightMiddleError = 0.08,
-    .intersection = 0.35,
+    .intersection = 0.3,
 };
 
 namespace nodes {
@@ -80,6 +79,7 @@ namespace nodes {
         count_.store(0);
         prevT_.store(0);
         ultrasoundNode_ = ultrasoundNode;
+        inIntersection_ = false;
     }
 
     LidarNode::~LidarNode() {
@@ -112,7 +112,7 @@ namespace nodes {
         };
     }
 
-    void LidarNode::start(bool continous, std::function<void()> intersection) {
+    void LidarNode::start(bool continous, std::function<void(IntersectionType detectedIntersection)> intersection) {
         onIntersection_ = intersection;
         ioNode_->set_led_color(0, 0, 255, 0);
         prevT_.exchange(0);
@@ -138,10 +138,11 @@ namespace nodes {
         LidarMode activeMode = this->mode.load();
         this->mode.store(LidarMode::None);
         if (intersection) {
-            this->mode.store(LidarMode::None);
-            std::function<void()> callback = this->onIntersection_;
-            onIntersection_ = [](){};
-            callback();
+            assert(true);
+            // this->mode.store(LidarMode::None);
+            // std::function<void()> callback = this->onIntersection_;
+            // onIntersection_ = [](){};
+            // callback();
         }else {
             this->ultrasoundNode_->handleExtreme([this, activeMode]() {
                 prevT_.exchange(0);
@@ -199,26 +200,41 @@ namespace nodes {
         }
     }
 
-    long LidarNode::getTimestamp() {
-        auto timeStamp = std::chrono::high_resolution_clock::now();
-        long timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(
-            timeStamp.time_since_epoch()
-        ).count();
-        return timeNow;
+    IntersectionType LidarNode::detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack) {
+        uint8_t missing = 0;
+        if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)) {
+            return IntersectionType::AllFour;
+        }
+        if ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
+            return IntersectionType::RightT;
+        }
+        if ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
+            return IntersectionType::LeftT;
+        }
+        if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
+            return IntersectionType::TopT;
+        }
+        return IntersectionType::None;
     }
 
     double LidarNode::estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
         double valueBackRight, double valueBack, double valueBackLeft) {
-        long timeNow = getTimestamp();
+        long timeNow = helper::getTimestamp();
         long oldTime = prevT_.exchange(timeNow);
         // if (((valueFrontLeft + valueFrontRight) > pidLidarValues.intersection) or ((valueFrontLeft + valueFront) > pidLidarValues.intersection) or ((valueFront + valueFrontRight) > pidLidarValues.intersection)) {
-        // if (((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) ) or ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)) or ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection))) {
-        //     std::function<void()> callback = this->onIntersection_;
-        //     this->onIntersection_ = [](){};
-        //     this->stop();
-        //     callback();
-        //     prevT_.exchange(0);
-        // }else {
+        //if (((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) ) or ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)) or ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection))) {
+        IntersectionType detectedIntersection = detectIntersection(valueLeft, valueFront, valueRight, valueBack);
+        if ((detectedIntersection != IntersectionType::None) and (inIntersection_ == false)) {
+            inIntersection_ = true;
+            std::function<void(IntersectionType detectedIntersection)> callback = this->onIntersection_;
+            this->onIntersection_ = [](IntersectionType detectedIntersection){};
+            this->stop();
+            callback(detectedIntersection);
+            prevT_.exchange(0);
+        } else {
+            if ((detectedIntersection == IntersectionType::None) and (inIntersection_ == true)) {
+                inIntersection_ = false;
+            }
             if (oldTime != 0) {
                 double result =   valueFrontLeft - valueFrontRight;
                 // std::cout << result << std::endl;
@@ -235,11 +251,11 @@ namespace nodes {
                 }
                 int leftMotor = (-diff)*pidLidarValues.deviation+pidLidarValues.mid;
                 int rightMotor = (diff)*pidLidarValues.deviation+pidLidarValues.mid;
-                std::cout << "Lidar values " << valueFrontLeft << ", " << valueFrontRight << ", " << valueFrontLeft - valueFrontRight << std::endl;
+                std::cout << "Lidar values " << valueFrontLeft << ", " << valueFrontRight << ", " << diff << ", dt:" << dt << std::endl;
                 // std::cout << "Motor settings " << leftMotor << ", " << rightMotor << ", " << result << std::endl;
                 kinematics_->motorSpeed(leftMotor, rightMotor, [](bool sucess){});
             }
-        // }
+        }
         return 0.0;
     }
 

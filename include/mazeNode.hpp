@@ -1,0 +1,46 @@
+//
+// Created by root on 4/23/25.
+//
+
+#ifndef MAZENODE_HPP
+#define MAZENODE_HPP
+
+#include <memory>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/u_int8.hpp>
+#include "io_node.hpp"
+#include "kinematics_node.hpp"
+#include "lidar_node.hpp"
+#include "imu_node.hpp"
+
+namespace nodes
+{
+    class MazeNode : public rclcpp::Node {
+    public:
+        // Constructor (takes pointers to existing nodes)
+        MazeNode(
+            std::shared_ptr<IoNode> ionode,
+            std::shared_ptr<KinematicsNode> kinematics,
+            std::shared_ptr<LidarNode> lidar_node,
+            std::shared_ptr<ImuNode> imu_node
+        );
+
+        // Destructor
+        ~MazeNode();
+        void start();
+
+
+    private:
+        // From these variables it is possible to call methods of nodes they contain
+        std::function<void()> lidarCallback;
+        std::shared_ptr<IoNode> ionode_;
+        std::shared_ptr<KinematicsNode> kinematics_;
+        std::shared_ptr<LidarNode> lidar_node_;
+        std::shared_ptr<ImuNode> imu_node_;
+
+        // Subscriber for button numbers and its callbask function
+        rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr aruco_subscriber_;
+    };
+}
+
+#endif //MAZENODE_HPP

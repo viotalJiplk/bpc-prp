@@ -11,7 +11,7 @@ namespace nodes {
         std::shared_ptr<KeyboardInputNode> keyboard_input,
         std::shared_ptr<LidarNode> lidar_node,
         std::shared_ptr<ImuNode> imu_node,
-        std::shared_ptr<ArucoNode> aruco_node
+        std::shared_ptr<MazeNode> maze_node
         ): Node("MainNode") {
        line_= line;
        kinematics_ = kinematics;
@@ -23,6 +23,7 @@ namespace nodes {
         Topic::ionode_buttons, 1, std::bind(&MainNode::button_callback, this, std::placeholders::_1));
         keyboard_subscriber_ = this->create_subscription<std_msgs::msg::Char>(
         Topic::keyboardIn, 1, std::bind(&MainNode::keyboard_callback, this, std::placeholders::_1));
+        maze_node_ = maze_node;
     }
 
     MainNode::~MainNode() {
@@ -50,14 +51,14 @@ namespace nodes {
             case 'l':
                 if (this->lidar_node_->get_sensors_mode() == LidarMode::None) {
                     this->lidarCallback = [this]() {
-                        this->lidar_node_->start(true, [this]() {
+                        this->lidar_node_->start(true, [this](IntersectionType detectedIntersection) {
                             std::cout << "intersection" << std::endl;
                             // kinematics_->backward(200, 10, [this](bool success) {
-                                this->lidar_node_->center([this]() {
-                                    kinematics_->forward(300, 10, [this](bool success) {
+                                //this->lidar_node_->center([this]() {
+                                    //kinematics_->forward(300, 10, [this](bool success) {
                                         this->lidarCallback();
-                                    });
-                                });
+                                    //});
+                                //});
                             // });
                         });
                     };
@@ -99,6 +100,10 @@ namespace nodes {
                 break;
             case 'f':
                 this->kinematics_->forward(50, 10, [this](bool success) {});
+
+                break;
+            case 'm':
+                this->maze_node_->start();
 
                 break;
             case ' ':

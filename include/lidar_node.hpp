@@ -17,6 +17,15 @@ enum class LidarMode {
     CenterLookup,
 };
 
+
+enum class IntersectionType {
+    None,
+    LeftT,
+    RightT,
+    TopT,
+    AllFour,
+};
+
 enum class PreviousDirection {
     Left,
     Right,
@@ -64,12 +73,11 @@ namespace nodes
         LidarMode get_sensors_mode();
 
         void stop();
-        void start(bool continous, std::function<void()> intersection);
+        void start(bool continous, std::function<void(IntersectionType detectedIntersection)> intersection);
         void center(std::function<void()> after);
     private:
         PreviousDirection previous_direction_;
         std::atomic<uint32_t> count_;
-        long getTimestamp();
         std::shared_ptr<IoNode> ioNode_;
         std::atomic<LidarMode> mode;
         std::shared_ptr<KinematicsNode> kinematics_;
@@ -80,11 +88,13 @@ namespace nodes
         double normalizeData(float data, float min, float max) const;
         void on_lidar_sensors_msg(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg);
         void onExtreme(bool);
-        std::function<void()> onIntersection_;
+        std::function<void(IntersectionType detectedIntersection)> onIntersection_;
 
         void centerHandler(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight,
         double valueBackRight, double valueBack, double valueBackLeft);
         std::function<void()> centerCallback_;
+        bool inIntersection_;
+        IntersectionType detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack);
 
         double estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
             double valueBackRight, double valueBack, double valueBackLeft);
