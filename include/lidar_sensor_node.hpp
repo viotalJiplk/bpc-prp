@@ -19,6 +19,7 @@ namespace nodes {
             std::shared_ptr<algorithms::LidarFiltr> algo_;
             rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr lidar_subscriber_;
             rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr lidar_filtered_publisher_;
+            std::atomic<long> prevT_;
     };
 };
 

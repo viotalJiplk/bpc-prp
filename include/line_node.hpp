@@ -59,7 +59,6 @@ namespace nodes
         rclcpp::Subscription<std_msgs::msg::UInt16MultiArray>::SharedPtr line_sensors_subscriber_;
         double normalizeData(uint16_t data, uint16_t min, uint16_t max) const;
         void on_line_sensors_msg(std::shared_ptr<std_msgs::msg::UInt16MultiArray> msg);
-
         float estimate_continuous_line_pose(float left_value, float right_value);
 
         algorithms::Pid* algo_;
