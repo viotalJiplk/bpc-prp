@@ -12,6 +12,15 @@
 #include "kinematics_node.hpp"
 #include "lidar_node.hpp"
 #include "imu_node.hpp"
+#include <queue>
+
+enum class ArucoTurn{
+    Left,
+    Right,
+    Forward,
+    None
+
+};
 
 namespace nodes
 {
@@ -31,6 +40,9 @@ namespace nodes
 
 
     private:
+        std::queue<ArucoTurn> arucoExitQueue;
+        std::queue<ArucoTurn> arucoTreasureQueue;
+        std::mutex arucoMutex;
         // From these variables it is possible to call methods of nodes they contain
         std::function<void()> lidarCallback;
         std::shared_ptr<IoNode> ionode_;
@@ -40,6 +52,7 @@ namespace nodes
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr aruco_subscriber_;
+        void aruco_callback_(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg);
     };
 }
 

@@ -185,4 +185,19 @@ namespace nodes {
             localCallback(false);
         }
     }
+    void KinematicsNode::turnLeft(int16_t speed, std::function<void(bool)> callback){
+        this->angle(M_PI/2.0, speed, [callback](bool sucess) {
+                        callback(sucess);
+        });
+    }
+    void KinematicsNode::turnRight(int16_t speed, std::function<void(bool)> callback){
+        this->angle(-M_PI/2.0, speed, [callback](bool sucess) {
+                        callback(sucess);
+        });
+    }
+    void KinematicsNode::turnBack(int16_t speed, std::function<void(bool)> callback){
+        this->angle(M_PI, speed, [callback](bool sucess) {
+                        callback(sucess);
+        });
+    }
 }

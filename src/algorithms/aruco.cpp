@@ -34,10 +34,10 @@ namespace algorithms {
                 aruco.corners = marker_corners.at(i);
                 arucos.emplace_back(aruco);
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
         }
         else {
-            std::cout << "Arucos not found" << std::endl;
+            // std::cout << "Arucos not found" << std::endl;
         }
 
         return arucos;

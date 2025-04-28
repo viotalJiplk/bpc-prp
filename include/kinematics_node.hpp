@@ -35,6 +35,9 @@ namespace nodes {
         void angle(double angle, int16_t speed, std::function<void(bool)> callback);
         void motorSpeed(int16_t speedL, int16_t speedR, std::function<void(bool)> callback);
         void motorSpeed(int16_t speedL, int16_t speedR, bool isInfinite, std::function<void(bool)> callback);
+        void turnLeft(int16_t speed, std::function<void(bool)> callback);
+        void turnRight(int16_t speed, std::function<void(bool)> callback);
+        void turnBack(int16_t speed, std::function<void(bool)> callback);
         void stop();
     private:
         Plan plan_;
