@@ -68,6 +68,8 @@ namespace nodes
         void stop();
         void start(bool continous, std::function<void(IntersectionType detectedIntersection)> intersection);
         void center(std::function<void()> after);
+        IntersectionType detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack);
+        IntersectionType getThisIntersection();
     private:
         PreviousDirection previous_direction_;
         std::atomic<uint32_t> count_;
@@ -87,8 +89,7 @@ namespace nodes
         void centerHandler(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight,
         double valueBackRight, double valueBack, double valueBackLeft);
         std::function<void()> centerCallback_;
-        bool inIntersection_;
-        IntersectionType detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack);
+        IntersectionType this_intersection_;
 
         double estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
             double valueBackRight, double valueBack, double valueBackLeft);

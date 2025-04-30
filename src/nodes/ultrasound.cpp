@@ -54,8 +54,8 @@ struct extreme {
 };
 
 struct extreme extremeValues = {
-    .middleError = 0.10,
-    .leftRightError = 0.10,
+    .middleError = 0.25,
+    .leftRightError = 0.25,
 };
 
 namespace nodes {
@@ -125,7 +125,7 @@ namespace nodes {
     }
 
     void UltrasoundNode::calibrationStart() {
-        ioNode_->set_led_color(0, 255, 255, 0);
+        // ioNode_->set_led_color(0, 255, 255, 0);
         left_min = 0;
         left_max = 170;
         middle_min = 0;
@@ -136,7 +136,7 @@ namespace nodes {
     }
 
     void UltrasoundNode::calibrationEnd(bool continous) {
-        ioNode_->set_led_color(0, 0, 255, 0);
+        // ioNode_->set_led_color(0, 0, 255, 0);
         if (continous) {
             mode.store(UltrasoundMode::FeedbackPID);
         }else {
@@ -147,7 +147,7 @@ namespace nodes {
     void UltrasoundNode::stop() {
         mode.store(UltrasoundMode::None);
         kinematics_->stop();
-        ioNode_->set_led_color(0, 255, 0, 0);
+        // ioNode_->set_led_color(0, 255, 0, 0);
     }
 
     void UltrasoundNode::on_ultrasound_sensors_msg(std::shared_ptr<std_msgs::msg::UInt8MultiArray> msg){
@@ -249,9 +249,10 @@ namespace nodes {
         UltrasoundDirection preferredDirection = this->preferredDirection_.load();
         if (preferredDirection != UltrasoundDirection::Front && (middle <= extremeValues.middleError || left_value <= extremeValues.leftRightError || right_value <= extremeValues.leftRightError)) {
             if (preferredDirection == UltrasoundDirection::Right) {
+                previousDirection = UltrasoundDirection::Right;
                 kinematics_->angle(-3, 3, [](bool sucess){});
-            }else {
-                preferredDirection = UltrasoundDirection::Left;
+            }else if (preferredDirection == UltrasoundDirection::Left){
+                previousDirection = UltrasoundDirection::Left;
                 kinematics_->angle(3, 3, [](bool sucess){});
             }
         }else{

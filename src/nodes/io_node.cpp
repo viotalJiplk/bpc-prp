@@ -98,25 +98,27 @@ namespace nodes {
         if (intersection == IntersectionType::AllFour){
             this->set_all_leds_color(0, 0, 255);
         }else if (intersection == IntersectionType::TopT){
-            this->set_led_color(0, 0, 0, 0);
-            this->set_led_color(1, 0, 0, 255);
-            this->set_led_color(2, 0, 0, 255);
-            this->set_led_color(3, 0, 0, 255);
-        }else if (intersection == IntersectionType::LeftT){
             this->set_led_color(0, 0, 0, 255);
             this->set_led_color(1, 0, 0, 255);
-            this->set_led_color(2, 255, 255, 0);
+            this->set_led_color(2, 0, 0, 255);
+            this->set_led_color(3, 255, 0, 0);
+        }else if (intersection == IntersectionType::LeftT){
+            this->set_led_color(0, 0, 0, 255);
+            this->set_led_color(1, 255, 0, 0);
+            this->set_led_color(2, 0, 0, 255);
             this->set_led_color(3, 0, 0, 255);
         }else if (intersection == IntersectionType::RightT){
             this->set_led_color(0, 0, 0, 255);
-            this->set_led_color(1, 255, 255, 0);
-            this->set_led_color(2, 0, 0, 255);
+            this->set_led_color(1, 0, 0, 255);
+            this->set_led_color(2, 255, 0, 0);
             this->set_led_color(3, 0, 0, 255);
         }else{
-                this->set_led_color(0, 0, 0, 0);
-                this->set_led_color(1, 0, 0, 0);
-                this->set_led_color(2, 0, 0, 0);
-                this->set_led_color(3, 0, 255, 0);
+            this->set_led_color(0, 0, 0, 0);
+            this->set_led_color(1, 0, 0, 0);
+            this->set_led_color(2, 0, 0, 0);
+            this->set_led_color(3, 0, 255, 0);
         }
+        std::cout << "hi" << std::endl;
+
     }
 }
