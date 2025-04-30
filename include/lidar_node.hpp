@@ -8,6 +8,7 @@
 #include "io_node.hpp"
 #include "pid.hpp"
 #include "ultrasound_node.hpp"
+#include "helper.hpp"
 
 enum class LidarMode {
     None,
@@ -17,14 +18,6 @@ enum class LidarMode {
     CenterLookup,
 };
 
-
-enum class IntersectionType {
-    None,
-    LeftT,
-    RightT,
-    TopT,
-    AllFour,
-};
 
 enum class PreviousDirection {
     Left,

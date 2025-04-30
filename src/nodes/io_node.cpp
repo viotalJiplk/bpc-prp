@@ -1,5 +1,4 @@
 #include "io_node.hpp"
-#include "helper.hpp"
 
 namespace nodes {
     IoNode::IoNode(): Node("buttonsReader") {
@@ -20,21 +19,47 @@ namespace nodes {
     }
 
     void IoNode::set_led_color(uint8_t led_number, uint8_t R, uint8_t G, uint8_t B) {
-        if(led_number >= 3) return; // we have only 3 LEDs on our robot
+        if(led_number > 3) return; // we have only 4 LEDs on our robot
         std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
         switch(led_number) {
-            case 0: leds.data = {R, G, B, IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], IoNode::leds[6], IoNode::leds[7], IoNode::leds[8], IoNode::leds[9], IoNode::leds[10], IoNode::leds[11]}; break;
-            case 1: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], R, G, B, IoNode::leds[6], IoNode::leds[7], IoNode::leds[8], IoNode::leds[9], IoNode::leds[10], IoNode::leds[11]}; break;
-            case 2: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], R, G, B, IoNode::leds[9], IoNode::leds[10], IoNode::leds[11]}; break;
-            case 3: leds.data = {IoNode::leds[0], IoNode::leds[1], IoNode::leds[2], IoNode::leds[3], IoNode::leds[4], IoNode::leds[5], IoNode::leds[6], IoNode::leds[7], IoNode::leds[8], R, G, B}; break;
+            case 0:
+                this->leds[0] = R;
+                this->leds[1] = G;
+                this->leds[2] = B;
+                break;
+            case 1:
+                this->leds[3] = R;
+                this->leds[4] = G;
+                this->leds[5] = B;
+                break;
+            case 2:
+                this->leds[6] = R;
+                this->leds[7] = G;
+                this->leds[8] = B;
+                break;
+            case 3:
+                this->leds[9] = R;
+                this->leds[10] = G;
+                this->leds[11] = B;
+                break;
             default:
                 break;
+        }
+        for (int i = 0 ; i < 12 ; i++)
+        {
+            leds.data.push_back(this->leds[i]);
         }
         led_publisher_->publish(leds);
     }
 
     void IoNode::set_all_leds_color(uint8_t R, uint8_t G, uint8_t B) {
         std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
+        for (int i = 0 ; i < 12 ; i++)
+        {
+            if (i%3 == 0) this->leds[i] = R;
+            else if (i%3 == 1) this->leds[i] = G;
+            else if (i%3 == 2) this->leds[i] = B;
+        }
         leds.data = {R, G, B, R, G, B, R, G , B, R, G, B};
         led_publisher_->publish(leds);
     }
@@ -68,5 +93,30 @@ namespace nodes {
         // ------------------------
         // END OF TEMPORARY SECTION
 
+    }
+    void IoNode::showIntersection(IntersectionType intersection){
+        if (intersection == IntersectionType::AllFour){
+            this->set_all_leds_color(0, 0, 255);
+        }else if (intersection == IntersectionType::TopT){
+            this->set_led_color(0, 0, 0, 0);
+            this->set_led_color(1, 0, 0, 255);
+            this->set_led_color(2, 0, 0, 255);
+            this->set_led_color(3, 0, 0, 255);
+        }else if (intersection == IntersectionType::LeftT){
+            this->set_led_color(0, 0, 0, 255);
+            this->set_led_color(1, 0, 0, 255);
+            this->set_led_color(2, 255, 255, 0);
+            this->set_led_color(3, 0, 0, 255);
+        }else if (intersection == IntersectionType::RightT){
+            this->set_led_color(0, 0, 0, 255);
+            this->set_led_color(1, 255, 255, 0);
+            this->set_led_color(2, 0, 0, 255);
+            this->set_led_color(3, 0, 0, 255);
+        }else{
+                this->set_led_color(0, 0, 0, 0);
+                this->set_led_color(1, 0, 0, 0);
+                this->set_led_color(2, 0, 0, 0);
+                this->set_led_color(3, 0, 255, 0);
+        }
     }
 }

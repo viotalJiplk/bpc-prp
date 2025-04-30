@@ -4,6 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 #include <std_msgs/msg/u_int8_multi_array.hpp>
+#include "helper.hpp"
 
 namespace nodes {
     class IoNode : public rclcpp::Node {
@@ -20,6 +21,7 @@ namespace nodes {
         // Functions to set LED colors
         void set_led_color(uint8_t led_number, uint8_t R, uint8_t G, uint8_t B);
         void set_all_leds_color(uint8_t R, uint8_t G, uint8_t B);
+        void showIntersection(IntersectionType intersection);
 
     private:
 
