@@ -38,6 +38,7 @@ struct pidLidar {
     double leftRightMiddleError;
     double intersection;
     double intersectionOut;
+    double extremePreference;
 };
 
 struct pidLidar pidLidarValues = {
@@ -45,14 +46,15 @@ struct pidLidar pidLidarValues = {
     .ki = 0.00,
     // .kd = 0.4,
     .kd = 0.0,
-    .mid = 7.0,
-    .deviation = 7.0,
+    .mid = 14.0,
+    .deviation = 14.0,
     .error = 0.005,
     .middleError = 0.04,
     .leftRightError = 0.08,
     .leftRightMiddleError = 0.08,
     .intersection = 0.21,
     .intersectionOut = 0.18,
+    .extremePreference = 0.3,
 };
 
 namespace nodes {
@@ -140,20 +142,29 @@ namespace nodes {
     void LidarNode::onExtreme(bool intersection) {
         LidarMode activeMode = this->mode.load();
         this->mode.store(LidarMode::None);
+        lidarResult prevLidar = this->previousLidarResult_.load();
         if (intersection) {
             assert(true);
             // this->mode.store(LidarMode::None);
             // std::function<void()> callback = this->onIntersection_;
             // onIntersection_ = [](){};
             // callback();
-        }else {
+        } else {
+            UltrasoundDirection preferredDirection = UltrasoundDirection::Front;
+            lidarResult previousLidar = this->previousLidarResult_.load();
+            if ((previousLidar.left > pidLidarValues.extremePreference) and (previousLidar.left > previousLidar.right)) {
+                preferredDirection = UltrasoundDirection::Left;
+            } else if (previousLidar.right > pidLidarValues.extremePreference) {
+                preferredDirection = UltrasoundDirection::Right;
+            }
+
             this->ultrasoundNode_->handleExtreme([this, activeMode]() {
                 prevT_.exchange(0);
                 this->mode.store(activeMode);
                 this->ultrasoundNode_->extremeTestingStart([this](bool intersection) {
                     this->onExtreme(intersection);
                 });
-            });
+            }, preferredDirection);
         }
     }
 
@@ -164,6 +175,7 @@ namespace nodes {
                 msg->data[0], msg->data[1], msg->data[2], msg->data[3], 
                 msg->data[4], msg->data[5], msg->data[6], msg->data[7]
             );
+            this->previousLidarResult_.store(normalResult);
             estimate_descrete_lidar_pose(normalResult.left, normalResult.right);
 
         } else if (mode.load() == LidarMode::FeedbackPID) {
@@ -172,6 +184,7 @@ namespace nodes {
                 msg->data[0], msg->data[1], msg->data[2], msg->data[3],
                 msg->data[4], msg->data[5], msg->data[6], msg->data[7]
             );
+            this->previousLidarResult_.store(normalResult);
             // std::cout << "'Normalized: '" << normalResult.left << ", " << normalResult.right << std::endl;
             estimate_continuous_lidar_pose(
                 normalResult.left,
@@ -189,6 +202,7 @@ namespace nodes {
                 msg->data[0], msg->data[1], msg->data[2], msg->data[3],
                 msg->data[4], msg->data[5], msg->data[6], msg->data[7]
             );
+            this->previousLidarResult_.store(normalResult);
             // std::cout << "'Normalized: '" << normalResult.left << ", " << normalResult.right << std::endl;
             centerHandler(
                 normalResult.left,
@@ -205,19 +219,17 @@ namespace nodes {
 
     IntersectionType LidarNode::detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack) {
         if (inIntersection_ == false){
-            if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)) {
+            if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection))
+            {
                 inIntersection_ = true;
                 return IntersectionType::AllFour;
-            }
-            if ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
+            } else if ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
                 inIntersection_ = true;
                 return IntersectionType::RightT;
-            }
-            if ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
+            } else if ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
                 inIntersection_ = true;
                 return IntersectionType::LeftT;
-            }
-            if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
+            } else if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
                 inIntersection_ = true;
                 return IntersectionType::TopT;
             }
@@ -225,11 +237,11 @@ namespace nodes {
         }else{
             if ((valueLeft < pidLidarValues.intersectionOut) and (valueRight < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.intersectionOut)) {
                 inIntersection_ = false;
-            }else if ((valueRight < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.intersectionOut) and (valueBack < pidLidarValues.intersectionOut)) {
+            } else if ((valueRight < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.intersectionOut) and (valueBack < pidLidarValues.intersectionOut)) {
                 inIntersection_ = false;
-            }else if ((valueLeft < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.intersectionOut) and (valueBack < pidLidarValues.intersectionOut)) {
+            } else if ((valueLeft < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.intersectionOut) and (valueBack < pidLidarValues.intersectionOut)) {
                 inIntersection_ = false;
-            }else if ((valueLeft < pidLidarValues.intersectionOut) and (valueRight < pidLidarValues.intersectionOut) and (valueBack < pidLidarValues.intersectionOut)) {
+            } else if ((valueLeft < pidLidarValues.intersectionOut) and (valueRight < pidLidarValues.intersectionOut) and (valueBack < pidLidarValues.intersectionOut)) {
                 inIntersection_ = false;
             }
             return IntersectionType::None;

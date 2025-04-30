@@ -50,6 +50,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         /opt/ros/humble/include
 )
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${SDL2_LIBS})
+target_link_libraries(${PROJECT_NAME} atomic)
 ament_target_dependencies(${PROJECT_NAME} rclcpp std_msgs sensor_msgs cv_bridge image_transport visualization_msgs)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib/${PROJECT_NAME})

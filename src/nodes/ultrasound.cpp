@@ -43,8 +43,8 @@ struct pidUltrasound pidUltrasoundValues = {
     .mid = 10.0,
     .deviation = 9.0,
     .error = 0.005,
-    .middleError = 0.05,
-    .leftRightError = 0.06,
+    .middleError = 0.07,
+    .leftRightError = 0.08,
 };
 
 struct extreme {
@@ -54,8 +54,8 @@ struct extreme {
 };
 
 struct extreme extremeValues = {
-    .middleError = 0.2,
-    .leftRightError = 0.2,
+    .middleError = 0.25,
+    .leftRightError = 0.25,
 };
 
 namespace nodes {
@@ -246,42 +246,53 @@ namespace nodes {
 
     void UltrasoundNode::extremeHandlerCallback(double left_value, double middle, double right_value){
         // std::cout << "Ultrasound values " << left_value << ", " << right_value << std::endl;
-;        if (middle <= extremeValues.middleError) {
-            // predict value
-            if (previousDirection == UltrasoundDirection::Front){
-                if (left_value > right_value) {
-                    previousDirection = UltrasoundDirection::Left;
+        UltrasoundDirection preferredDirection = this->preferredDirection_.load();
+        if (preferredDirection != UltrasoundDirection::Front && (middle <= extremeValues.middleError || left_value <= extremeValues.leftRightError || right_value <= extremeValues.leftRightError)) {
+            if (preferredDirection == UltrasoundDirection::Right) {
+                kinematics_->angle(-3, 3, [](bool sucess){});
+            }else {
+                preferredDirection = UltrasoundDirection::Left;
+                kinematics_->angle(3, 3, [](bool sucess){});
+            }
+        }else{
+            if (middle <= extremeValues.middleError) {
+                // predict value
+                if (previousDirection == UltrasoundDirection::Front){
+                    if (left_value > right_value) {
+                        previousDirection = UltrasoundDirection::Left;
+                        kinematics_->angle(3, 3, [](bool sucess){});
+                    } else {
+                        previousDirection = UltrasoundDirection::Right;
+                        kinematics_->angle(-3, 3, [](bool sucess){});
+                    }
+                } else if (previousDirection == UltrasoundDirection::Left) {
                     kinematics_->angle(3, 3, [](bool sucess){});
-                } else {
+                }else {
                     previousDirection = UltrasoundDirection::Right;
                     kinematics_->angle(-3, 3, [](bool sucess){});
                 }
-            } else if (previousDirection == UltrasoundDirection::Left) {
-                kinematics_->angle(3, 3, [](bool sucess){});
-            }else {
-                previousDirection = UltrasoundDirection::Right;
-                kinematics_->angle(-3, 3, [](bool sucess){});
+            } else if (left_value <= extremeValues.leftRightError) {
+                if (previousDirection == UltrasoundDirection::Left) {
+                    kinematics_->angle(3, 3, [](bool sucess){});
+                }else {
+                    previousDirection = UltrasoundDirection::Right;
+                    kinematics_->angle(-3, 3, [](bool sucess){});
+                }
+            } else if (right_value <= extremeValues.leftRightError) {
+                if (previousDirection == UltrasoundDirection::Right) {
+                    kinematics_->angle(-3, 3, [](bool sucess){});
+                }else {
+                    previousDirection = UltrasoundDirection::Left;
+                    kinematics_->angle(3, 3, [](bool sucess){});
+                }
+            } else {
+                previousDirection = UltrasoundDirection::Front;
+                this->preferredDirection_.store(UltrasoundDirection::Front);
+                this->mode.store(UltrasoundMode::None);
+                std::function<void()> callback = this->extremeHandleCallback_;
+                this->extremeHandleCallback_ = [](){};
+                callback();
             }
-        } else if (left_value <= extremeValues.leftRightError) {
-            if (previousDirection == UltrasoundDirection::Left) {
-                kinematics_->angle(3, 3, [](bool sucess){});
-            }else {
-                previousDirection = UltrasoundDirection::Right;
-                kinematics_->angle(-3, 3, [](bool sucess){});
-            }
-        } else if (right_value <= extremeValues.leftRightError) {
-            if (previousDirection == UltrasoundDirection::Right) {
-                kinematics_->angle(-3, 3, [](bool sucess){});
-            }else {
-                previousDirection = UltrasoundDirection::Left;
-                kinematics_->angle(3, 3, [](bool sucess){});
-            }
-        } else {
-            previousDirection = UltrasoundDirection::Front;
-            this->mode.store(UltrasoundMode::None);
-            std::function<void()> callback = this->extremeHandleCallback_;
-            this->extremeHandleCallback_ = [](){};
-            callback();
         }
     }
 
@@ -289,8 +300,9 @@ namespace nodes {
         this->extremeTestingCallback_ = callback;
         this->mode.store(UltrasoundMode::ExtremeTesting);
     };
-    void UltrasoundNode::handleExtreme(std::function<void()> callback) {
+    void UltrasoundNode::handleExtreme(std::function<void()> callback, UltrasoundDirection preferredDirection) {
         this->extremeHandleCallback_ = callback;
+        this->preferredDirection_.store(preferredDirection);
         this->mode.store(UltrasoundMode::ExtremeHandling);
     };
 

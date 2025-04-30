@@ -54,7 +54,7 @@ namespace nodes
         void stop();
         void calibrationEnd(bool continous);
         void extremeTestingStart(std::function<void(bool)> callback);
-        void handleExtreme(std::function<void()> callback);
+        void handleExtreme(std::function<void()> callback, UltrasoundDirection preferredDirection);
     private:
         std::function<void(bool)> extremeTestingCallback_;
         std::function<void()> extremeHandleCallback_;
@@ -62,6 +62,7 @@ namespace nodes
         std::atomic<uint32_t> count_;
         std::shared_ptr<IoNode> ioNode_;
         std::atomic<UltrasoundMode> mode;
+        std::atomic<UltrasoundDirection> preferredDirection_;
         std::shared_ptr<KinematicsNode> kinematics_;
         void extremeTestingCheck(double left_value, double middle, double right_value);
         void extremeHandlerCallback(double left_value, double middle, double right_value);

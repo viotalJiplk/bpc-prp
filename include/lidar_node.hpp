@@ -84,6 +84,7 @@ namespace nodes
         struct lidarResult normalize(float dataLeft, float dataFrontLeft, float dataFront, float dataFrontRight, float dataRight, 
             float dataBackRight, float dataBack, float dataBackLeft);
         std::atomic<long> prevT_;
+        std::atomic<lidarResult> previousLidarResult_;
         rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr lidar_sensors_subscriber_;
         double normalizeData(float data, float min, float max) const;
         void on_lidar_sensors_msg(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg);
