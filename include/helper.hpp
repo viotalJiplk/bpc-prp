@@ -12,6 +12,9 @@ enum class IntersectionType {
     RightT,
     TopT,
     AllFour,
+    LeftTurn,
+    RightTurn,
+    U,
 };
 
 namespace Topic {

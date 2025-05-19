@@ -112,13 +112,28 @@ namespace nodes {
             this->set_led_color(1, 0, 0, 255);
             this->set_led_color(2, 255, 0, 0);
             this->set_led_color(3, 0, 0, 255);
+        }else if (intersection == IntersectionType::U){
+            this->set_led_color(0, 0, 0, 255);
+            this->set_led_color(1, 255, 0, 0);
+            this->set_led_color(2, 255, 0, 0);
+            this->set_led_color(3, 255, 0, 0);
+        }else if (intersection == IntersectionType::RightTurn){
+            this->set_led_color(0, 0, 0, 255);
+            this->set_led_color(1, 0, 0, 255);
+            this->set_led_color(2, 255, 0, 0);
+            this->set_led_color(3, 255, 0, 255);
+        }else if (intersection == IntersectionType::LeftTurn){
+            this->set_led_color(0, 0, 0, 255);
+            this->set_led_color(1, 255, 0, 0);
+            this->set_led_color(2, 0, 0, 255);
+            this->set_led_color(3, 255, 0, 255);
         }else{
             this->set_led_color(0, 0, 0, 0);
             this->set_led_color(1, 0, 0, 0);
             this->set_led_color(2, 0, 0, 0);
             this->set_led_color(3, 0, 255, 0);
         }
-        std::cout << "hi" << std::endl;
+        // std::cout << "hi" << std::endl;
 
     }
 }

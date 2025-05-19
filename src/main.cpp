@@ -58,11 +58,11 @@ int main(int argc, char* argv[]) {
     auto imu = std::make_shared<nodes::ImuNode>(kinematics);
     executor->add_node(imu);
 
-    // auto aruco = std::make_shared<nodes::ArucoNode>();
-    // aruco->init();
-    // executor->add_node(aruco);
+    auto aruco = std::make_shared<nodes::ArucoNode>();
+    aruco->init();
+    executor->add_node(aruco);
 
-    auto mazeNode = std::make_shared<nodes::MazeNode>(ioNode, kinematics, lidar, imu); //TODO add aruco
+    auto mazeNode = std::make_shared<nodes::MazeNode>(ioNode, kinematics, lidar, imu, ultrasound, line); //TODO add aruco
     executor->add_node(mazeNode);
 
     auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound, keyboard, lidar, imu, mazeNode);

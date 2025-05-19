@@ -40,6 +40,20 @@ struct pid pidValues = {
     .deviation = 4.0,
 };
 
+struct untilLine {
+    float NormalLeftMin;
+    float NormalLeftMax;
+    float NormalRightMin;
+    float NormalRightMax;
+};
+
+struct untilLine untilLineValues = {
+    .NormalLeftMin = 0,
+    .NormalLeftMax = 65,
+    .NormalRightMin = 14,
+    .NormalRightMax = 44
+};
+
 namespace nodes {
     LineNode::LineNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode): GeneralNode("LineNode", 1) {
         line_sensors_subscriber_ = this->create_subscription<std_msgs::msg::UInt16MultiArray>(
@@ -137,6 +151,8 @@ namespace nodes {
         } else if (mode.load() == SensorsMode::FeedbackPID) {
             normalize(msg->data[0], msg->data[1]);
             estimate_continuous_line_pose(left_sensor, right_sensor);
+        }else if (mode.load() == SensorsMode::UntilLine) {
+            forwardUntilLineCallback(left_sensor, right_sensor);
         }
         publish();
     }
@@ -175,5 +191,25 @@ namespace nodes {
         }else{
             kinematics_->forward(10, descreteValues.forwardSpeed, [](bool sucess){});
         }
+    }
+
+    float LineNode::forwardUntilLineCallback(float left_value, float right_value)
+    {
+        left_value = this->normalizeData(left_value, untilLineValues.NormalLeftMin, untilLineValues.NormalLeftMax);
+        right_value = this->normalizeData(right_value, untilLineValues.NormalRightMin, untilLineValues.NormalRightMax);
+        std::cout << left_value << ", " << right_value << std::endl;
+        if (left_value > 0.5 or right_value > 0.5)
+        {
+            this->kinematics_->stop();
+            auto callback = this->untilLineCallbackEnd;
+            this->untilLineCallbackEnd = [](){};
+            callback();
+        }
+    }
+
+    void LineNode::forwardUntilLine(std::function<void(void)> callback){
+        this->mode.store(SensorsMode::UntilLine);
+        this->untilLineCallbackEnd = callback;
+        this->kinematics_->motorSpeed(10, 10, true,[](bool sucess){});
     }
 }

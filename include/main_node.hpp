@@ -21,7 +21,7 @@ namespace nodes
     public:
         // Constructor (takes pointers to existing nodes)
         MainNode(
-            std::shared_ptr<IoNode> ionode,
+            std::shared_ptr<IoNode> io_node,
             std::shared_ptr<LineNode> line, 
             std::shared_ptr<KinematicsNode> kinematics,
             std::shared_ptr<UltrasoundNode> ultrasound,
@@ -49,6 +49,7 @@ namespace nodes
         std::shared_ptr<KeyboardInputNode> keyboard_input_;
         std::shared_ptr<LidarNode> lidar_node_;
         std::shared_ptr<ImuNode> imu_node_;
+        std::shared_ptr<IoNode> io_node_;
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr button_subscriber_;

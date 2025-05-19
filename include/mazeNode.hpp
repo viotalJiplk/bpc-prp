@@ -12,6 +12,8 @@
 #include "kinematics_node.hpp"
 #include "lidar_node.hpp"
 #include "imu_node.hpp"
+#include "ultrasound_node.hpp"
+#include "line_node.hpp"
 #include <queue>
 
 enum class ArucoTurn{
@@ -31,17 +33,19 @@ namespace nodes
             std::shared_ptr<IoNode> ionode,
             std::shared_ptr<KinematicsNode> kinematics,
             std::shared_ptr<LidarNode> lidar_node,
-            std::shared_ptr<ImuNode> imu_node
+            std::shared_ptr<ImuNode> imu_node,
+            std::shared_ptr<UltrasoundNode> ultrasound_node,
+            std::shared_ptr<LineNode> line_node
         );
 
         // Destructor
         ~MazeNode();
         void start();
-
+        void stop();
 
     private:
-        std::queue<ArucoTurn> arucoExitQueue;
-        std::queue<ArucoTurn> arucoTreasureQueue;
+        ArucoTurn arucoExit;
+        ArucoTurn arucoTreasure;
         std::mutex arucoMutex;
         // From these variables it is possible to call methods of nodes they contain
         std::function<void()> lidarCallback;
@@ -49,6 +53,8 @@ namespace nodes
         std::shared_ptr<KinematicsNode> kinematics_;
         std::shared_ptr<LidarNode> lidar_node_;
         std::shared_ptr<ImuNode> imu_node_;
+        std::shared_ptr<UltrasoundNode> ultrasound_node_;
+        std::shared_ptr<LineNode> line_node_;
 
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr aruco_subscriber_;

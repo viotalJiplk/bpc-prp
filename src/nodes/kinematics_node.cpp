@@ -9,24 +9,32 @@ std::mutex planMutex;
 
 bool hasFinished(uint32_t start, uint32_t actual,  int expectedChange) {
     // TODO catch overflow and underflow
+    bool toReturn = false;
     if (expectedChange > 0) {
         if (UINT32_MAX - start > expectedChange) {
-            return  actual > (start + expectedChange);
+            toReturn =  actual > (start + expectedChange);
         } else if ( actual > (UINT32_MAX/2)) {
-            return false;
+            toReturn = false;
         }else {
             uint32_t expectedWrapped = expectedChange - (UINT32_MAX - start);
             return actual > expectedWrapped;
         }
     } else {
         if (abs(expectedChange) < start) {
-            return actual < (start + expectedChange);
+            toReturn = actual < (start + expectedChange);
         } else if (actual < (UINT32_MAX/2)) {
-            return false;
+            toReturn = false;
         } else {
             uint32_t expectedWrapped = UINT32_MAX - (expectedChange + start);
-            return actual < expectedWrapped;
+            toReturn = actual < expectedWrapped;
         }
+    }
+    if (toReturn)
+    {
+        return true;
+    }else
+    {
+        return false;
     }
 }
 
@@ -46,6 +54,8 @@ namespace nodes {
         // TODO add evaluation of encoders acording to current command and make corrections
         uint32_t leftMotor = msg->data[0];
         uint32_t rightMotor = msg->data[1];
+        this->lEncoder.store(leftMotor);
+        this->rEncoder.store(rightMotor);
         planMutex.lock();
         bool localFinished = false;
         std::function<void(bool)> localCallback = [&](bool) {};
@@ -115,6 +125,37 @@ namespace nodes {
         }
     }
 
+    void KinematicsNode::interruptOp()
+    {
+        planMutex.lock();
+        struct planPaused  plan_paused;
+        plan_paused.lEncoder = this->lEncoder;
+        plan_paused.rEncoder = this->rEncoder;
+        plan_paused.plan = plan_;
+        planStack.push(plan_paused);
+        motors_->setMotorsSpeed(0,0);
+        plan_.hasFinished = true;
+        plan_.lMotor = 0;
+        plan_.rMotor = 0;
+        planMutex.unlock();
+    }
+
+    void KinematicsNode::continueOp(){
+        planMutex.lock();
+        if (!planStack.empty())
+        {
+            struct planPaused plan_paused = planStack.top();
+            planStack.pop();
+            plan_ = plan_paused.plan;
+            plan_.change.l += this->lEncoder - plan_paused.lEncoder;
+            plan_.change.r += this->rEncoder - plan_paused.rEncoder;
+        }else
+        {
+            std::cout << "Cannot continue with nonexisting plan" << std::endl;
+        }
+        planMutex.unlock();
+    }
+
     void KinematicsNode::angle(double angle, int16_t speed, std::function<void(bool)> callback){
         // TODO implement
         algorithms::RobotSpeed calculatedSpeed;
@@ -180,6 +221,10 @@ namespace nodes {
         bool localFinished = plan_.hasFinished;
         plan_.hasFinished = true;
         plan_.callback = [](bool success){};
+        while (!this->planStack.empty())
+        {
+            this->planStack.pop();
+        }
         planMutex.unlock();
         if (!localFinished) {
             localCallback(false);

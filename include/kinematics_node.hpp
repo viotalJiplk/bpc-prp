@@ -7,6 +7,7 @@
 #include "motors.hpp"
 #include "encoders.hpp"
 #include "kinematics.hpp"
+#include <stack>
 
 struct Encoders{
     uint32_t l; //left
@@ -21,6 +22,13 @@ struct Plan {
     bool isInfinite;
     Encoders start;
     algorithms::EncodersChange change;
+};
+
+struct planPaused
+{
+    struct Plan plan;
+    uint32_t lEncoder;
+    uint32_t rEncoder;
 };
 
 namespace nodes {
@@ -38,10 +46,15 @@ namespace nodes {
         void turnLeft(int16_t speed, std::function<void(bool)> callback);
         void turnRight(int16_t speed, std::function<void(bool)> callback);
         void turnBack(int16_t speed, std::function<void(bool)> callback);
+        void interruptOp();
+        void continueOp();
         void stop();
     private:
+        std::stack<struct planPaused> planStack;
         Plan plan_;
         algorithms::Kinematics* algo_;
+        std::atomic<uint32_t> lEncoder;
+        std::atomic<uint32_t> rEncoder;
         std::shared_ptr<nodes::Motors> motors_;
         std::shared_ptr<nodes::Encoder> encoders_;
         rclcpp::Subscription<std_msgs::msg::UInt32MultiArray>::SharedPtr encodersSubscriber_;

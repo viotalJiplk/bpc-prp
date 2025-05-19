@@ -4,7 +4,7 @@
 
 namespace nodes {
     MainNode::MainNode(
-        std::shared_ptr<IoNode> ionode,
+        std::shared_ptr<IoNode> io_node,
         std::shared_ptr<LineNode> line,
         std::shared_ptr<KinematicsNode> kinematics,
         std::shared_ptr<UltrasoundNode> ultrasound,
@@ -24,6 +24,7 @@ namespace nodes {
         keyboard_subscriber_ = this->create_subscription<std_msgs::msg::Char>(
         Topic::keyboardIn, 1, std::bind(&MainNode::keyboard_callback, this, std::placeholders::_1));
         maze_node_ = maze_node;
+        io_node_ = io_node;
     }
 
     MainNode::~MainNode() {
@@ -106,11 +107,16 @@ namespace nodes {
                 this->maze_node_->start();
 
                 break;
+            case 'k':
+                this->line_->forwardUntilLine([this]() {});
+                break;
             case ' ':
+                this->maze_node_->stop();
                 this->kinematics_->stop();
                 this->lidar_node_->stop();
                 this->ultrasound_->stop();
                 this->imu_node_->stop();
+                this->io_node_->set_all_leds_color(0,0,0);
                 break;
         }
     }
