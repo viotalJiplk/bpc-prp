@@ -1,0 +1,61 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage[czech]{babel} % čeština
+\usepackage[utf8]{inputenc} % kódování textu
+\usepackage[IL2]{fontenc} % kódování fontu
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{biblatex}
+\addbibresource{refs.bib}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\usepackage{caption}
+\DeclareCaptionLabelSeparator{sep}{:\space}
+\captionsetup[table]{
+    labelsep=sep,
+}
+    
+\begin{document}
+
+\title{Dokumentace projektu BPC-PRP}
+
+\author{\IEEEauthorblockN{Vojtěch Vařecha}
+\IEEEauthorblockA{\textit{Fakulta informačních technologií} \\
+\textit{Vysoké učení technické v~Brně}\\
+Brno, Česká Republika \\
+xvarec06@vutbr.cz}
+\and
+\IEEEauthorblockN{Vojtěch Růžička}
+\IEEEauthorblockA{\textit{Fakulta informačních technologií} \\
+\textit{Vysoké učení technické v~Brně}\\
+Brno, Česká Republika \\
+xruzic56@vutbr.cz}
+}
+
+\maketitle
+
+\begin{abstract}
+V~rámci kurzu BPC-PRP se na připraveném robotovi implementují 3 hlavní úkoly – jízda po čáře, jízda koridorem a únik z~bludiště. Implementace probíhá na vyšší úrovni abstrakce za využití systému ROS2 a jazyka C++. Robot disponuje mj. diferenciálním podvozkem, IR snímači čáry, LiDARem, ultrazvukovými senzory vzdálenosti a kamerou.
+\end{abstract}
+
+\renewcommand\IEEEkeywordsname{Klíčová slova}
+\begin{IEEEkeywords}
+Robotika, projekt, BPC-PRP, ROS2, labyrint
+\end{IEEEkeywords}
+
+
+\input{texts/1_introduction.tex}
+\input{texts/2_method.tex}
+\input{texts/3_conclusion.tex}
+
+
+\printbibliography
+
+\end{document}
