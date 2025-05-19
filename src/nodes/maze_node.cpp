@@ -24,10 +24,10 @@ namespace nodes {
 
     void MazeNode::start(){
         this->arucoMutex.lock();
-        while(!arucoExitQueue.empty()){
+        while(!this->arucoExitQueue.empty()){
             this->arucoExitQueue.pop();
         }
-        while(!arucoTreasureQueue.empty()){
+        while(!this->arucoTreasureQueue.empty()){
             this->arucoTreasureQueue.pop();
         }
         this->arucoMutex.unlock();
@@ -40,8 +40,8 @@ namespace nodes {
                     ArucoTurn wantedTurn = ArucoTurn::None;
                     if (!this->arucoExitQueue.empty()){
                         wantedTurn = this->arucoExitQueue.front();
+                        this->arucoExitQueue.pop();
                     }
-                    this->arucoExitQueue.pop();
                     this->arucoMutex.unlock();
 
                     if (wantedTurn == ArucoTurn::Right and (detectedIntersection == IntersectionType::RightT
