@@ -1,3 +1,10 @@
+// motors.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for motors driving node (used by kinematics).
+
+
 #pragma once
 
 #include <rclcpp/rclcpp.hpp>

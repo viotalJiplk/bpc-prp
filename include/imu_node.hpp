@@ -1,3 +1,9 @@
+// imu_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for IMU data interpretation node.
+
 
 #ifndef IMU_NODE_HPP
 #define IMU_NODE_HPP

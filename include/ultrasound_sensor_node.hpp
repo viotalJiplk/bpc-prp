@@ -1,6 +1,9 @@
+// ultrasound_sensor_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/7/25.
-//
+// Header file for ultrasound sensors data filtering node.
+
 
 #ifndef ULTRASOUND_SENSOR_NODE_H
 #define ULTRASOUND_SENSOR_NODE_H

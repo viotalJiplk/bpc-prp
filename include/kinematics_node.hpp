@@ -1,3 +1,10 @@
+// kinematics_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for differential drive kinematics node.
+
+
 #pragma once
 
 #include <rclcpp/rclcpp.hpp>

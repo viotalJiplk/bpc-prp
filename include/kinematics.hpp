@@ -1,3 +1,10 @@
+// kinematics.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for differential drive kinematics algorithm.
+
+
 #ifndef KINEMATICS_HPP
 #define KINEMATICS_HPP
 namespace algorithms {

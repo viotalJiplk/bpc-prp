@@ -1,3 +1,10 @@
+// main_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for central mission control node.
+
+
 #ifndef MAIN_NODE_HPP
 #define MAIN_NODE_HPP
 

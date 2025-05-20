@@ -1,6 +1,8 @@
+// mazeNode.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/23/25.
-//
+// Header file for maze escape mission node.
 
 #ifndef MAZENODE_HPP
 #define MAZENODE_HPP

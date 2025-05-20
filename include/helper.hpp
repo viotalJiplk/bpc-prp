@@ -1,3 +1,9 @@
+// helper.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file defining shortcuts for ROS topics.
+
 
 #ifndef HELPER_HPP
 #define HELPER_HPP
@@ -45,4 +51,4 @@ namespace Frame {
     const std::string lidar = "lidar";
 };
 
-#endif
+#endif // HELPER_HPP

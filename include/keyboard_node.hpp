@@ -1,6 +1,9 @@
+// keyboard_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/9/25.
-//
+// Header file for keyboard input enapsilating node.
+
 
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
