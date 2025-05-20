@@ -1,5 +1,5 @@
-DESCRIPTION OF ALL OUR NODES & NODES USED BY US
-===============================================
+DESCRIPTION OF ROS NODES USED BY THE TIME OF 1ST EXAM (LINE FOLLOWING)
+======================================================================
 
 Our program consists of several nodes with unique roles.
 The main node is responsible for overall state of the robot and
