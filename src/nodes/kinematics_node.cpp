@@ -2,7 +2,7 @@
 #include "helper.hpp"
 
 #define WHEEL_BASE 128.0
-#define WHEEL_RADIUS 33.0
+#define WHEEL_RADIUS 35.0
 #define PULSES_PER_ROTATION 576
 
 std::mutex planMutex;
@@ -242,6 +242,17 @@ namespace nodes {
     }
     void KinematicsNode::turnBack(int16_t speed, std::function<void(bool)> callback){
         this->angle(M_PI, speed, [callback](bool sucess) {
+                        callback(sucess);
+        });
+    }
+
+    void KinematicsNode::turnSlightlyLeft(int16_t speed, std::function<void(bool)> callback){
+        this->angle(M_PI/4.0, speed, [callback](bool sucess) {
+                        callback(sucess);
+        });
+    }
+    void KinematicsNode::turnSlightlyRight(int16_t speed, std::function<void(bool)> callback){
+        this->angle(-M_PI/4.0, speed, [callback](bool sucess) {
                         callback(sucess);
         });
     }

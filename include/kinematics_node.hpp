@@ -49,6 +49,8 @@ namespace nodes {
         void interruptOp();
         void continueOp();
         void stop();
+        void turnSlightlyLeft(int16_t speed, std::function<void(bool)> callback);
+        void turnSlightlyRight(int16_t speed, std::function<void(bool)> callback);
     private:
         std::stack<struct planPaused> planStack;
         Plan plan_;
