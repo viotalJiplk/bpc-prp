@@ -1,3 +1,10 @@
+// kinematics_node.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for differential drive kinematics node.
+
+
 #include "kinematics_node.hpp"
 #include "helper.hpp"
 
@@ -8,7 +15,6 @@
 std::mutex planMutex;
 
 bool hasFinished(uint32_t start, uint32_t actual,  int expectedChange) {
-    // TODO catch overflow and underflow
     bool toReturn = false;
     if (expectedChange > 0) {
         if (UINT32_MAX - start > expectedChange) {
@@ -51,7 +57,6 @@ namespace nodes {
     }
 
     void KinematicsNode::on_encoder_callback(std_msgs::msg::UInt32MultiArray_<std::allocator<void>>::SharedPtr msg) {
-        // TODO add evaluation of encoders acording to current command and make corrections
         uint32_t leftMotor = msg->data[0];
         uint32_t rightMotor = msg->data[1];
         this->lEncoder.store(leftMotor);
@@ -157,7 +162,6 @@ namespace nodes {
     }
 
     void KinematicsNode::angle(double angle, int16_t speed, std::function<void(bool)> callback){
-        // TODO implement
         algorithms::RobotSpeed calculatedSpeed;
         calculatedSpeed.v = 0;
         calculatedSpeed.w = angle;
@@ -189,7 +193,6 @@ namespace nodes {
     }
 
     void KinematicsNode::motorSpeed(int16_t speedL, int16_t speedR, bool isInfinite, std::function<void(bool)> callback){
-        // TODO implement
         planMutex.lock();
         plan_.start.l = encoders_->getLeftEncoderState();
         plan_.start.r = encoders_->getRightEncoderState();

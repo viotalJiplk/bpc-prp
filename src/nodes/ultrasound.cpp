@@ -1,3 +1,10 @@
+// ultrasound.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for ultrasound sensors data interpretation node.
+
+
 #include <io_node.hpp>
 
 #include "helper.hpp"
@@ -125,7 +132,6 @@ namespace nodes {
     }
 
     void UltrasoundNode::calibrationStart() {
-        // ioNode_->set_led_color(0, 255, 255, 0);
         left_min = 0;
         left_max = 170;
         middle_min = 0;
@@ -136,7 +142,6 @@ namespace nodes {
     }
 
     void UltrasoundNode::calibrationEnd(bool continous) {
-        // ioNode_->set_led_color(0, 0, 255, 0);
         if (continous) {
             mode.store(UltrasoundMode::FeedbackPID);
         }else {
@@ -147,22 +152,16 @@ namespace nodes {
     void UltrasoundNode::stop() {
         mode.store(UltrasoundMode::None);
         kinematics_->stop();
-        // ioNode_->set_led_color(0, 255, 0, 0);
     }
 
     void UltrasoundNode::on_ultrasound_sensors_msg(std::shared_ptr<std_msgs::msg::UInt8MultiArray> msg){
         struct ultrasoundResult normalResult = normalize(msg->data[0], msg->data[1], msg->data[2]);
         if (mode.load() == UltrasoundMode::Calibration) {
             calibrate(msg->data[0], msg->data[1], msg->data[2]);
-            /* std::cout << "calibrate:" << std::endl;
-            std::cout << "left: " << left_min << "/" << left_max << std::endl;
-            std::cout << "right: " << right_min << "/" << right_max << std::endl;*/
         } else if (mode.load() == UltrasoundMode::FeedbackBang) {
             estimate_descrete_ultrasound_pose(normalResult.left, normalResult.right);
 
         } else if (mode.load() == UltrasoundMode::FeedbackPID) {
-            // std::cout << "Raw: " << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[2]) << std::endl;
-            // std::cout << "'Normalized: '" << normalResult.left << ", " << normalResult.right << std::endl;
             estimate_continuous_ultrasound_pose(normalResult.left, normalResult.middle, normalResult.right);
         }else if (mode.load() == UltrasoundMode::ExtremeTesting) {
             extremeTestingCheck(normalResult.left, normalResult.middle, normalResult.right);
@@ -172,7 +171,6 @@ namespace nodes {
     }
 
     double UltrasoundNode::estimate_continuous_ultrasound_pose(double left_value, double middle, double right_value){
-        // std::cout << "Ultrasound values " << left_value << ", " << right_value << std::endl;
         if ((middle > pidUltrasoundValues.middleError) and (left_value > pidUltrasoundValues.leftRightError) and (right_value > pidUltrasoundValues.leftRightError)) {
             previousDirection = UltrasoundDirection::Front;
             auto timeStamp = std::chrono::high_resolution_clock::now();
@@ -188,7 +186,6 @@ namespace nodes {
                     result = 0.0;
                 }
                 double dt = (timeNow-oldTime)/1000.0;
-                // std::cout << dt << std::endl;
                 double diff = algo_->step(result, dt);
                 if (diff > 1) {
                     diff = 1.0;
@@ -197,7 +194,6 @@ namespace nodes {
                 }
                 int leftMotor = (-diff)*pidUltrasoundValues.deviation+pidUltrasoundValues.mid;
                 int rightMotor = (diff)*pidUltrasoundValues.deviation+pidUltrasoundValues.mid;
-                // std::cout << "Motor settings " << leftMotor << ", " << rightMotor << ", " << result << std::endl;
                 kinematics_->motorSpeed(leftMotor, rightMotor, [](bool sucess){});
             }
         } else if (left_value <= pidUltrasoundValues.leftRightError) {
@@ -235,7 +231,6 @@ namespace nodes {
     }
 
     void UltrasoundNode::extremeTestingCheck(double left_value, double middle, double right_value){
-        // std::cout << "Ultrasound values " << left_value << ", " << right_value << std::endl;
         if ((middle <= extremeValues.middleError) or (left_value <= extremeValues.leftRightError) or (right_value <= extremeValues.leftRightError)) {
             this->mode.store(UltrasoundMode::None);
             std::function<void(bool)> callback = this->extremeTestingCallback_;
@@ -245,7 +240,6 @@ namespace nodes {
     }
 
     void UltrasoundNode::extremeHandlerCallback(double left_value, double middle, double right_value){
-        // std::cout << "Ultrasound values " << left_value << ", " << right_value << std::endl;
         UltrasoundDirection preferredDirection = this->preferredDirection_.load();
         if (preferredDirection != UltrasoundDirection::Front && (middle <= extremeValues.middleError || left_value <= extremeValues.leftRightError || right_value <= extremeValues.leftRightError)) {
             if (preferredDirection == UltrasoundDirection::Right) {
@@ -313,7 +307,6 @@ namespace nodes {
 
     void UltrasoundNode::estimate_descrete_ultrasound_pose(double l_norm, double r_norm) {
         double result = l_norm - r_norm;
-        // std::cout << "result: " <<result  << std::endl;
         if(result > descreteValuesUltrasound.extremeLineReadingDeviation){
             kinematics_->angle(descreteValuesUltrasound.angleAngle, descreteValuesUltrasound.angleSpeed, [](bool sucess){});
         }else if(result < -descreteValuesUltrasound.extremeLineReadingDeviation){

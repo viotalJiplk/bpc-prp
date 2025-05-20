@@ -1,3 +1,10 @@
+// io_node.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for IO (LEDs and buttons) node.
+
+
 #include "io_node.hpp"
 
 namespace nodes {
@@ -73,25 +80,7 @@ namespace nodes {
 
         button_publisher_->publish(newMsg);
 
-        // TEMPORARY: LAUNCHING EXPERIMENTS VIA BUTTONS
-        // --------------------------------------------
-
         std::cout << msg->data << std::endl;
-
-        /*if (msg->data == 0) {
-            // 1st button + red light
-            set_all_leds_color(255, 0, 0);
-            line_->calibrationStart();
-        } else if (msg->data == 1) {
-            // 2nd button + green light
-            set_all_leds_color(0, 255, 0);
-        } else {
-            // 3rd button + blue light
-            set_all_leds_color(0, 0, 255);
-        }*/
-
-        // ------------------------
-        // END OF TEMPORARY SECTION
 
     }
     void IoNode::showIntersection(IntersectionType intersection){
@@ -133,7 +122,6 @@ namespace nodes {
             this->set_led_color(2, 0, 0, 0);
             this->set_led_color(3, 0, 0, 128);
         }
-        // std::cout << "hi" << std::endl;
 
     }
 }
