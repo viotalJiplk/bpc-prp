@@ -1,6 +1,10 @@
+// helper.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/23/25.
-//
+// Source file for timestamps operations.
+
+
 #include "helper.hpp"
 #include <chrono>
 
