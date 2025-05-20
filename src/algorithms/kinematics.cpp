@@ -1,4 +1,11 @@
-#include "kinematics.hpp"//
+// kinematics.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for differential drive kinematics algorithm.
+
+
+#include "kinematics.hpp"
 
 #include <cmath>
 #define PI 3.14159265358979323846
