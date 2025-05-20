@@ -1,3 +1,9 @@
+// t_kinematics.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Tests for line estimation algorithm (using GoogleTests).
+
 
 #include <iostream>
 #include <gtest/gtest.h>
@@ -11,7 +17,6 @@ TEST(LineEstimator, line_estimator_test_1) {
     EXPECT_EQ(result, DiscreteLinePose::LineOnRight);
 }
 
-// ...
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
