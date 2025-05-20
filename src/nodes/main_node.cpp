@@ -132,6 +132,8 @@ namespace nodes {
                 }
                 break;
             case 1:
+                this->maze_node_->start();
+                /*
                 if (this->line_->get_sensors_mode() == SensorsMode::None) {
                     line_->calibrationStart();
                     kinematics_->angle(0.5, 5,  [this](bool result) {
@@ -145,8 +147,16 @@ namespace nodes {
                 } else {
                     this->line_->stop();
                 }
+                */
                 break;
             case 2:
+                this->maze_node_->stop();
+                this->kinematics_->stop();
+                this->lidar_node_->stop();
+                this->ultrasound_->stop();
+                this->imu_node_->stop();
+                this->io_node_->set_all_leds_color(0,0,0);
+                /*
                 if (this->line_->get_sensors_mode() == SensorsMode::None) {
                     line_->calibrationStart();
                     kinematics_->angle(0.5, 5,  [this](bool result) {
@@ -160,6 +170,7 @@ namespace nodes {
                 } else {
                     this->line_->stop();
                 }
+                */
                 break;
             default: break;
         }
