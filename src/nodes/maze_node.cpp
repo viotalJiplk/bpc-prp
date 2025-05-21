@@ -4,7 +4,7 @@
 #include "mazeNode.hpp"
 #include "helper.hpp"
 
-uint32_t halfBlock = 120;
+uint32_t halfBlock = 50;
 
 namespace nodes {
     MazeNode::MazeNode(
@@ -58,14 +58,13 @@ namespace nodes {
                                 this->kinematics_->continueOp();
                             }, UltrasoundDirection::Front);
                         });
-                        kinematics_->forward(halfBlock, 14, [this](bool success)
-                        {
+                        kinematics_->forward(halfBlock, 10, [this](bool success){
                             IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                             uint8_t fw = 0;
                             if (detectedIntersection == IntersectionType::TopT) {
-                                fw = 50;
+                                fw = 10;
                             }
-                            kinematics_->forward(fw, 14, [this, detectedIntersection](bool success){
+                            kinematics_->forward(fw, 10, [this, detectedIntersection](bool success){
                                 this->ultrasound_node_->stop();
                                 ArucoWanted wantedTurn = this->wantedTurn_.exchange({ArucoTurn::None, ArucoTurn::None});
                                 if (wantedTurn.exit == ArucoTurn::Right and (detectedIntersection == IntersectionType::RightT
