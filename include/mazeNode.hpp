@@ -24,6 +24,11 @@ enum class ArucoTurn{
 
 };
 
+struct ArucoWanted{
+    ArucoTurn exit;
+    ArucoTurn treasure;
+};
+
 namespace nodes
 {
     class MazeNode : public rclcpp::Node {
@@ -44,9 +49,7 @@ namespace nodes
         void stop();
 
     private:
-        ArucoTurn arucoExit;
-        ArucoTurn arucoTreasure;
-        std::mutex arucoMutex;
+        std::atomic<ArucoWanted> wantedTurn_;
         // From these variables it is possible to call methods of nodes they contain
         std::function<void()> lidarCallback;
         std::shared_ptr<IoNode> ionode_;

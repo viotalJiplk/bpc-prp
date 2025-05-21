@@ -29,15 +29,12 @@ namespace nodes {
     MazeNode::~MazeNode() {}
 
     void MazeNode::stop(){
-        this->arucoMutex.lock();
-        arucoTreasure = ArucoTurn::None;
-        arucoExit = ArucoTurn::None;
-        this->arucoMutex.unlock();
+        this->wantedTurn_ .store({ArucoTurn::None, ArucoTurn::None});
     }
 
+
     void MazeNode::start(){
-        arucoTreasure = ArucoTurn::None;
-        arucoExit = ArucoTurn::None;
+        this->wantedTurn_ .store({ArucoTurn::None, ArucoTurn::None});
         this->lidarCallback = [this]() {
             this->lidar_node_->start(true, [this](IntersectionType detectedIntersection) {
                 kinematics_->stop();
@@ -64,27 +61,24 @@ namespace nodes {
                     {
                         this->ultrasound_node_->stop();
                         IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                        this->arucoMutex.lock();
-                        ArucoTurn wantedTurn = arucoExit;
-                        arucoExit = ArucoTurn::None;
-                        arucoTreasure = ArucoTurn::None;
-                        this->arucoMutex.unlock();
+                        ArucoWanted wantedTurn = this->wantedTurn_.exchange({ArucoTurn::None, ArucoTurn::None});
 
-                        if (wantedTurn == ArucoTurn::Right and (detectedIntersection == IntersectionType::RightT
+
+                        if (wantedTurn.exit == ArucoTurn::Right and (detectedIntersection == IntersectionType::RightT
                         or detectedIntersection == IntersectionType::AllFour
                         or detectedIntersection == IntersectionType::TopT)){
                             this->kinematics_->turnRight(10, [this](bool sucess) {
                                 IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
                             });
-                        } else if (wantedTurn == ArucoTurn::Left and (detectedIntersection == IntersectionType::LeftT
+                        } else if (wantedTurn.exit == ArucoTurn::Left and (detectedIntersection == IntersectionType::LeftT
                             or detectedIntersection == IntersectionType::AllFour
                             or detectedIntersection == IntersectionType::TopT)){
                             this->kinematics_->turnLeft(10, [this](bool sucess) {
                                 IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
                             });
-                        } else if (wantedTurn == ArucoTurn::Forward and (detectedIntersection == IntersectionType::RightT
+                        } else if (wantedTurn.exit == ArucoTurn::Forward and (detectedIntersection == IntersectionType::RightT
                             or detectedIntersection == IntersectionType::AllFour
                             or detectedIntersection == IntersectionType::LeftT)){
                             IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
@@ -109,11 +103,13 @@ namespace nodes {
                                 this->lidarCallback();
                             });
                         } else if (detectedIntersection == IntersectionType::LeftTurn){
+                            this->wantedTurn_.store(wantedTurn);
                             this->kinematics_->turnLeft(10, [this](bool sucess) {
                                 // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
                             });
                         } else if (detectedIntersection == IntersectionType::RightTurn){
+                            this->wantedTurn_.store(wantedTurn);
                             this->kinematics_->turnRight(10, [this](bool sucess) {
                                 // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
@@ -132,21 +128,21 @@ namespace nodes {
     }
 
     void MazeNode::aruco_callback_(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg){
-        this->arucoMutex.lock();
+        ArucoWanted wantedTurn = this->wantedTurn_.load(); //this could lead to raceconditions
         uint8_t data = msg->data;
         if (data == 0){
-            this->arucoExit = ArucoTurn::Forward;
+            wantedTurn.exit = ArucoTurn::Forward;
         }else if (data == 1){
-            this->arucoExit = ArucoTurn::Left;
+            wantedTurn.exit = ArucoTurn::Left;
         }else if (data == 2){
-            this->arucoExit = ArucoTurn::Right;
+            wantedTurn.exit = ArucoTurn::Right;
         } else if (data == 10){
-            this->arucoTreasure = ArucoTurn::Forward;
+            wantedTurn.treasure = ArucoTurn::Forward;
         }else if (data == 11){
-            this->arucoTreasure = ArucoTurn::Left;
+            wantedTurn.treasure = ArucoTurn::Left;
         }else if (data == 12){
-            this->arucoTreasure = ArucoTurn::Right;
+            wantedTurn.treasure = ArucoTurn::Right;
         }
-        this->arucoMutex.unlock();
+        this->wantedTurn_.store(wantedTurn);
     }
 }

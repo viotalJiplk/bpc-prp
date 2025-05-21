@@ -56,6 +56,7 @@ struct pidLidar pidLidarValues = {
     .leftRightMiddleError = 0.08,
     .intersection = 0.21,
     .intersectionOut = 0.18,
+    .backStop = 0.1,
     .extremePreference = 0.3,
 };
 
