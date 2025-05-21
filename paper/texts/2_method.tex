@@ -22,8 +22,8 @@ Aby byl robot schopen řízeného pohybu, byl implementován uzel \texttt{kinema
     \begin{tabular}{|l|l|}
         \hline
         \textbf{Vlastnost} & \textbf{Hodnota} \\ \hline
-        Poloměr kola & 33 mm \\ \hline
-        Obvod kola & 20,73 mm \\ \hline
+        Poloměr kola & 35 mm \\ \hline
+        Obvod kola & 22 mm \\ \hline
         Rozchod kol & 128 mm \\ \hline
         Pulzy enkodéru & 576 za rotaci \\ \hline
     \end{tabular}
@@ -57,4 +57,4 @@ V~uzlu \texttt{aruco} se nachází implementace poslední dílčí části proje
 Konečným úkolem robota je projet bludištěm, což je v~naší implementaci řešeno dvěma strategiemi. První z~nich pouze určuje, že robot bude sledovat pravou stěnu bludiště (což časem vede k~nalezení cíle, jelikož se v~bludišti nenachází žádné smyčky) a druhá potom využívá přítomnosti ArUco kódů, které napovídají nejkratší cestu k~cíli. V~případě, že druhá strategie selže, např. z~důvodu „přehlédnutí“ kódu, aplikuje se druhá strategie – robot by měl tedy v~každém případě dorazit do cíle.
 
 % ovládání klávesnicí
-V~průběhu řešení projektu byla také navíc implementována možnost ovládat činnosti a jízdu robota s~pomocí klávesnice počítače (na čemž spolupracují uzly \texttt{keyboard} a \texttt{main node}). Různým činnostem byla přiřazena písmena, např. \texttt{L} spouští jízdu s~pomocí LiDARu a \texttt{U} s~pomocí ultrazvukových senzorů. Navíc je možné v~případě potřeby ovládat klávesami \texttt{W}, \texttt{A}, \texttt{S} a \texttt{D} pjízdu s~pomocí ultrazvuku ohyby vpřed, vlevo, vpravo a vzad.
+V~průběhu řešení projektu byla také navíc implementována možnost ovládat činnosti a jízdu robota s~pomocí klávesnice počítače (na čemž spolupracují uzly \texttt{keyboard} a \texttt{main node}). Různým činnostem byla přiřazena písmena, např. \texttt{L} spouští jízdu s~pomocí LiDARu a \texttt{U} s~pomocí ultrazvukových senzorů. Navíc je možné v~případě potřeby ovládat klávesami \texttt{W}, \texttt{A}, \texttt{S} a \texttt{D} jízdu s~pomocí ultrazvuku ohyby vpřed, vlevo, vpravo a vzad.
