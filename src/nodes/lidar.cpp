@@ -262,10 +262,10 @@ namespace nodes {
                 resultType = IntersectionType::TopT;
                 this_intersection_ = resultType;
                 this->ioNode_->showIntersection(resultType);
-            } else if ((valueLeft < pidLidarValues.intersectionOut) and (valueRight < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.backStop)) {
-                resultType = IntersectionType::U;
-                this_intersection_ = resultType;
-                this->ioNode_->showIntersection(resultType);
+            // } else if ((valueLeft < pidLidarValues.intersectionOut) and (valueRight < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.backStop)) {
+            //    resultType = IntersectionType::U;
+            //    this_intersection_ = resultType;
+            //    this->ioNode_->showIntersection(resultType);
             }else if (valueLeft > pidLidarValues.intersectionOut and valueBack > pidLidarValues.intersectionOut)
             {
                 resultType = IntersectionType::LeftTurn;

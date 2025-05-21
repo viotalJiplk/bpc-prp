@@ -57,13 +57,17 @@ namespace nodes {
                             this->kinematics_->continueOp();
                         }, UltrasoundDirection::Front);
                     });
-                    kinematics_->forward(halfBlock, 14, [this](bool success)
-                    {
+                    kinematics_->forward(halfBlock, 14, [this](bool success) {
                         this->ultrasound_node_->stop();
                         IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                         ArucoWanted wantedTurn = this->wantedTurn_.exchange({ArucoTurn::None, ArucoTurn::None});
+                        uint8_t fw = 0;
+                        if (detectedIntersection == IntersectionType::TopT) {
+                            fw = 40;
+                        }
 
-
+                        kinematics_->forward(fw, 14, [this, detectedIntersection, wantedTurn](bool success)
+                        {
                         if (wantedTurn.exit == ArucoTurn::Right and (detectedIntersection == IntersectionType::RightT
                         or detectedIntersection == IntersectionType::AllFour
                         or detectedIntersection == IntersectionType::TopT)){
@@ -120,6 +124,7 @@ namespace nodes {
                         }
                         // kinematics_->forward(300, 10, [this](bool success) {
                         // });
+                    });
                     });
                 }
             });
