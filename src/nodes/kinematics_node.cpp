@@ -58,8 +58,8 @@ namespace nodes {
         uint32_t rightMotor = msg->data[1];
         this->lEncoder.store(leftMotor);
         this->rEncoder.store(rightMotor);
-        uint8_t tmpCount = count.exchange(count.load()+1);
-        if (tmpCount > 3){
+        // uint8_t tmpCount = count.exchange(count.load()+1);
+        // if (tmpCount > 3){
             count.store(0);
             planMutex.lock();
             bool localFinished = false;
@@ -86,7 +86,7 @@ namespace nodes {
             if (localFinished) {
                 localCallback(true);
             }
-        }
+        //}
     }
     void KinematicsNode::forward(uint32_t length, int16_t speed, std::function<void(bool)> callback){
         algorithms::Coordinates coordinates;
