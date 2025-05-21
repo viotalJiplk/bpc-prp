@@ -137,7 +137,7 @@ namespace nodes {
     void LidarNode::stop() {
         prevT_.exchange(0);
         mode.store(LidarMode::None);
-        kinematics_->stop();
+        kinematics_->stop([](bool success) {});
         ultrasoundNode_->stop();
         // ioNode_->set_led_color(0, 255, 0, 0);
     }
@@ -375,7 +375,7 @@ namespace nodes {
             if (diff  < 0.01) {
                 std::function<void()> callback = this->centerCallback_;
                 this->centerCallback_ = [](){};
-                this->kinematics_->stop();
+                this->kinematics_->stop([](bool success) {});
                 this->stop();
                 callback();
             }

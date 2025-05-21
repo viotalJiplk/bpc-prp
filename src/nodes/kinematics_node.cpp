@@ -47,39 +47,45 @@ namespace nodes {
         algo_ = new algorithms::Kinematics(WHEEL_RADIUS, WHEEL_BASE, PULSES_PER_ROTATION);
         plan_.hasFinished = true;
         encodersSubscriber_ = this->create_subscription<std_msgs::msg::UInt32MultiArray>(
-                Topic::encoders_publisher, 1, std::bind(&KinematicsNode::on_encoder_callback, this, std::placeholders::_1));
+                Topic::encoders_publisher, 1, std::bind(&KinematicsNode::on_encoder_callback, this, std::placeholders::_1));\
+        count.store(0);
     }
 
-    void KinematicsNode::on_encoder_callback(std_msgs::msg::UInt32MultiArray_<std::allocator<void>>::SharedPtr msg) {
+    void KinematicsNode::on_encoder_callback(std_msgs::msg::UInt32MultiArray_<std::allocator<void>>::SharedPtr msg)
+    {
         // TODO add evaluation of encoders acording to current command and make corrections
         uint32_t leftMotor = msg->data[0];
         uint32_t rightMotor = msg->data[1];
         this->lEncoder.store(leftMotor);
         this->rEncoder.store(rightMotor);
-        planMutex.lock();
-        bool localFinished = false;
-        std::function<void(bool)> localCallback = [&](bool) {};
-        if (plan_.isInfinite) {
-            motors_->setMotorsSpeed(plan_.lMotor, plan_.rMotor);
-        }else if ((!plan_.hasFinished)) {
-            localCallback = plan_.callback;
-            bool leftFinished = hasFinished(plan_.start.l, leftMotor, plan_.change.l);
-            bool rightFinished = hasFinished(plan_.start.r, rightMotor, plan_.change.r);
-            if (leftFinished || rightFinished) {
-                localFinished = true;
-                motors_->setMotorsSpeed(0,0);
-                plan_.hasFinished = true;
-                plan_.lMotor = 0;
-                plan_.rMotor = 0;
-            }else {
+        uint8_t tmpCount = count.exchange(count.load()+1);
+        if (tmpCount > 3){
+            count.store(0);
+            planMutex.lock();
+            bool localFinished = false;
+            std::function<void(bool)> localCallback = [&](bool) {};
+            if (plan_.isInfinite) {
                 motors_->setMotorsSpeed(plan_.lMotor, plan_.rMotor);
+            }else if ((!plan_.hasFinished)) {
+                localCallback = plan_.callback;
+                bool leftFinished = hasFinished(plan_.start.l, leftMotor, plan_.change.l);
+                bool rightFinished = hasFinished(plan_.start.r, rightMotor, plan_.change.r);
+                if (leftFinished || rightFinished) {
+                    localFinished = true;
+                    motors_->setMotorsSpeed(0,0);
+                    plan_.hasFinished = true;
+                    plan_.lMotor = 0;
+                    plan_.rMotor = 0;
+                }else {
+                    motors_->setMotorsSpeed(plan_.lMotor, plan_.rMotor);
+                }
+            }else {
+                motors_->setMotorsSpeed(0, 0);
             }
-        }else {
-            motors_->setMotorsSpeed(0, 0);
-        }
-        planMutex.unlock();
-        if (localFinished) {
-            localCallback(true);
+            planMutex.unlock();
+            if (localFinished) {
+                localCallback(true);
+            }
         }
     }
     void KinematicsNode::forward(uint32_t length, int16_t speed, std::function<void(bool)> callback){
@@ -208,7 +214,7 @@ namespace nodes {
         }
     }
 
-    void KinematicsNode::stop() {
+    void KinematicsNode::stop(std::function<void(bool)> callback) {
         planMutex.lock();
         plan_.start.l = encoders_->getLeftEncoderState();
         plan_.start.r = encoders_->getRightEncoderState();
@@ -219,8 +225,8 @@ namespace nodes {
         plan_.isInfinite = false;
         std::function<void(bool)> localCallback = plan_.callback;
         bool localFinished = plan_.hasFinished;
-        plan_.hasFinished = true;
-        plan_.callback = [](bool success){};
+        plan_.hasFinished = false;
+        plan_.callback = callback;
         while (!this->planStack.empty())
         {
             this->planStack.pop();

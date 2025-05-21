@@ -4,7 +4,7 @@
 #include "mazeNode.hpp"
 #include "helper.hpp"
 
-uint32_t halfBlock = 120;
+uint32_t halfBlock = 100;
 
 namespace nodes {
     MazeNode::MazeNode(
@@ -37,91 +37,93 @@ namespace nodes {
         this->wantedTurn_ .store({ArucoTurn::None, ArucoTurn::None});
         this->lidarCallback = [this]() {
             this->lidar_node_->start(true, [this](IntersectionType detectedIntersection) {
-                kinematics_->stop();
-                if (detectedIntersection == IntersectionType::U)
+                kinematics_->stop([this, detectedIntersection](bool success)
                 {
-                    this->kinematics_->turnBack(10, [this](bool sucess) {
-                        IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                        if (detectedIntersection == IntersectionType::None)
-                        {
-                            this->ionode_->showIntersection(IntersectionType::None);
-                        }
-                        this->lidarCallback();
-                    });
-                }else{
-                    this->ultrasound_node_->extremeTestingStart([this](bool sucess)
+                    if (detectedIntersection == IntersectionType::U)
                     {
-                        this->kinematics_->interruptOp();
-                        this->ultrasound_node_->handleExtreme([this]()
+                        this->kinematics_->turnBack(10, [this](bool sucess) {
+                            IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                            if (detectedIntersection == IntersectionType::None)
+                            {
+                                this->ionode_->showIntersection(IntersectionType::None);
+                            }
+                            this->lidarCallback();
+                        });
+                    }else{
+                        this->ultrasound_node_->extremeTestingStart([this](bool sucess)
                         {
-                            this->kinematics_->continueOp();
-                        }, UltrasoundDirection::Front);
-                    });
-                    kinematics_->forward(halfBlock, 14, [this](bool success)
-                    {
-                        this->ultrasound_node_->stop();
-                        IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                        ArucoWanted wantedTurn = this->wantedTurn_.exchange({ArucoTurn::None, ArucoTurn::None});
+                            this->kinematics_->interruptOp();
+                            this->ultrasound_node_->handleExtreme([this]()
+                            {
+                                this->kinematics_->continueOp();
+                            }, UltrasoundDirection::Front);
+                        });
+                        kinematics_->forward(halfBlock, 14, [this](bool success)
+                        {
+                            this->ultrasound_node_->stop();
+                            IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                            ArucoWanted wantedTurn = this->wantedTurn_.exchange({ArucoTurn::None, ArucoTurn::None});
 
 
-                        if (wantedTurn.exit == ArucoTurn::Right and (detectedIntersection == IntersectionType::RightT
-                        or detectedIntersection == IntersectionType::AllFour
-                        or detectedIntersection == IntersectionType::TopT)){
-                            this->kinematics_->turnRight(10, [this](bool sucess) {
-                                IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                                this->lidarCallback();
-                            });
-                        } else if (wantedTurn.exit == ArucoTurn::Left and (detectedIntersection == IntersectionType::LeftT
+                            if (wantedTurn.exit == ArucoTurn::Right and (detectedIntersection == IntersectionType::RightT
                             or detectedIntersection == IntersectionType::AllFour
                             or detectedIntersection == IntersectionType::TopT)){
-                            this->kinematics_->turnLeft(10, [this](bool sucess) {
+                                this->kinematics_->turnRight(10, [this](bool sucess) {
+                                    IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                    this->lidarCallback();
+                                });
+                            } else if (wantedTurn.exit == ArucoTurn::Left and (detectedIntersection == IntersectionType::LeftT
+                                or detectedIntersection == IntersectionType::AllFour
+                                or detectedIntersection == IntersectionType::TopT)){
+                                this->kinematics_->turnLeft(10, [this](bool sucess) {
+                                    IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                    this->lidarCallback();
+                                });
+                            } else if (wantedTurn.exit == ArucoTurn::Forward and (detectedIntersection == IntersectionType::RightT
+                                or detectedIntersection == IntersectionType::AllFour
+                                or detectedIntersection == IntersectionType::LeftT)){
                                 IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
-                            });
-                        } else if (wantedTurn.exit == ArucoTurn::Forward and (detectedIntersection == IntersectionType::RightT
-                            or detectedIntersection == IntersectionType::AllFour
-                            or detectedIntersection == IntersectionType::LeftT)){
-                            IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                            this->lidarCallback();
-                        } else if (detectedIntersection == IntersectionType::RightT) {
-                            this->kinematics_->turnRight(10, [this](bool sucess) {
+                            } else if (detectedIntersection == IntersectionType::RightT) {
+                                this->kinematics_->turnRight(10, [this](bool sucess) {
+                                    IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                    this->lidarCallback();
+                                });
+                            } else if (detectedIntersection == IntersectionType::LeftT) {
                                 IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
-                            });
-                        } else if (detectedIntersection == IntersectionType::LeftT) {
-                            IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                            this->lidarCallback();
-                        } else if (detectedIntersection == IntersectionType::TopT) {
-                            this->kinematics_->turnRight(10, [this](bool sucess) {
+                            } else if (detectedIntersection == IntersectionType::TopT) {
+                                this->kinematics_->turnRight(10, [this](bool sucess) {
+                                    IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                    this->lidarCallback();
+                                });
+                            } else if (detectedIntersection == IntersectionType::AllFour)
+                            {
+                                this->kinematics_->turnRight(10, [this](bool sucess) {
+                                    IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                    this->lidarCallback();
+                                });
+                            } else if (detectedIntersection == IntersectionType::LeftTurn){
+                                this->wantedTurn_.store(wantedTurn);
+                                this->kinematics_->turnLeft(10, [this](bool sucess) {
+                                    // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                    this->lidarCallback();
+                                });
+                            } else if (detectedIntersection == IntersectionType::RightTurn){
+                                this->wantedTurn_.store(wantedTurn);
+                                this->kinematics_->turnRight(10, [this](bool sucess) {
+                                    // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                    this->lidarCallback();
+                                });
+                            }else {
                                 IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
-                            });
-                        } else if (detectedIntersection == IntersectionType::AllFour)
-                        {
-                            this->kinematics_->turnRight(10, [this](bool sucess) {
-                                IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                                this->lidarCallback();
-                            });
-                        } else if (detectedIntersection == IntersectionType::LeftTurn){
-                            this->wantedTurn_.store(wantedTurn);
-                            this->kinematics_->turnLeft(10, [this](bool sucess) {
-                                // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                                this->lidarCallback();
-                            });
-                        } else if (detectedIntersection == IntersectionType::RightTurn){
-                            this->wantedTurn_.store(wantedTurn);
-                            this->kinematics_->turnRight(10, [this](bool sucess) {
-                                // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                                this->lidarCallback();
-                            });
-                        }else {
-                            IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                            this->lidarCallback();
-                        }
-                        // kinematics_->forward(300, 10, [this](bool success) {
-                        // });
-                    });
+                            }
+                            // kinematics_->forward(300, 10, [this](bool success) {
+                            // });
+                        });
                 }
+                });
             });
         };
         this->lidarCallback();

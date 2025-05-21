@@ -48,11 +48,12 @@ namespace nodes {
         void turnBack(int16_t speed, std::function<void(bool)> callback);
         void interruptOp();
         void continueOp();
-        void stop();
+        void stop(std::function<void(bool)> callback);
         void turnSlightlyLeft(int16_t speed, std::function<void(bool)> callback);
         void turnSlightlyRight(int16_t speed, std::function<void(bool)> callback);
     private:
         std::stack<struct planPaused> planStack;
+        std::atomic<uint32_t> count;
         Plan plan_;
         algorithms::Kinematics* algo_;
         std::atomic<uint32_t> lEncoder;

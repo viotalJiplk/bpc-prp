@@ -146,7 +146,7 @@ namespace nodes {
 
     void UltrasoundNode::stop() {
         mode.store(UltrasoundMode::None);
-        kinematics_->stop();
+        // kinematics_->stop([](bool success) {});
         // ioNode_->set_led_color(0, 255, 0, 0);
     }
 

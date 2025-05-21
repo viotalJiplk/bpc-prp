@@ -200,7 +200,7 @@ namespace nodes {
         std::cout << left_value << ", " << right_value << std::endl;
         if (left_value > 0.5 or right_value > 0.5)
         {
-            this->kinematics_->stop();
+            this->kinematics_->stop([](bool success) {});
             auto callback = this->untilLineCallbackEnd;
             this->untilLineCallbackEnd = [](){};
             callback();

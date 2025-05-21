@@ -100,7 +100,7 @@ namespace nodes {
 
                 break;
             case 'f':
-                this->kinematics_->forward(50, 10, [this](bool success) {});
+                this->kinematics_->forward(100, 14, [this](bool success) {});
 
                 break;
             case 'm':
@@ -112,7 +112,7 @@ namespace nodes {
                 break;
             case ' ':
                 this->maze_node_->stop();
-                this->kinematics_->stop();
+                this->kinematics_->stop([](bool success) {});
                 this->lidar_node_->stop();
                 this->ultrasound_->stop();
                 this->imu_node_->stop();
@@ -151,7 +151,7 @@ namespace nodes {
                 break;
             case 2:
                 this->maze_node_->stop();
-                this->kinematics_->stop();
+                this->kinematics_->stop([](bool success) {});
                 this->lidar_node_->stop();
                 this->ultrasound_->stop();
                 this->imu_node_->stop();
