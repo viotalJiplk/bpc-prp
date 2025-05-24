@@ -2,8 +2,47 @@ TODO na druhý termín zkoušky
 ============================
 
 - použít pouze L, R, F, B lidarové laloky
+
 - použít inerciálu pro
     - otočky v zatáčkách
     - jízdu rovně (ve spolupráci s lidarem)
+
+
+
+
+- (DONE) kontrola aruco callback
+
+- (DONE) kontrola: obsahuje maze node všechny potřebné ukazatele na ostatní noudy?
+    --> ano, dokonce má ultrazvuk navíc 
+        --> je to potřeba a je to k něčemu, nepoužívá ho už implicitně lidar nouda?
+            --> nejspíš to je blbost, dávám pryč.
+
+- co mumí naše implementace IMU noudy?
+    - 
+
+
+- skončil jsem se zakomentováním ultrazvuku a těla původního automatu
+- automat funguje následovně:
+
+    fce START definuje, co se má stát po callbacku LIDARCALLBACK
+        uvnitř je vždy, že se nějak reaguje na lidarovou situaci (křižovatku)
+        a potom se volá LIDARCALLBACK nebo se končí (?)
+    poté fce START tento LIDARCALLBACK volá
+
+
+- fce pro blikání diodou a její návrat do pův. stavu
+  (pro značení odbočování např.)
+
+- fce "dorovnat střed"
+- fce jet blok rovně
+- fce? jet rovně do změny stavu lidaru
+- fce otočka vlevo
+- fce otočka vpravo 
+- fce otočka vzad
+
+- kalibrace imu??
+- měření stupňů otočení v imu?
+- co takhle "dokud z imu nepřijde že jsme 90 stupňů otočeni, otáčíme se"?
+
 
 
