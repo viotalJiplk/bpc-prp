@@ -1,0 +1,9 @@
+TODO na druhý termín zkoušky
+============================
+
+- použít pouze L, R, F, B lidarové laloky
+- použít inerciálu pro
+    - otočky v zatáčkách
+    - jízdu rovně (ve spolupráci s lidarem)
+
+
