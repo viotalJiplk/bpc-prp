@@ -10,7 +10,12 @@
 #include <sensor_msgs/msg/image.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
-#include <cv_bridge/cv_bridge.h>
+
+// CHOOSE RIGHT VERSION ACC. TO ROS2 DISTRO (school PC: humble)
+// humble --> .h  |  jazzy --> .hpp
+// #include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
+
 #include "aruco.hpp"
 #include "aruco_node.hpp"
 #include "helper.hpp"

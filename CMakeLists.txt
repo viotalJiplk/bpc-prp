@@ -23,7 +23,6 @@ find_package(SDL2 REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
 set(SRC
-        ${CMAKE_SOURCE_DIR}/src/example.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/io_node.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/encoders.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/motors.cpp
@@ -54,7 +53,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         include
         ${OpenCV_INCLUDE_DIRS}
         ${SDL2_INCLUDE_DIRS}
-        /opt/ros/humble/include
+
+        # CHOOSE RIGHT ROS2 DISTRO NAME (school PC: humble)
+        #/opt/ros/humble/include
+        /opt/ros/jazzy/include
 )
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${SDL2_LIBS})
 target_link_libraries(${PROJECT_NAME} atomic)
