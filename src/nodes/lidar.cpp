@@ -96,6 +96,34 @@ namespace nodes {
         this_intersection_ = IntersectionType::None;
     }
 
+    // alt. constructor
+    LidarNode::LidarNode(std::shared_ptr<IoNode> ioNode): GeneralNode("LidarNode", 1) {
+        lidar_sensors_subscriber_ = this->create_subscription<std_msgs::msg::Float32MultiArray>(
+                  Topic::lidarFiltered, 1, std::bind(&LidarNode::intersectionInfo, this, std::placeholders::_1));
+        left_min = 0.0;
+        left_max = 2.5;
+        front_min = 0.0;
+        front_max = 2.5;
+        right_min = 0.0;
+        right_max = 2.5;
+        back_min = 0.0;
+        back_max = 2.5;
+        back_left_min = 0.0;
+        back_left_max = 2.5;
+        back_right_min = 0.0;
+        back_right_max = 2.5;
+        front_left_min = 0.0;
+        front_left_max = 2.5;
+        front_right_min = 0.0;
+        front_right_max = 2.5;
+        ioNode_ = ioNode;
+        mode = LidarMode::None;
+        algo_ = new algorithms::Pid(pidLidarValues.kp, pidLidarValues.ki, pidLidarValues.kd);
+        count_.store(0);
+        prevT_.store(0);
+        this_intersection_ = IntersectionType::None;
+    }
+
     LidarNode::~LidarNode() {
         // Destructor Implementation (if needed)
     }
@@ -210,6 +238,7 @@ namespace nodes {
             );
         }
     }
+
 
     IntersectionType LidarNode::getThisIntersection() {
         lidarResult previousLidar = this->previousLidarResult_.load();
@@ -327,6 +356,102 @@ namespace nodes {
             return IntersectionType::None;
         }
     }
+
+    IntersectionType LidarNode::intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg) {
+
+        struct lidarResult normalResult = normalize(
+            msg->data[0], msg->data[1], msg->data[2], msg->data[3],
+            msg->data[4], msg->data[5], msg->data[6], msg->data[7]
+        );
+
+        // save result for future use
+        this->previousLidarResult_.store(normalResult);
+        
+        IntersectionType resultType = IntersectionType::None;
+       
+        // ALL FOUR
+        if( 
+            (normalResult.left  > pidLidarValues.intersection) and 
+            (normalResult.right > pidLidarValues.intersection) and 
+            (normalResult.front > pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::AllFour;
+        } 
+        // RIGHT T
+        else if (
+            (normalResult.left  < pidLidarValues.intersection) and 
+            (normalResult.right > pidLidarValues.intersection) and 
+            (normalResult.front > pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::RightT;
+        } 
+        // LEFT T
+        else if( 
+            (normalResult.left  > pidLidarValues.intersection) and 
+            (normalResult.right < pidLidarValues.intersection) and 
+            (normalResult.front > pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::LeftT;
+        } 
+        // TOP T
+        else if( 
+            (normalResult.left  > pidLidarValues.intersection) and 
+            (normalResult.right > pidLidarValues.intersection) and 
+            (normalResult.front < pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::TopT;
+        } 
+        // U TURN
+        else if( 
+            (normalResult.left  < pidLidarValues.intersection) and 
+            (normalResult.right < pidLidarValues.intersection) and 
+            (normalResult.front < pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::U;
+        }
+        // LEFT TURN
+        else if( 
+            (normalResult.left  > pidLidarValues.intersection) and 
+            (normalResult.right < pidLidarValues.intersection) and 
+            (normalResult.front < pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::LeftTurn;
+        } 
+        // RIGHT TURN
+        else if( 
+            (normalResult.left  < pidLidarValues.intersection) and 
+            (normalResult.right > pidLidarValues.intersection) and 
+            (normalResult.front < pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::RightTurn;
+        }
+        // I (SIMPLE CORRIDOR)
+        else if( 
+            (normalResult.left  < pidLidarValues.intersection) and 
+            (normalResult.right < pidLidarValues.intersection) and 
+            (normalResult.front > pidLidarValues.intersection) and 
+            (normalResult.back  > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::RightTurn;
+        }
+        // (else type stays on value "None")
+
+        // save detected intersection type
+        this_intersection_ = resultType;
+
+        // show intersection on LEDs
+        this->ioNode_->showIntersection(resultType);
+
+        return resultType;
+    }
+ 
 
     double LidarNode::estimate_continuous_lidar_pose(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight, 
         double valueBackRight, double valueBack, double valueBackLeft) {

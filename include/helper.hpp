@@ -21,6 +21,7 @@ enum class IntersectionType {
     LeftTurn,
     RightTurn,
     U,
+    I,
 };
 
 namespace Topic {

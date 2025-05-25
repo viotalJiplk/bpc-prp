@@ -36,7 +36,6 @@ namespace nodes
             std::shared_ptr<KinematicsNode> kinematics,
             std::shared_ptr<LidarNode> lidar_node,
             std::shared_ptr<ImuNode> imu_node,
-            std::shared_ptr<UltrasoundNode> ultrasound_node,
             std::shared_ptr<LineNode> line_node
         );
 
@@ -55,7 +54,6 @@ namespace nodes
         std::shared_ptr<KinematicsNode> kinematics_;
         std::shared_ptr<LidarNode> lidar_node_;
         std::shared_ptr<ImuNode> imu_node_;
-        std::shared_ptr<UltrasoundNode> ultrasound_node_;
         std::shared_ptr<LineNode> line_node_;
 
         // Subscriber for button numbers and its callbask function

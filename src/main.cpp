@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     auto lidar_sensor = std::make_shared<nodes::LidarSensorNode>();
     executor->add_node(lidar_sensor);
 
-    auto lidar = std::make_shared<nodes::LidarNode>(kinematics, ioNode, ultrasound);
+    auto lidar = std::make_shared<nodes::LidarNode>(ioNode);
     executor->add_node(lidar);
 
     auto imu = std::make_shared<nodes::ImuNode>(kinematics);
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     aruco->init();
     executor->add_node(aruco);
 
-    auto mazeNode = std::make_shared<nodes::MazeNode>(ioNode, kinematics, lidar, imu, ultrasound, line); //TODO add aruco
+    auto mazeNode = std::make_shared<nodes::MazeNode>(ioNode, kinematics, lidar, imu, line); //TODO add aruco
     executor->add_node(mazeNode);
 
     auto mainNode = std::make_shared<nodes::MainNode>(ioNode, line, kinematics, ultrasound, keyboard, lidar, imu, mazeNode);

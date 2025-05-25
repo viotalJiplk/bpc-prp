@@ -49,6 +49,9 @@ namespace nodes
     public:
 
         LidarNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ioNode, std::shared_ptr<UltrasoundNode> ultrasoundNode);
+    
+        // alternative constructor -- used for maze2
+        LidarNode(std::shared_ptr<IoNode> ioNode);
 
         ~LidarNode();
 
@@ -104,6 +107,8 @@ namespace nodes
         algorithms::Pid* algo_;
         std::shared_ptr<UltrasoundNode> ultrasoundNode_;
         double centerMin;
+
+        IntersectionType intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg); // just return type, dont move
 
     };
 }
