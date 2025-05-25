@@ -16,7 +16,7 @@ namespace nodes {
             std::shared_ptr<KinematicsNode> kinematics,
             std::shared_ptr<LidarNode> lidar_node,
             std::shared_ptr<ImuNode> imu_node,
-            std::shared_ptr<UltrasoundNode> ultrasound_node,
+            //std::shared_ptr<UltrasoundNode> ultrasound_node,
             std::shared_ptr<LineNode> line_node
     ): rclcpp::Node ("maze_node"){
 
@@ -24,7 +24,7 @@ namespace nodes {
         this->imu_node_ = imu_node;
         this->kinematics_ = kinematics;
         this->ionode_ = ionode;
-        this->ultrasound_node_ = ultrasound_node;
+        //this->ultrasound_node_ = ultrasound_node;
         this->line_node_ = line_node;
         this->aruco_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
                   Topic::aruco, 1, std::bind(&MazeNode::aruco_callback_, this, std::placeholders::_1));
@@ -33,16 +33,22 @@ namespace nodes {
     MazeNode::~MazeNode() {}
 
     void MazeNode::stop(){
+        kinematics_->stop();
         this->arucoMutex.lock();
         arucoTreasure = ArucoTurn::None;
         arucoExit = ArucoTurn::None;
         this->arucoMutex.unlock();
+        ionode_->set_all_leds_color(128,0,0);
     }
 
     void MazeNode::start(){
         arucoTreasure = ArucoTurn::None;
         arucoExit = ArucoTurn::None;
         this->lidarCallback = [this]() {
+            
+            // TODO zde switch s impl. kon automatu -- přepsat lépe již existující
+            
+            /*
             this->lidar_node_->start(true, [this](IntersectionType detectedIntersection) {
                 kinematics_->stop();
                 if (detectedIntersection == IntersectionType::U)
@@ -128,11 +134,12 @@ namespace nodes {
                         }
                     });
                 }
-            });
+            }); */
         };
         this->lidarCallback();
     }
 
+    // Save next direction from decoded aruco tag
     void MazeNode::aruco_callback_(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg){
         this->arucoMutex.lock();
         uint8_t data = msg->data;

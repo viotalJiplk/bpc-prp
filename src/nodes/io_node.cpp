@@ -71,6 +71,75 @@ namespace nodes {
         led_publisher_->publish(leds);
     }
 
+    void IoNode::led_blink_once(uint8_t led_number, uint16_t duration_ms) {
+        if(led_number > 3) return; // we have only 4 LEDs on our robot
+        
+        // turn off
+        std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
+        switch(led_number) {
+            case 0:
+                this->leds[0] = 0;
+                this->leds[1] = 0;
+                this->leds[2] = 0;
+                break;
+            case 1:
+                this->leds[3] = 0;
+                this->leds[4] = 0;
+                this->leds[5] = 0;
+                break;
+            case 2:
+                this->leds[6] = 0;
+                this->leds[7] = 0;
+                this->leds[8] = 0;
+                break;
+            case 3:
+                this->leds[9] = 0;
+                this->leds[10] = 0;
+                this->leds[11] = 0;
+                break;
+            default:
+                break;
+        }
+        for (int i = 0 ; i < 12 ; i++) {
+            leds.data.push_back(this->leds[i]);
+        }
+        led_publisher_->publish(leds);
+
+        // wait
+
+
+        // turn on
+        std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
+        switch(led_number) {
+            case 0:
+                this->leds[0] = R;
+                this->leds[1] = G;
+                this->leds[2] = B;
+                break;
+            case 1:
+                this->leds[3] = R;
+                this->leds[4] = G;
+                this->leds[5] = B;
+                break;
+            case 2:
+                this->leds[6] = R;
+                this->leds[7] = G;
+                this->leds[8] = B;
+                break;
+            case 3:
+                this->leds[9] = R;
+                this->leds[10] = G;
+                this->leds[11] = B;
+                break;
+            default:
+                break;
+        }
+        for (int i = 0 ; i < 12 ; i++) {
+            leds.data.push_back(this->leds[i]);
+        }
+        led_publisher_->publish(leds);
+    }
+
     void IoNode::on_button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg) {
         // processing message to button number - main purpose of this function
         IoNode::button_pressed_ = msg->data;
