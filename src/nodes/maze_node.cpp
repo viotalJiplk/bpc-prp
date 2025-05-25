@@ -16,7 +16,7 @@ namespace nodes {
             std::shared_ptr<KinematicsNode> kinematics,
             std::shared_ptr<LidarNode> lidar_node,
             std::shared_ptr<ImuNode> imu_node,
-            //std::shared_ptr<UltrasoundNode> ultrasound_node,
+            std::shared_ptr<UltrasoundNode> ultrasound_node,
             std::shared_ptr<LineNode> line_node
     ): rclcpp::Node ("maze_node"){
 
@@ -24,7 +24,7 @@ namespace nodes {
         this->imu_node_ = imu_node;
         this->kinematics_ = kinematics;
         this->ionode_ = ionode;
-        //this->ultrasound_node_ = ultrasound_node;
+        this->ultrasound_node_ = ultrasound_node;
         this->line_node_ = line_node;
         this->aruco_subscriber_ = this->create_subscription<std_msgs::msg::UInt8>(
                   Topic::aruco, 1, std::bind(&MazeNode::aruco_callback_, this, std::placeholders::_1));

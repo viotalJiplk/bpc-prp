@@ -33,11 +33,14 @@ TODO na druhý termín zkoušky
 - fce pro blikání diodou a její návrat do pův. stavu
   (pro značení odbočování např.)
     1. přidat funkci (DONE)
-    2. přidat stavovou proměnnou pro 4 ledky
-    3. dokončit funkci, dodat časovač - máme?
-    4. případně kromě blikn once ještě i blikání vícekrát
+    2. přidat stavovou proměnnou pro 4 ledky (DONE už kdysi)
+    3. dokončit funkci, dodat časovač - máme? (DONE docela podivně, možná nefunkčně)
+    4. případně kromě blikn once ještě i blikání vícekrát (zatím nedělám)
 
 - fce "dorovnat střed"
+    - tj. jet rovně nějakou délku
+    - ale, pokud jsem moc blízko (lidar / ultrazbuk řeknou), zastavit
+
 - fce jet blok rovně
 - fce? jet rovně do změny stavu lidaru
 - fce otočka vlevo

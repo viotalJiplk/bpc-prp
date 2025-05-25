@@ -30,8 +30,8 @@ namespace nodes {
         void set_all_leds_color(uint8_t R, uint8_t G, uint8_t B);
         void showIntersection(IntersectionType intersection);
 
-        // LED blink (turn off, then return to original color)
-        void led_blink_once(uint8_t led_number, uint16_t duration_ms);
+        // LED blink (turn off, wait, then return to original color)
+        void led_blink(uint8_t led_number, uint16_t duration_ns);
 
     private:
 

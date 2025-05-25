@@ -6,6 +6,11 @@
 
 
 #include "io_node.hpp"
+#include <cstdint>
+#include <rclcpp/utilities.hpp>
+#include <unistd.h>
+
+using namespace std::chrono_literals;
 
 namespace nodes {
     IoNode::IoNode(): Node("buttonsReader") {
@@ -71,31 +76,33 @@ namespace nodes {
         led_publisher_->publish(leds);
     }
 
-    void IoNode::led_blink_once(uint8_t led_number, uint16_t duration_ms) {
+    void IoNode::led_blink(uint8_t led_number, uint16_t duration_ns) {
         if(led_number > 3) return; // we have only 4 LEDs on our robot
         
-        // turn off
+        uint8_t saved_state[3] = {0, 0, 0};
+
+        // turn LED off and save original state (color)
         std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
         switch(led_number) {
             case 0:
-                this->leds[0] = 0;
-                this->leds[1] = 0;
-                this->leds[2] = 0;
+                saved_state[0] = this->leds[0]; this->leds[0] = 0;
+                saved_state[1] = this->leds[1]; this->leds[1] = 0;
+                saved_state[2] = this->leds[2]; this->leds[2] = 0;
                 break;
             case 1:
-                this->leds[3] = 0;
-                this->leds[4] = 0;
-                this->leds[5] = 0;
+                saved_state[0] = this->leds[0]; this->leds[3] = 0;
+                saved_state[1] = this->leds[1]; this->leds[4] = 0;
+                saved_state[2] = this->leds[2]; this->leds[5] = 0;
                 break;
             case 2:
-                this->leds[6] = 0;
-                this->leds[7] = 0;
-                this->leds[8] = 0;
+                saved_state[0] = this->leds[0]; this->leds[6] = 0;
+                saved_state[1] = this->leds[1]; this->leds[7] = 0;
+                saved_state[2] = this->leds[2]; this->leds[8] = 0;
                 break;
             case 3:
-                this->leds[9] = 0;
-                this->leds[10] = 0;
-                this->leds[11] = 0;
+                saved_state[0] = this->leds[0]; this->leds[9] = 0;
+                saved_state[1] = this->leds[1]; this->leds[10] = 0;
+                saved_state[2] = this->leds[2]; this->leds[11] = 0;
                 break;
             default:
                 break;
@@ -106,30 +113,29 @@ namespace nodes {
         led_publisher_->publish(leds);
 
         // wait
+        rclcpp::sleep_for(duration_ns * 1ns);
 
-
-        // turn on
-        std_msgs::msg::UInt8MultiArray leds = std_msgs::msg::UInt8MultiArray();
+        // turn LED on with saved color
         switch(led_number) {
             case 0:
-                this->leds[0] = R;
-                this->leds[1] = G;
-                this->leds[2] = B;
+                this->leds[0] = saved_state[0];
+                this->leds[1] = saved_state[1];
+                this->leds[2] = saved_state[2];
                 break;
             case 1:
-                this->leds[3] = R;
-                this->leds[4] = G;
-                this->leds[5] = B;
+                this->leds[3] = saved_state[0];
+                this->leds[4] = saved_state[1];
+                this->leds[5] = saved_state[2];
                 break;
             case 2:
-                this->leds[6] = R;
-                this->leds[7] = G;
-                this->leds[8] = B;
+                this->leds[6] = saved_state[0];
+                this->leds[7] = saved_state[1];
+                this->leds[8] = saved_state[2];
                 break;
             case 3:
-                this->leds[9] = R;
-                this->leds[10] = G;
-                this->leds[11] = B;
+                this->leds[9] = saved_state[0];
+                this->leds[10] = saved_state[1];
+                this->leds[11] = saved_state[2];
                 break;
             default:
                 break;
@@ -139,6 +145,7 @@ namespace nodes {
         }
         led_publisher_->publish(leds);
     }
+
 
     void IoNode::on_button_callback(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg) {
         // processing message to button number - main purpose of this function
