@@ -49,10 +49,10 @@ namespace nodes {
                         this->lidarCallback();
                     });
                 } else if (detectedIntersection == IntersectionType::LeftTurn){
-                            this->kinematics_->turnLeft(10, [this](bool sucess) {
-                                // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                                this->lidarCallback();
-                            });
+                        this->kinematics_->turnLeft(10, [this](bool sucess) {
+                            // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                            this->lidarCallback();
+                        });
                 } else if (detectedIntersection == IntersectionType::RightTurn){
                             this->kinematics_->turnRight(10, [this](bool sucess) {
                                 // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
