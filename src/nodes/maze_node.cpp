@@ -48,7 +48,17 @@ namespace nodes {
                         }
                         this->lidarCallback();
                     });
-                }else{
+                } else if (detectedIntersection == IntersectionType::LeftTurn){
+                            this->kinematics_->turnLeft(10, [this](bool sucess) {
+                                // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                this->lidarCallback();
+                            });
+                } else if (detectedIntersection == IntersectionType::RightTurn){
+                            this->kinematics_->turnRight(10, [this](bool sucess) {
+                                // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
+                                this->lidarCallback();
+                            });
+                } else{
                     this->ultrasound_node_->extremeTestingStart([this](bool sucess)
                     {
                         this->kinematics_->interruptOp();
@@ -106,19 +116,7 @@ namespace nodes {
                                 IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                                 this->lidarCallback();
                             });
-                        } else if (detectedIntersection == IntersectionType::LeftTurn){
-                            this->wantedTurn_.store(wantedTurn);
-                            this->kinematics_->turnLeft(10, [this](bool sucess) {
-                                // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                                this->lidarCallback();
-                            });
-                        } else if (detectedIntersection == IntersectionType::RightTurn){
-                            this->wantedTurn_.store(wantedTurn);
-                            this->kinematics_->turnRight(10, [this](bool sucess) {
-                                // IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
-                                this->lidarCallback();
-                            });
-                        }else {
+                        } else {
                             IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                             this->lidarCallback();
                         }

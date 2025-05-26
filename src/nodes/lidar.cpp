@@ -40,6 +40,7 @@ struct pidLidar {
     double intersection;
     double intersectionOut;
     double backStop;
+    double frontStop;
     double extremePreference;
 };
 
@@ -57,6 +58,7 @@ struct pidLidar pidLidarValues = {
     .intersection = 0.21,
     .intersectionOut = 0.18,
     .backStop = 0.1,
+    .frontStop = 0.1,
     .extremePreference = 0.3,
 };
 
@@ -229,10 +231,10 @@ namespace nodes {
         } else if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
             resultType = IntersectionType::TopT;
             this->ioNode_->showIntersection(resultType);
-        }else if (valueLeft > pidLidarValues.intersectionOut and valueBack > pidLidarValues.intersectionOut){
+        }else if (valueLeft > pidLidarValues.intersection and valueFront > pidLidarValues.intersectionOut){
             resultType = IntersectionType::LeftTurn;
             this->ioNode_->showIntersection(resultType);
-        } else if (valueRight > pidLidarValues.intersectionOut and valueBack > pidLidarValues.intersectionOut)
+        } else if (valueRight > pidLidarValues.intersection and valueFront > pidLidarValues.intersectionOut)
         {
             resultType = IntersectionType::RightTurn;
             this->ioNode_->showIntersection(resultType);
@@ -242,7 +244,6 @@ namespace nodes {
     }
 
     IntersectionType LidarNode::detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack) {
-        std::cout << valueLeft << ", " << valueFront << ", " << valueRight << ", " << valueBack << std::endl;
         if (this_intersection_ == IntersectionType::None){
             IntersectionType resultType = IntersectionType::None;
             if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection))
@@ -266,17 +267,23 @@ namespace nodes {
             //    resultType = IntersectionType::U;
             //    this_intersection_ = resultType;
             //    this->ioNode_->showIntersection(resultType);
-            }else if (valueLeft > pidLidarValues.intersectionOut and valueBack > pidLidarValues.intersectionOut)
+            }else if (valueLeft > pidLidarValues.intersection and valueFront < pidLidarValues.frontStop)
             {
                 resultType = IntersectionType::LeftTurn;
                 this_intersection_ = resultType;
                 this->ioNode_->showIntersection(resultType);
-            } else if (valueRight > pidLidarValues.intersectionOut and valueBack > pidLidarValues.intersectionOut)
+            } else if (valueRight > pidLidarValues.intersection and valueFront < pidLidarValues.frontStop)
             {
+                this->kinematics_->stop();
                 resultType = IntersectionType::RightTurn;
                 this_intersection_ = resultType;
                 this->ioNode_->showIntersection(resultType);
             }
+
+            if (resultType != IntersectionType::None){
+                std::cout << valueLeft << ", " << valueFront << ", " << valueRight << ", " << valueBack << std::endl;
+            }
+
             return resultType;
         }else{
             if (this_intersection_ == IntersectionType::AllFour and (
@@ -311,6 +318,7 @@ namespace nodes {
                 (valueRight > pidLidarValues.intersection)
                 or (valueLeft < pidLidarValues.intersectionOut)
                 or (valueFront < pidLidarValues.intersectionOut)
+                or (valueBack > pidLidarValues.intersection)
                 )){
                 this->ioNode_->showIntersection(IntersectionType::None);
                 this_intersection_ = IntersectionType::None;
@@ -318,6 +326,7 @@ namespace nodes {
                     (valueLeft > pidLidarValues.intersection)
                     or (valueRight < pidLidarValues.intersectionOut)
                     or (valueFront < pidLidarValues.intersectionOut)
+                    or (valueBack > pidLidarValues.intersection)
                     )){
                 this->ioNode_->showIntersection(IntersectionType::None);
                 this_intersection_ = IntersectionType::None;
