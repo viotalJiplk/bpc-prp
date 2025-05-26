@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     auto lidar = std::make_shared<nodes::LidarNode>(ioNode);
     executor->add_node(lidar);
 
-    auto imu = std::make_shared<nodes::ImuNode>(kinematics);
+    auto imu = std::make_shared<nodes::ImuNode>(kinematics, ioNode);
     executor->add_node(imu);
 
     auto aruco = std::make_shared<nodes::ArucoNode>();

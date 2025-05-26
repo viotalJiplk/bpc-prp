@@ -8,9 +8,11 @@
 #ifndef IMU_NODE_HPP
 #define IMU_NODE_HPP
 
+#include <cstdint>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include "imu.hpp"
+#include "io_node.hpp"
 #include "pid.hpp"
 #include "kinematics_node.hpp"
 
@@ -20,12 +22,16 @@ namespace nodes {
     enum class ImuNodeMode {
         CALIBRATE,
         INTEGRATE,
-        None,
+        NONE,
+        LEFT90,
+        RIGHT90,
+        RIGHT180,
+        FORWARD,
     };
 
     class ImuNode : public rclcpp::Node {
     public:
-        ImuNode(std::shared_ptr<KinematicsNode> kinematics);
+        ImuNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ionode);
         ~ImuNode() override = default;
 
         // Set the IMU Mode
@@ -37,6 +43,12 @@ namespace nodes {
         // Get the results after Integration
         auto getIntegratedResults();
 
+        // Turns etc. for maze solving
+        void turnLeft();
+        void turnRight();
+        void turnBack();
+        void forward(); // TODO distance?
+
         // Reset the class
         void reset_imu();
         void start();
@@ -45,7 +57,7 @@ namespace nodes {
     private:
 
         void calibrate();
-        void integrate(float gyro_z, double dt);
+        void integrate();
 
         long getTimestamp();
 
@@ -60,6 +72,7 @@ namespace nodes {
         int sample_num;
 
         std::shared_ptr<KinematicsNode> kinematics_;
+        std::shared_ptr<IoNode> ionode_;
 
         algorithms::Pid* algo_;
 

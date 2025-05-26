@@ -11,6 +11,7 @@
 #include "imu_node.hpp"
 #include <chrono>
 #include "helper.hpp"
+#include "io_node.hpp"
 #include "pid.hpp"
 
 
@@ -32,11 +33,12 @@ struct pid_imu pidImuValues = {
 
 namespace nodes {
 
-    ImuNode::ImuNode(std::shared_ptr<KinematicsNode> kinematics): rclcpp::Node("ImuNode") {
+    ImuNode::ImuNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ionode): rclcpp::Node("ImuNode") {
         imu_subscriber_ = this->create_subscription<sensor_msgs::msg::Imu>(
           Topic::imu, 1, std::bind(&ImuNode::on_imu_msg, this, std::placeholders::_1));
         kinematics_ = kinematics;
-        mode = ImuNodeMode::None;
+        ionode_ = ionode;
+        mode = ImuNodeMode::NONE;
         planar_integrator_ = algorithms::PlanarImuIntegrator();
         gyro_calibration_samples_ = std::vector<float>();
         sample_num = 0;
@@ -57,11 +59,27 @@ namespace nodes {
     }
 
     void ImuNode::stop() {
-        mode = ImuNodeMode::None;
+        mode = ImuNodeMode::NONE;
     }
 
     ImuNodeMode ImuNode::getMode() {
         return mode;
+    }
+
+    void ImuNode::turnLeft() {
+        mode = ImuNodeMode::LEFT90;
+    }
+
+    void ImuNode::turnRight() {
+        mode = ImuNodeMode::RIGHT90;
+    }
+
+    void ImuNode::turnBack() {
+        mode = ImuNodeMode::RIGHT180;
+    }
+    
+    void ImuNode::forward() {   // TODO distance?
+        mode = ImuNodeMode::FORWARD;
     }
 
     void ImuNode::reset_imu() {
@@ -75,8 +93,8 @@ namespace nodes {
         planar_integrator_.setCalibration(gyro_calibration_samples_);
     }
 
-    void ImuNode::integrate(float gyro_z, double dt) {
-
+    void ImuNode::integrate() {
+        mode = ImuNodeMode::INTEGRATE;
     }
 
     long ImuNode::getTimestamp() {
@@ -88,13 +106,40 @@ namespace nodes {
     }
 
     void ImuNode::on_imu_msg(const sensor_msgs::msg::Imu::SharedPtr msg) {
+
+        switch(this->mode) {
+            case ImuNodeMode::CALIBRATE:
+                gyro_calibration_samples_.push_back(msg->angular_velocity.z);
+                sample_num++;
+                if(sample_num >= 240) {
+                    calibrate();
+                    this->mode = ImuNodeMode::NONE;
+                    ionode_->led_blink(0, 200);
+                }
+                break;
+
+            case ImuNodeMode::INTEGRATE:
+                break;
+
+            case ImuNodeMode::LEFT90:
+                break;
+
+            case ImuNodeMode::RIGHT90:
+                break;
+
+            case nodes::ImuNodeMode::RIGHT180:
+                break;
+
+            case ImuNodeMode::FORWARD:
+                break;
+
+            case ImuNodeMode::NONE:
+            default:
+                break;
+        }
+
         if(getMode() == ImuNodeMode::CALIBRATE) {
-          gyro_calibration_samples_.push_back(msg->angular_velocity.z);
-          sample_num++;
-          if(sample_num >= 240) {
-            calibrate();
-            setMode(ImuNodeMode::INTEGRATE);
-          }
+          
         }
         else if(getMode() == ImuNodeMode::INTEGRATE) {
             long timeNow = getTimestamp();

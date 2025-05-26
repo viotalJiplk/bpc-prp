@@ -76,7 +76,7 @@ namespace nodes {
         led_publisher_->publish(leds);
     }
 
-    void IoNode::led_blink(uint8_t led_number, uint16_t duration_ns) {
+    void IoNode::led_blink(uint8_t led_number, uint16_t duration_ms) {
         if(led_number > 3) return; // we have only 4 LEDs on our robot
         
         uint8_t saved_state[3] = {0, 0, 0};
@@ -113,7 +113,7 @@ namespace nodes {
         led_publisher_->publish(leds);
 
         // wait
-        rclcpp::sleep_for(duration_ns * 1ns);
+        rclcpp::sleep_for(duration_ms * 1000000 * 1ns);
 
         // turn LED on with saved color
         switch(led_number) {

@@ -31,7 +31,7 @@ namespace nodes {
         void showIntersection(IntersectionType intersection);
 
         // LED blink (turn off, wait, then return to original color)
-        void led_blink(uint8_t led_number, uint16_t duration_ns);
+        void led_blink(uint8_t led_number, uint16_t duration_ms);
 
     private:
 

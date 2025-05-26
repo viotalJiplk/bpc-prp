@@ -89,7 +89,7 @@ namespace nodes {
 
                 break;
             case 'i':
-                if (this->imu_node_->getMode() == ImuNodeMode::None) {
+                if (this->imu_node_->getMode() == ImuNodeMode::NONE) {
                     this->imu_node_->start();
                 }else {
                     this->imu_node_->stop();
