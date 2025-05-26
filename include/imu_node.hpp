@@ -31,7 +31,7 @@ namespace nodes {
 
     class ImuNode : public rclcpp::Node {
     public:
-        ImuNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<IoNode> ionode);
+        ImuNode(std::shared_ptr<KinematicsNode> kinematics, std::shared_ptr<Motors> motors, std::shared_ptr<IoNode> ionode);
         ~ImuNode() override = default;
 
         // Set the IMU Mode
@@ -48,6 +48,7 @@ namespace nodes {
         void turnRight();
         void turnBack();
         void forward(); // TODO distance?
+        void reset_orientation();
 
         // Reset the class
         void reset_imu();
@@ -57,7 +58,9 @@ namespace nodes {
     private:
 
         void calibrate();
-        void integrate();
+        long integrate(float angular_velocity_z); // returns timestamp of previous measurement
+
+        double control_movement(float desired_angle, float current_angle, long current_timestamp, long previous_timestamp); // PID wrapper, returns angles difference
 
         long getTimestamp();
 
@@ -72,6 +75,7 @@ namespace nodes {
         int sample_num;
 
         std::shared_ptr<KinematicsNode> kinematics_;
+        std::shared_ptr<Motors> motors_;
         std::shared_ptr<IoNode> ionode_;
 
         algorithms::Pid* algo_;

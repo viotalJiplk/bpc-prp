@@ -8,6 +8,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "io_node.hpp"
 #include "line_node.hpp"
+#include "motors.hpp"
 #include "ultrasound_node.hpp"
 #include "ultrasound_sensor_node.hpp"
 #include "main_node.hpp"
@@ -48,7 +49,10 @@ int main(int argc, char* argv[]) {
     auto lidar = std::make_shared<nodes::LidarNode>(ioNode);
     executor->add_node(lidar);
 
-    auto imu = std::make_shared<nodes::ImuNode>(kinematics, ioNode);
+    auto motors = std::make_shared<nodes::Motors>();
+    executor->add_node(motors);
+
+    auto imu = std::make_shared<nodes::ImuNode>(kinematics, motors, ioNode);
     executor->add_node(imu);
 
     auto aruco = std::make_shared<nodes::ArucoNode>();

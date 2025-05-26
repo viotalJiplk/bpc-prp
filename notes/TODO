@@ -61,4 +61,8 @@ TODO na druhý termín zkoušky
     - snad by to teď mělo fungovat tak, že se lidarnouda zkonstruuje a sama běží
     - ukládá si průběžně výsledky do intersectionInfo a já si je vezmu vždy když chci
 
+- nebude potřeba vždy po změně módu pro IMU resetovat integrátor? aby se nepamatoval chybu?
+
+- experimentuji s tím, že vynechám kinematiku a plánování a zapíšu rovnou do motorů z IMU noudy
+
 

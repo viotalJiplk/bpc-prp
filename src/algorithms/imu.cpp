@@ -28,8 +28,8 @@ namespace algorithms {
 
     float PlanarImuIntegrator::update(float gyro_z, double dt) {
         float old_theta = theta_;
-        theta_ += dt * gyro_z;
-        return theta_ - 0;
+        theta_ += dt * (gyro_z - gyro_offset_);
+        return old_theta - theta_; // return difference from last measurement
     }
 
     void PlanarImuIntegrator::setCalibration(std::vector<float> gyro) {
@@ -38,6 +38,10 @@ namespace algorithms {
 
     float PlanarImuIntegrator::getYaw() {
       return theta_;
+    }
+
+    void PlanarImuIntegrator::resetYaw() {
+      theta_ = 0.0;
     }
 
     void PlanarImuIntegrator::reset() {

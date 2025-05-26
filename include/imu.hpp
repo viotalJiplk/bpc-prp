@@ -32,6 +32,9 @@ namespace algorithms {
         // Return the current estimated yaw
         float getYaw();
 
+        // Reset orientation
+        void resetYaw();
+
         // Reset orientation and calibration
         void reset();
 
