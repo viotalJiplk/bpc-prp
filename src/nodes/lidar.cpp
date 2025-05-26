@@ -42,6 +42,8 @@ struct pidLidar {
     double backStop;
     double frontStop;
     double extremePreference;
+    double maxSumSide;
+    double maxSumFront;
 };
 
 struct pidLidar pidLidarValues = {
@@ -55,11 +57,13 @@ struct pidLidar pidLidarValues = {
     .middleError = 0.04,
     .leftRightError = 0.08,
     .leftRightMiddleError = 0.08,
-    .intersection = 0.21,
-    .intersectionOut = 0.18,
+    .intersection = 0.19,
+    .intersectionOut = 0.17,
     .backStop = 0.1,
     .frontStop = 0.1,
     .extremePreference = 0.3,
+    .maxSumSide = 0.25,
+    .maxSumFront = 0.35,
 };
 
 namespace nodes {
@@ -341,7 +345,7 @@ namespace nodes {
         long oldTime = prevT_.exchange(timeNow);
         // if (((valueFrontLeft + valueFrontRight) > pidLidarValues.intersection) or ((valueFrontLeft + valueFront) > pidLidarValues.intersection) or ((valueFront + valueFrontRight) > pidLidarValues.intersection)) {
         //if (((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) ) or ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)) or ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection))) {
-        IntersectionType detectedIntersection = detectIntersection(valueLeft, valueFront, valueRight, valueBack);
+         IntersectionType detectedIntersection = detectIntersection(valueLeft, valueFront, valueRight, valueBack);
         if ((detectedIntersection != IntersectionType::None)) {
 
             std::function<void(IntersectionType detectedIntersection)> callback = this->onIntersection_;
@@ -352,6 +356,16 @@ namespace nodes {
         } else {
             if (oldTime != 0) {
                 double result = valueFrontLeft - valueFrontRight;
+                if (valueFrontLeft + valueFrontRight > pidLidarValues.maxSumFront) {
+                    result = valueLeft - valueRight;
+                    if (valueLeft + valueRight > pidLidarValues.maxSumSide){
+                        result = 0.0;
+                        std::cout << "Ignoring in" << std::endl;
+                    }else{
+                        std::cout << "Ignoring front in" << std::endl;
+                    }
+                }
+
                 // std::cout << result << std::endl;
                 if (abs(result) < pidLidarValues.error) {
                     result = 0.0;
