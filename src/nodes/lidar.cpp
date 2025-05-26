@@ -122,6 +122,7 @@ namespace nodes {
         count_.store(0);
         prevT_.store(0);
         this_intersection_ = IntersectionType::None;
+        mazeOff.store(true);
     }
 
     LidarNode::~LidarNode() {
@@ -168,11 +169,17 @@ namespace nodes {
         });
     }
 
+    void LidarNode::start() {
+        prevT_.exchange(0);
+        mazeOff.store(false);
+    }
+
     void LidarNode::stop() {
         prevT_.exchange(0);
         mode.store(LidarMode::None);
-        kinematics_->stop();
-        ultrasoundNode_->stop();
+        //kinematics_->stop();
+        //ultrasoundNode_->stop();
+        mazeOff.store(true);
         // ioNode_->set_led_color(0, 255, 0, 0);
     }
 
@@ -359,6 +366,8 @@ namespace nodes {
 
     void LidarNode::intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg) {
 
+        if(mazeOff.load()) return;
+
         struct lidarResult normalResult = normalize(
             msg->data[0], msg->data[1], msg->data[2], msg->data[3],
             msg->data[4], msg->data[5], msg->data[6], msg->data[7]
@@ -439,7 +448,13 @@ namespace nodes {
             (normalResult.front > pidLidarValues.intersection) and 
             (normalResult.back  > pidLidarValues.intersection)
         ) {
-            resultType = IntersectionType::RightTurn;
+            resultType = IntersectionType::I;
+        }
+        // F (FORWARD CLEAR, OTHERS DONT CARE)
+        else if(
+            (normalResult.front > pidLidarValues.intersection)
+        ) {
+            resultType = IntersectionType::F;
         }
         // (else type stays on value "None")
 

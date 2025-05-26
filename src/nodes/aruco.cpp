@@ -13,8 +13,8 @@
 
 // CHOOSE RIGHT VERSION ACC. TO ROS2 DISTRO (school PC: humble)
 // humble --> .h  |  jazzy --> .hpp
-// #include <cv_bridge/cv_bridge.h>
-#include <cv_bridge/cv_bridge.hpp>
+#include <cv_bridge/cv_bridge.h>
+//#include <cv_bridge/cv_bridge.hpp>
 
 #include "aruco.hpp"
 #include "aruco_node.hpp"

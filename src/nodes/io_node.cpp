@@ -192,12 +192,28 @@ namespace nodes {
             this->set_led_color(1, 128, 0, 0);
             this->set_led_color(2, 0, 0, 128);
             this->set_led_color(3, 128, 0, 0);
-        }else{ /* forward coridor */
+        }else if (intersection == IntersectionType::I){
             this->set_led_color(0, 0, 0, 128);
             this->set_led_color(1, 0, 0, 0);
             this->set_led_color(2, 0, 0, 0);
             this->set_led_color(3, 0, 0, 128);
+        }else if (intersection == IntersectionType::None){
+            this->set_led_color(0, 128, 0, 0);
+            this->set_led_color(1, 128, 0, 0);
+            this->set_led_color(2, 128, 0, 0);
+            this->set_led_color(3, 128, 0, 0);
+        }else if (intersection == IntersectionType::F){
+            this->set_led_color(0, 0, 0, 0);
+            this->set_led_color(1, 0, 0, 0);
+            this->set_led_color(2, 0, 0, 0);
+            this->set_led_color(3, 0, 0, 128);
+        }else{ /* unknown intersection */
+            this->set_led_color(0, 128, 32, 0);
+            this->set_led_color(1, 128, 32, 0);
+            this->set_led_color(2, 128, 32, 0);
+            this->set_led_color(3, 128, 32, 0);
         }
+
 
     }
 }

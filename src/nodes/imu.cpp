@@ -62,6 +62,7 @@ namespace nodes {
     }
 
     void ImuNode::stop() {
+        motors_->setMotorsSpeed(0,0);
         mode = ImuNodeMode::NONE;
     }
 
@@ -158,7 +159,7 @@ namespace nodes {
             case ImuNodeMode::CALIBRATE:
                 gyro_calibration_samples_.push_back(msg->angular_velocity.z);
                 sample_num++;
-                if(sample_num >= 240) {
+                if(sample_num >= 420) {
                     calibrate(); // pass samples to algorithm
                     this->mode = ImuNodeMode::NONE;
                     ionode_->led_blink(0, 200);
@@ -199,7 +200,8 @@ namespace nodes {
                 // stop if no further rotation needed
                 if( control_movement(-90.0f, planar_integrator_.getYaw(), this->prevT_, prev_timestamp) < 0.01 ) {
                     // difference too small, job done --> return to mode "none"
-                    motors_->setMotorsSpeed(0, 0);
+                    kinematics_->stop();
+                    //motors_->setMotorsSpeed(0, 0);
                     this->reset_orientation();
                     this->mode = ImuNodeMode::NONE;   
                 }
@@ -213,7 +215,8 @@ namespace nodes {
                 // stop if no further rotation needed
                 if( control_movement(90.0f, planar_integrator_.getYaw(), this->prevT_, prev_timestamp) < 0.01 ) {
                     // difference too small, job done --> return to mode "none"
-                    motors_->setMotorsSpeed(0, 0);
+                    kinematics_->stop();
+                    //motors_->setMotorsSpeed(0, 0);
                     this->reset_orientation();
                     this->mode = ImuNodeMode::NONE;   
                 }
@@ -227,7 +230,8 @@ namespace nodes {
                 // stop if no further rotation needed
                 if( control_movement(180.0f, planar_integrator_.getYaw(), this->prevT_, prev_timestamp) < 0.01 ) {
                     // difference too small, job done --> return to mode "none"
-                    motors_->setMotorsSpeed(0, 0);
+                    kinematics_->stop();
+                    //motors_->setMotorsSpeed(0, 0);
                     this->reset_orientation();
                     this->mode = ImuNodeMode::NONE;   
                 }
@@ -239,7 +243,7 @@ namespace nodes {
                 // TODO decide: use IMU or kinematics? 
                 
                 // temporarily using kinematics to move forward - fixed distance
-                this->kinematics_->forward(120, 10, [](bool sucess){});
+                this->kinematics_->forward(50, 10, [](bool sucess){});
 
                 /*
                 // process data from IMU

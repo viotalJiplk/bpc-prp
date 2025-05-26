@@ -55,8 +55,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         ${SDL2_INCLUDE_DIRS}
 
         # CHOOSE RIGHT ROS2 DISTRO NAME (school PC: humble)
-        #/opt/ros/humble/include
-        /opt/ros/jazzy/include
+        /opt/ros/humble/include
+        #/opt/ros/jazzy/include
 )
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${SDL2_LIBS})
 target_link_libraries(${PROJECT_NAME} atomic)

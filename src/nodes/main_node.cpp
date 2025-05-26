@@ -119,6 +119,22 @@ namespace nodes {
                 this->imu_node_->stop();
                 this->io_node_->set_all_leds_color(0,0,0);
                 break;
+
+            case '0':
+                this->io_node_->led_blink(0, 200);
+                break;
+            case '1':
+                this->io_node_->led_blink(1, 200);
+                break;
+            case '2':
+                this->io_node_->led_blink(2, 200);
+                break;
+            case '3':
+                this->io_node_->led_blink(3, 200);
+                break;
+            case '4':
+                this->io_node_->set_all_leds_color(128,0,128);
+                break;
         }
     }
 

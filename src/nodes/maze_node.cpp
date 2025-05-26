@@ -8,7 +8,7 @@
 #include "mazeNode.hpp"
 #include "helper.hpp"
 
-uint32_t halfBlock = 120;
+uint32_t halfBlock = 200;
 
 namespace nodes {
     MazeNode::MazeNode(
@@ -32,6 +32,8 @@ namespace nodes {
 
     void MazeNode::stop(){
         kinematics_->stop();
+        lidar_node_->stop();
+        imu_node_->stop();
         this->arucoMutex.lock();
         arucoTreasure = ArucoTurn::None;
         arucoExit = ArucoTurn::None;
@@ -40,8 +42,13 @@ namespace nodes {
     }
 
     void MazeNode::start(){
+        this->arucoMutex.lock();
         arucoTreasure = ArucoTurn::None;
         arucoExit = ArucoTurn::None;
+        this->arucoMutex.unlock();
+
+        this->lidar_node_->start();
+        this->imu_node_->start();
 
         this->fsmCallback = [this]() {
 
@@ -60,55 +67,71 @@ namespace nodes {
             IntersectionType detectedIntersection = this->lidar_node_->getIntersectionInfo();
             switch(detectedIntersection) {
                 case IntersectionType::I:
-                    ionode_->led_blink(3, 200); // blink forward (LED on index 3)
-                    imu_node_->forward(); // go 1 tile forward
+                    this->ionode_->led_blink(3, 200); // blink forward (LED on index 3)
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     // repeat -- call itself -- always --> after switch statement
                     break;
 
                 case IntersectionType::U:
-                    ionode_->led_blink(0, 200); // blink backward (LED on index 0)
-                    imu_node_->turnBack(); // turn
-                    imu_node_->forward(); // go 1 tile forward
+                    this->ionode_->led_blink(0, 200); // blink backward (LED on index 0)
+                    this->imu_node_->turnBack(); // turn
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::RightTurn:
-                    ionode_->led_blink(1, 200); // blink right (LED on index 1)
-                    imu_node_->turnRight(); // turn
-                    imu_node_->forward(); // go 1 tile forward
+                    this->ionode_->led_blink(1, 200); // blink right (LED on index 1)
+                    this->imu_node_->turnRight(); // turn
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::LeftTurn:
-                    ionode_->led_blink(2, 200); // blink left (LED on index 2)
-                    imu_node_->turnLeft(); // turn
-                    imu_node_->forward(); // go 1 tile forward
+                    this->ionode_->led_blink(2, 200); // blink left (LED on index 2)
+                    this->imu_node_->turnLeft(); // turn
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::RightT:                   
                     executeWantedTurn(wantedTurn); // blink and turn
-                    imu_node_->forward(); // go 1 tile forward
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::LeftT:                    
                     executeWantedTurn(wantedTurn); // blink and turn
-                    imu_node_->forward(); // go 1 tile forward
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::TopT:
                     executeWantedTurn(wantedTurn); // blink and turn
-                    imu_node_->forward(); // go 1 tile forward
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::AllFour:
                     executeWantedTurn(wantedTurn); // blink and turn
-                    imu_node_->forward(); // go 1 tile forward
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
+                    break;
+
+                case IntersectionType::F:
+                    this->ionode_->led_blink(3, 200); // blink forward (LED on index 3)
+                    this->kinematics_->forward(200, 10, [this](bool success) {this->fsmCallback();});
+                    //imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::None:
                 default:
+                    this->ionode_->led_blink(3, 200); // blink forward (LED on index 3)
+                    this->kinematics_->forward(50, 10, [this](bool success) {this->fsmCallback();});
                     break;
             }
             
-            this->fsmCallback(); // repeat
+            //this->fsmCallback(); // repeat
 
             /*
             this->lidar_node_->start(true, [this](IntersectionType detectedIntersection) {
@@ -205,28 +228,28 @@ namespace nodes {
     void MazeNode::executeWantedTurn(ArucoTurn wantedTurn) {
         switch(wantedTurn) {
             case ArucoTurn::Left:
-                ionode_->led_blink(2, 200); // blink left (LED on index 2)
-                imu_node_->turnLeft();
-                imu_node_->forward();
+                this->ionode_->led_blink(2, 200); // blink left (LED on index 2)
+                this->imu_node_->turnLeft();
+                this->imu_node_->forward();
                 break;
 
             case ArucoTurn::Right:
-                ionode_->led_blink(1, 200); // blink right (LED on index 1)
-                imu_node_->turnRight();
-                imu_node_->forward();
+                this->ionode_->led_blink(1, 200); // blink right (LED on index 1)
+                this->imu_node_->turnRight();
+                this->imu_node_->forward();
                 break;
 
             case ArucoTurn::Forward:
-                ionode_->led_blink(3, 200); // blink forward (LED on index 3)
-                imu_node_->forward();
+                this->ionode_->led_blink(3, 200); // blink forward (LED on index 3)
+                this->imu_node_->forward();
                 break;
 
             case ArucoTurn::None:
             default:
                 // should not happen; 2x longer blink forward
-                ionode_->led_blink(3, 300);
-                ionode_->led_blink(3, 300);
-                imu_node_->stop();
+                this->ionode_->led_blink(3, 300);
+                this->ionode_->led_blink(3, 300);
+                this->imu_node_->stop();
                 break;
         }
     }

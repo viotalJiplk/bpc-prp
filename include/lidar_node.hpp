@@ -77,6 +77,7 @@ namespace nodes
 
         void stop();
         void start(bool continous, std::function<void(IntersectionType detectedIntersection)> intersection);
+        void start(); // for maze solving
         void center(std::function<void()> after);
         IntersectionType detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack);
         IntersectionType getThisIntersection();
@@ -111,6 +112,7 @@ namespace nodes
 
         void intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg); // just return type, dont move
 
+        std::atomic<bool> mazeOff; // maze solving on/off (default off)
     };
 }
 
