@@ -4,6 +4,8 @@
 #include "helper.hpp"
 #include "pid.hpp"
 #include "lidar_node.hpp"
+#include <chrono>
+#include <thread>
 
 #define PI 3.14159265
 
@@ -50,9 +52,9 @@ struct pidLidar pidLidarValues = {
     .kp = 1,
     .ki = 0.00,
     // .kd = 0.4,
-    .kd = 0.0,
+    .kd = 0.4,
     .mid = 14.0,
-    .deviation = 5.0,
+    .deviation = 7.0,
     .error = 0.005,
     .middleError = 0.04,
     .leftRightError = 0.08,
@@ -216,6 +218,7 @@ namespace nodes {
     }
 
     IntersectionType LidarNode::getThisIntersection() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10)); // so that lidar has time to fetch new data
         lidarResult previousLidar = this->previousLidarResult_.load();
         double valueLeft = previousLidar.left;
         double valueFront = previousLidar.front;
