@@ -80,6 +80,7 @@ namespace nodes
         void center(std::function<void()> after);
         IntersectionType detectIntersection(double valueLeft, double valueFront, double valueRight, double valueBack);
         IntersectionType getThisIntersection();
+        IntersectionType getIntersectionInfo(); // new, use this in maze2 -- returnstype of current inters.
     private:
         PreviousDirection previous_direction_;
         std::atomic<uint32_t> count_;
@@ -108,7 +109,7 @@ namespace nodes
         std::shared_ptr<UltrasoundNode> ultrasoundNode_;
         double centerMin;
 
-        IntersectionType intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg); // just return type, dont move
+        void intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg); // just return type, dont move
 
     };
 }

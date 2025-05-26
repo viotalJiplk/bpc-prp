@@ -42,12 +42,65 @@ namespace nodes {
     void MazeNode::start(){
         arucoTreasure = ArucoTurn::None;
         arucoExit = ArucoTurn::None;
-        this->lidarCallback = [this]() {
-            
-            // TODO zde switch s impl. kon automatu -- přepsat lépe již existující
 
-            //this->lidar_node_->
+        this->fsmCallback = [this]() {
+
+            // default strategy: turn left
+            ArucoTurn wantedTurn = ArucoTurn::Left;
+
+            // if aruco exists, use it (treasure prioritised)
+            this->arucoMutex.lock();
+                if(arucoTreasure != ArucoTurn::None) wantedTurn = arucoTreasure;
+                else if(arucoExit != ArucoTurn::None) wantedTurn = arucoExit;
+                arucoExit = ArucoTurn::None; // consume
+                arucoTreasure = ArucoTurn::None; // consume
+            this->arucoMutex.unlock();
+
+            // probe surroundings with lidar, make decision, continue driving
+            IntersectionType detectedIntersection = this->lidar_node_->getIntersectionInfo();
+            switch(detectedIntersection) {
+                case IntersectionType::I:
+                    // TODO reaction (kinematics & imu)
+                    // blink forward
+                    // go 1 tile forward
+                    // repeat -- call itself -- always --> after switch statement
+                    break;
+
+                case IntersectionType::U:
+                    // TODO reaction (kinematics & imu)
+                    break;
+
+                case IntersectionType::RightTurn:
+                    // TODO reaction (kinematics & imu)
+                    break;
+
+                case IntersectionType::LeftTurn:
+                    // TODO reaction (kinematics & imu)
+                    break;
+
+                case IntersectionType::RightT:
+                    // TODO reaction (kinematics & imu)
+                    break;
+
+                case IntersectionType::LeftT:
+                    // TODO reaction (kinematics & imu)
+                    break;
+
+                case IntersectionType::TopT:
+                    // TODO reaction (kinematics & imu)
+                    break;
+
+                case IntersectionType::AllFour:
+                    // TODO reaction (kinematics & imu)
+                    break;
+
+                case IntersectionType::None:
+                default:
+                    break;
+            }
             
+            this->fsmCallback(); // repeat
+
             /*
             this->lidar_node_->start(true, [this](IntersectionType detectedIntersection) {
                 kinematics_->stop();
@@ -136,7 +189,7 @@ namespace nodes {
                 }
             }); */
         };
-        this->lidarCallback();
+        this->fsmCallback();
     }
 
     // Save next direction from decoded aruco tag

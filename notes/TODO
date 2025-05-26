@@ -1,7 +1,7 @@
 TODO na druhý termín zkoušky
 ============================
 
-- použít pouze L, R, F, B lidarové laloky
+- (DONE) použít pouze L, R, F, B lidarové laloky
 
 - použít inerciálu pro
     - otočky v zatáčkách
@@ -30,7 +30,7 @@ TODO na druhý termín zkoušky
     poté fce START tento LIDARCALLBACK volá
 
 
-- fce pro blikání diodou a její návrat do pův. stavu
+- (DONE) fce pro blikání diodou a její návrat do pův. stavu
   (pro značení odbočování např.)
     1. přidat funkci (DONE)
     2. přidat stavovou proměnnou pro 4 ledky (DONE už kdysi)
@@ -51,7 +51,11 @@ TODO na druhý termín zkoušky
 - měření stupňů otočení v imu?
 - co takhle "dokud z imu nepřijde že jsme 90 stupňů otočeni, otáčíme se"?
 
-- mým cílem je z lidaru pouze vytáhnout info o křižovatce, pokud je
+- (DONE) mým cílem je z lidaru pouze vytáhnout info o křižovatce, pokud je
   (a to jednorázově, nechci řídit pohyb pomocí toho)
   --> tedy nelze použít estimate_..., prootože to rozjíždí motory 
+
+    - snad by to teď mělo fungovat tak, že se lidarnouda zkonstruuje a sama běží
+    - ukládá si průběžně výsledky do intersectionInfo a já si je vezmu vždy když chci
+
 

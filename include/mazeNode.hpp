@@ -49,7 +49,7 @@ namespace nodes
         ArucoTurn arucoTreasure;
         std::mutex arucoMutex;
         // From these variables it is possible to call methods of nodes they contain
-        std::function<void()> lidarCallback;
+        std::function<void()> fsmCallback;
         std::shared_ptr<IoNode> ionode_;
         std::shared_ptr<KinematicsNode> kinematics_;
         std::shared_ptr<LidarNode> lidar_node_;

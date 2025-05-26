@@ -357,7 +357,7 @@ namespace nodes {
         }
     }
 
-    IntersectionType LidarNode::intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg) {
+    void LidarNode::intersectionInfo(std::shared_ptr<std_msgs::msg::Float32MultiArray> msg) {
 
         struct lidarResult normalResult = normalize(
             msg->data[0], msg->data[1], msg->data[2], msg->data[3],
@@ -448,8 +448,10 @@ namespace nodes {
 
         // show intersection on LEDs
         this->ioNode_->showIntersection(resultType);
+    }
 
-        return resultType;
+    IntersectionType LidarNode::getIntersectionInfo() {
+        return this->this_intersection_;
     }
  
 
