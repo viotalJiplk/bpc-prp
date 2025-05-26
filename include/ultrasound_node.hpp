@@ -23,6 +23,7 @@ enum class UltrasoundMode {
     FeedbackBang,
     FeedbackPID,
     ExtremeTesting,
+    UntilFront,
 };
 
 struct ultrasoundResult{
@@ -61,17 +62,21 @@ namespace nodes
         void calibrationEnd(bool continous);
         void extremeTestingStart(std::function<void(bool)> callback);
         void handleExtreme(std::function<void()> callback, UltrasoundDirection preferredDirection);
+        void untilFront(double length, std::function<void()> callback);
     private:
         std::function<void(bool)> extremeTestingCallback_;
         std::function<void()> extremeHandleCallback_;
+        std::function<void()> untilFrontCallback_;
         UltrasoundDirection previousDirection;
         std::atomic<uint32_t> count_;
         std::shared_ptr<IoNode> ioNode_;
         std::atomic<UltrasoundMode> mode;
         std::atomic<UltrasoundDirection> preferredDirection_;
         std::shared_ptr<KinematicsNode> kinematics_;
+        double expectedFront;
         void extremeTestingCheck(double left_value, double middle, double right_value);
         void extremeHandlerCallback(double left_value, double middle, double right_value);
+        void untilFrontHandlerCallback(double left_value, double middle, double right_value);
         struct ultrasoundResult normalize(uint8_t dataLeft, uint8_t dataMiddle, uint8_t dataRight);
         std::atomic<long> prevT_;
         void calibrate(uint8_t dataLeft, uint8_t dataMiddle, uint8_t dataRight);

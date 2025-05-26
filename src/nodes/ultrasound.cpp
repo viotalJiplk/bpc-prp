@@ -82,6 +82,8 @@ namespace nodes {
         count_.store(0);
         prevT_.store(0);
         previousDirection = UltrasoundDirection::Front;
+        this->untilFrontCallback_ = [](){};
+        this->expectedFront = 0;
     }
 
     UltrasoundNode::~UltrasoundNode() {
@@ -131,6 +133,12 @@ namespace nodes {
         }
     }
 
+    void UltrasoundNode::untilFront(double length, std::function<void()> callback){
+        this->expectedFront = length;
+        this->untilFrontCallback_ = callback;
+        this->mode.store(UltrasoundMode::UntilFront);
+    }
+
     void UltrasoundNode::calibrationStart() {
         left_min = 0;
         left_max = 170;
@@ -163,10 +171,12 @@ namespace nodes {
 
         } else if (mode.load() == UltrasoundMode::FeedbackPID) {
             estimate_continuous_ultrasound_pose(normalResult.left, normalResult.middle, normalResult.right);
-        }else if (mode.load() == UltrasoundMode::ExtremeTesting) {
+        } else if (mode.load() == UltrasoundMode::ExtremeTesting) {
             extremeTestingCheck(normalResult.left, normalResult.middle, normalResult.right);
-        }else if (mode.load() == UltrasoundMode::ExtremeHandling) {
+        } else if (mode.load() == UltrasoundMode::ExtremeHandling) {
             extremeHandlerCallback(normalResult.left, normalResult.middle, normalResult.right);
+        } else if (mode.load() == UltrasoundMode::UntilFront){
+            untilFrontHandlerCallback(normalResult.left, normalResult.middle, normalResult.right);
         }
     }
 
@@ -321,4 +331,17 @@ namespace nodes {
             kinematics_->forward(10, descreteValuesUltrasound.forwardSpeed, [](bool sucess){});
         }
     }
+
+    void UltrasoundNode::untilFrontHandlerCallback(double left_value, double middle, double right_value){
+        if (middle < this->expectedFront){
+            this->mode.store(UltrasoundMode::None);
+            std::function<void()> callback = this->untilFrontCallback_;
+            this->untilFrontCallback_ = [](){};
+            kinematics_->stop();
+            callback();
+        }else{
+            kinematics_->forward(100, descreteValuesUltrasound.forwardSpeed, [](bool sucess){});
+        }
+    }
 }
+

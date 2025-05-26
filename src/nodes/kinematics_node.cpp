@@ -9,7 +9,7 @@
 #include "helper.hpp"
 
 #define WHEEL_BASE 128.0
-#define WHEEL_RADIUS 35.0
+#define WHEEL_RADIUS 34.6 // yellow 34.6; gold 34.6
 #define PULSES_PER_ROTATION 576
 
 std::mutex planMutex;
