@@ -17,11 +17,14 @@ TODO na druhý termín zkoušky
         --> je to potřeba a je to k něčemu, nepoužívá ho už implicitně lidar nouda?
             --> nejspíš to je blbost, dávám pryč.
 
-- co mumí naše implementace IMU noudy?
-    - 
+- (DONE) co mumí naše implementace IMU noudy?
+    - po spuštění sippočká na 240 zpráv, z nic hse kalibruje
+    - po kalibraci (výpočtu odklonu) přejde do módu integrate - tj. jezdí rovně s pomocí PID regulátoru
 
+- jak naši IMU implementaci předělám? 
+    - aby po "start" se zkalbrovala a pak čekala
+    - následně může dostat příkazy k jízdě nebo otočkám (viz fce níže)
 
-- skončil jsem se zakomentováním ultrazvuku a těla původního automatu
 - automat funguje následovně:
 
     fce START definuje, co se má stát po callbacku LIDARCALLBACK
