@@ -1,3 +1,10 @@
+// lidar_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for LiDAR data interpretation node.
+
+
 #ifndef LIDAR_NODE_HPP
 #define LIDAR_NODE_HPP
 
@@ -98,7 +105,6 @@ namespace nodes
         std::shared_ptr<UltrasoundNode> ultrasoundNode_;
         double centerMin;
 
-        // DiscreteLinePose estimate_descrete_ultrasound_pose(float l_norm, float r_norm) const;
     };
 }
 

@@ -1,6 +1,9 @@
+// keyboard.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/9/25.
-//
+// Source file for keyboard input encapsulating node.
+
 
 #include "keyboard_node.hpp"
 
@@ -52,8 +55,6 @@ namespace nodes {
                 std_msgs::msg::Char msg;
                 msg.data = c;
                 publisher_->publish(msg);
-
-                // RCLCPP_INFO(this->get_logger(), "Key pressed: '%c'", c);
 
                 if (c == 'q')
                 {

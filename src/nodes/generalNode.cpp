@@ -1,3 +1,10 @@
+// generalNode.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for nodes inheritance attempt - general node.
+
+
 #include "generalNode.hpp"
 #include "helper.hpp"
 

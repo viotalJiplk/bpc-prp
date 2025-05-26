@@ -1,3 +1,10 @@
+// imu.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for IMU data interpretation node.
+
+
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include "imu.hpp"

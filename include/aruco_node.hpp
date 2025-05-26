@@ -1,3 +1,9 @@
+// aruco_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for camera reading and ArUco marker detection node.
+
 
 #ifndef ARUCO_NODE_HPP
 #define ARUCO_NODE_HPP
@@ -9,7 +15,6 @@
 #include <sensor_msgs/msg/compressed_image.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 #include <image_transport/image_transport.hpp>
-
 
 #include "aruco.hpp"
 

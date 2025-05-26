@@ -1,3 +1,10 @@
+// aruco.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for ArUco marker detection algorithm.
+
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
 
@@ -34,10 +41,6 @@ namespace algorithms {
                 aruco.corners = marker_corners.at(i);
                 arucos.emplace_back(aruco);
             }
-            // std::cout << std::endl;
-        }
-        else {
-            // std::cout << "Arucos not found" << std::endl;
         }
 
         return arucos;

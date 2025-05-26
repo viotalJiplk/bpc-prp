@@ -1,3 +1,10 @@
+# CMakeLists.txt
+# BPC-PRP project 2025
+# xvarec06 & xruzic56
+#
+# CMakeLists for tests build.
+
+
 cmake_minimum_required(VERSION 3.20)
 
 include_directories(../include)

@@ -1,3 +1,10 @@
+// generalNode.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for nodes inheritance attempt - general node.
+
+
 #ifndef GENERALNODE_HPP
 #define GENERALNODE_HPP
 

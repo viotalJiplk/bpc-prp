@@ -1,3 +1,10 @@
+// lidar.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for LiDAR data interpretation node.
+
+
 #include <io_node.hpp>
 #include <gtest/internal/gtest-internal.h>
 
@@ -194,8 +201,6 @@ namespace nodes {
             estimate_descrete_lidar_pose(normalResult.left, normalResult.right);
 
         } else if (mode.load() == LidarMode::FeedbackPID) {
-            // std::cout << "Raw: " << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[2]) << std::endl;
-            // std::cout << "'Normalized: '" << normalResult.left << ", " << normalResult.right << std::endl;
             estimate_continuous_lidar_pose(
                 normalResult.left,
                 normalResult.front_left,
@@ -207,8 +212,6 @@ namespace nodes {
                 normalResult.back_left
             );
         }else if (mode.load() == LidarMode::Center or mode.load() == LidarMode::CenterLookup) {
-            // std::cout << "Raw: " << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[2]) << std::endl;
-            // std::cout << "'Normalized: '" << normalResult.left << ", " << normalResult.right << std::endl;
             centerHandler(
                 normalResult.left,
                 normalResult.front_left,
@@ -351,9 +354,9 @@ namespace nodes {
         double valueBackRight, double valueBack, double valueBackLeft) {
         long timeNow = helper::getTimestamp();
         long oldTime = prevT_.exchange(timeNow);
-        // if (((valueFrontLeft + valueFrontRight) > pidLidarValues.intersection) or ((valueFrontLeft + valueFront) > pidLidarValues.intersection) or ((valueFront + valueFrontRight) > pidLidarValues.intersection)) {
-        //if (((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) ) or ((valueLeft > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)) or ((valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection))) {
-         IntersectionType detectedIntersection = detectIntersection(valueLeft, valueFront, valueRight, valueBack);
+
+        IntersectionType detectedIntersection = detectIntersection(valueLeft, valueFront, valueRight, valueBack);
+
         if ((detectedIntersection != IntersectionType::None)) {
 
             std::function<void(IntersectionType detectedIntersection)> callback = this->onIntersection_;
@@ -364,6 +367,7 @@ namespace nodes {
         } else {
             if (oldTime != 0) {
                 double result = valueFrontLeft - valueFrontRight;
+
                 if (valueFrontLeft + valueFrontRight > pidLidarValues.maxSumFront) {
                     result = valueLeft - valueRight;
                     if (valueLeft + valueRight > pidLidarValues.maxSumSide){
@@ -379,7 +383,6 @@ namespace nodes {
                     result = 0.0;
                 }
                 double dt = (timeNow-oldTime)/1000.0;
-                // std::cout << dt << std::endl;
                 double diff = algo_->step(result, dt);
                 if (diff > 1) {
                     diff = 1.0;
@@ -388,8 +391,6 @@ namespace nodes {
                 }
                 int leftMotor = (-diff)*pidLidarValues.deviation+pidLidarValues.mid;
                 int rightMotor = (diff)*pidLidarValues.deviation+pidLidarValues.mid;
-                // std::cout << "Lidar values " << valueFrontLeft << ", " << valueFrontRight << ", " << diff << ", dt:" << dt << std::endl;
-                // std::cout << "Motor settings " << leftMotor << ", " << rightMotor << ", " << result << std::endl;
                 kinematics_->motorSpeed(leftMotor, rightMotor, [](bool sucess){});
             }
         }
@@ -399,10 +400,8 @@ namespace nodes {
     void LidarNode::centerHandler(double valueLeft, double valueFrontLeft, double valueFront, double valueFrontRight, double valueRight,
         double valueBackRight, double valueBack, double valueBackLeft) {
         double actual = abs(valueBackRight + valueBackLeft + valueFrontRight + valueFrontLeft);
-        // std::cout << actual << std::endl;
         if (mode.load() == LidarMode::Center) {
             double diff = abs(actual - this->centerMin);
-            // std::cout << diff << std::endl;
             if (diff  < 0.01) {
                 std::function<void()> callback = this->centerCallback_;
                 this->centerCallback_ = [](){};
@@ -444,7 +443,6 @@ namespace nodes {
 
     void LidarNode::estimate_descrete_lidar_pose(double l_norm, double r_norm) {
         double result = l_norm - r_norm;
-        // std::cout << "result: " <<result  << std::endl;
         if(result > descreteValuesLidar.extremeLineReadingDeviation){
             kinematics_->angle(descreteValuesLidar.angleAngle, descreteValuesLidar.angleSpeed, [](bool sucess){});
         }else if(result < -descreteValuesLidar.extremeLineReadingDeviation){

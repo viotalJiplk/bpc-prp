@@ -1,3 +1,10 @@
+// main_node.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for central mission control node.
+
+
 #include "main_node.hpp"
 #include "helper.hpp"
 
@@ -32,7 +39,7 @@ namespace nodes {
     }
 
     void MainNode::FollowLine() {
-        // TODO
+
     }
 
     void MainNode::keyboard_callback(std_msgs::msg::Char_<std::allocator<void>>::SharedPtr msg) {
@@ -54,13 +61,7 @@ namespace nodes {
                     this->lidarCallback = [this]() {
                         this->lidar_node_->start(true, [this](IntersectionType detectedIntersection) {
                             std::cout << "intersection" << std::endl;
-                            // kinematics_->backward(200, 10, [this](bool success) {
-                                //this->lidar_node_->center([this]() {
-                                    //kinematics_->forward(300, 10, [this](bool success) {
-                                        this->lidarCallback();
-                                    //});
-                                //});
-                            // });
+                            this->lidarCallback();
                         });
                     };
                     this->lidarCallback();
@@ -133,21 +134,6 @@ namespace nodes {
                 break;
             case 1:
                 this->maze_node_->start();
-                /*
-                if (this->line_->get_sensors_mode() == SensorsMode::None) {
-                    line_->calibrationStart();
-                    kinematics_->angle(0.5, 5,  [this](bool result) {
-                        this->kinematics_->angle(-1, 5, [this](bool result) {
-                            this->kinematics_->angle(0.5, 5,  [this](bool result) {
-                                this->line_->calibrationEnd(false);
-                                std::cout << "Finished moving forward" << std::endl;
-                            });
-                        });
-                    });
-                } else {
-                    this->line_->stop();
-                }
-                */
                 break;
             case 2:
                 this->maze_node_->stop();
@@ -156,21 +142,6 @@ namespace nodes {
                 this->ultrasound_->stop();
                 this->imu_node_->stop();
                 this->io_node_->set_all_leds_color(0,0,0);
-                /*
-                if (this->line_->get_sensors_mode() == SensorsMode::None) {
-                    line_->calibrationStart();
-                    kinematics_->angle(0.5, 5,  [this](bool result) {
-                        this->kinematics_->angle(-1, 5, [this](bool result) {
-                            this->kinematics_->angle(0.5, 5,  [this](bool result) {
-                                this->line_->calibrationEnd(true);
-                                std::cout << "Finished moving forward" << std::endl;
-                            });
-                        });
-                    });
-                } else {
-                    this->line_->stop();
-                }
-                */
                 break;
             default: break;
         }

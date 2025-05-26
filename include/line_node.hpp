@@ -1,3 +1,10 @@
+// line_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for line estimation and following node.
+
+
 #ifndef LINE_NODE_HPP
 #define LINE_NODE_HPP
 
@@ -67,7 +74,6 @@ namespace nodes
 
         algorithms::Pid* algo_;
 
-        // DiscreteLinePose estimate_descrete_line_pose(float l_norm, float r_norm) const;
     };
 }
 

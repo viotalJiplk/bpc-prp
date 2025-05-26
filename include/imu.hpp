@@ -1,3 +1,9 @@
+// imu.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for IMU data processing algorithm.
+
 
 #ifndef IMU_HPP
 #define IMU_HPP
@@ -17,16 +23,16 @@ namespace algorithms {
 
         float vectorMean(std::vector<float> vector);
 
-        // TODO: Call this regularly to integrate gyro_z over time
+        // Call this regularly to integrate gyro_z over time
         float update(float gyro_z, double dt);
 
-        // TODO: Calibrate the gyroscope by computing average from static samples
+        // Calibrate the gyroscope by computing average from static samples
         void setCalibration(std::vector<float> gyro);
 
-        // TODO: Return the current estimated yaw
+        // Return the current estimated yaw
         float getYaw();
 
-        // TODO: Reset orientation and calibration
+        // Reset orientation and calibration
         void reset();
 
     private:

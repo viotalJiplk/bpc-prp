@@ -1,6 +1,9 @@
+// ultrasound_sensor.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/7/25.
-//
+// Source file for ultrasound sensors data filtering node.
+
 
 #include "ultrasound_sensor_node.hpp"
 
@@ -23,17 +26,12 @@ namespace nodes {
 
     void UltrasoundSensorNode::on_ultrasound_sensors_msg(std::shared_ptr<std_msgs::msg::UInt8MultiArray> msg){
         FilterMaxMin(msg);
-        // std_msgs::msg::UInt8MultiArray filtered_msg = std_msgs::msg::UInt8MultiArray();
-        // filtered_msg.data = msg->data;
-        // ultrasound_sensors_filtered_publisher_->publish(filtered_msg);
     }
     void UltrasoundSensorNode::FilterMaxMin(std::shared_ptr<std_msgs::msg::UInt8MultiArray> msg){
         mutex_.lock();
         if(count_ == FIELDLEN) {
             count_ = 0;
         }
-
-        // std::cout << static_cast<uint32_t>(msg->data[0]) << ", " << static_cast<uint32_t>(msg->data[1]) << ", " << static_cast<uint32_t>(msg->data[2])  << std::endl;
 
         left_[count_] = msg->data[0];
         middle_[count_] = msg->data[1];

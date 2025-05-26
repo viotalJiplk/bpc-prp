@@ -1,5 +1,13 @@
+// motors.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for motors driving node (used by kinematics).
+
+
 #include "motors.hpp"
 #include "helper.hpp"
+
 uint8_t convert(int16_t number) {
     if (number > (UINT8_MAX - 127)) {
         return UINT8_MAX;

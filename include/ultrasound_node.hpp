@@ -1,3 +1,10 @@
+// ultrasound_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for ultrasound sensors data interpretation node.
+
+
 #ifndef UlLTRASOUND_NODE_HPP
 #define UlLTRASOUND_NODE_HPP
 
@@ -8,7 +15,6 @@
 #include "kinematics_node.hpp"
 #include "io_node.hpp"
 #include "pid.hpp"
-#include "ultrasound_node.hpp"
 
 enum class UltrasoundMode {
     None,
@@ -82,7 +88,6 @@ namespace nodes
 
         algorithms::Pid* algo_;
 
-        // DiscreteLinePose estimate_descrete_ultrasound_pose(float l_norm, float r_norm) const;
     };
 }
 

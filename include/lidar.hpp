@@ -1,11 +1,13 @@
+// lidar.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/9/25.
-//
+// Header file for LiDAR data filtering algorithm.
+
 
 #ifndef LIDAR_H
 #define LIDAR_H
 
-#endif //LIDAR_H
 #include <vector>
 
 namespace algorithms {
@@ -27,3 +29,5 @@ namespace algorithms {
             LidarFiltrResults apply_filter(std::vector<float> points, float angle_start, float angle_end);
     };
 }
+
+#endif //LIDAR_H

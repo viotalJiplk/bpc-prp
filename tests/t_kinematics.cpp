@@ -1,3 +1,10 @@
+// t_kinematics.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Tests for kinematics algorithm (using GoogleTests).
+
+
 #include <gtest/gtest.h>
 #include "../include/kinematics.hpp"
 #include <cmath>

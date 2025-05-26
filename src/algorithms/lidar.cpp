@@ -1,6 +1,9 @@
+// lidar.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/9/25.
-//
+// Source file for LiDAR data filtering algorithm.
+
 
 #include "lidar.hpp"
 #include <cmath>
@@ -32,16 +35,18 @@ namespace algorithms {
         std::vector<float> left {};
         std::vector<float> right {};
 
-        // TODO: Define how wide each directional sector should be (in radians)
+        // Define how wide each directional sector should be (in radians)
         constexpr float angle_range = M_PI / 4 ;
 
         // Compute the angular step between each range reading
         auto angle_step = (angle_end - angle_start) / points.size();
         for (size_t i = 0; i < points.size(); ++i) {
             float point = points.at(i);
+            // Skip invalid (infinite) readings
             if (point == -std::numeric_limits<float>::infinity() or point == std::numeric_limits<float>::infinity()) {
                 point = 0;
             }
+            // Sort the value into the correct directional bin based on angle
             auto angle = angle_start + (i * angle_step) + M_PI;
             if ((angle < ((angle_range) + 3.0/8.0 * M_PI)) and (angle > 3.0/8.0 * M_PI)) { // 0/8 PI - 2/8 PI
                 left.push_back(point);
@@ -60,13 +65,11 @@ namespace algorithms {
             }else{                                                  // 14/8 PI - 16/8 PI
                 front_left.push_back(point); //
             }
-            // TODO: Skip invalid (infinite) readings
-            // TODO: Sort the value into the correct directional bin based on angle
         }
 
 
 
-        // TODO: Return the average of each sector (basic mean filter)
+        // Return the average of each sector (basic mean filter)
         return LidarFiltrResults{
             .front = vectorMean(front),
             .front_left = vectorMean(front_left),

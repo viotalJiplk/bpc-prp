@@ -1,3 +1,10 @@
+// aruco.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for camera reading and ArUco marker detection node.
+
+
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/publisher.hpp>
 #include <sensor_msgs/msg/image.hpp>
@@ -7,13 +14,10 @@
 #include "aruco.hpp"
 #include "aruco_node.hpp"
 #include "helper.hpp"
-// ArucoNode
 
 namespace nodes {
 
     ArucoNode::ArucoNode(): Node("ArucoNode") {
-        // camera_subscriber_ = this->create_subscription<sensor_msgs::msg::Image>(
-        //   Topic::camera, 1, std::bind(&ArucoNode::on_camera_msg, this, std::placeholders::_1));
         aruco_detector_ = algorithms::ArucoDetector();
         aruco_publisher_ = this->create_publisher<std_msgs::msg::UInt8>(Topic::aruco, 1);
     }

@@ -1,3 +1,10 @@
+// pid.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for PID regulator algorithm.
+
+
 #include "pid.hpp"
 
 namespace algorithms {

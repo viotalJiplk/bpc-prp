@@ -1,3 +1,9 @@
+// line.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for line estimation and following node.
+
 #include <io_node.hpp>
 
 #include "line_node.hpp"
@@ -141,9 +147,6 @@ namespace nodes {
     void LineNode::on_line_sensors_msg(std::shared_ptr<std_msgs::msg::UInt16MultiArray> msg){
         if (mode.load() == SensorsMode::Calibration) {
             calibrate(msg->data[0], msg->data[1]);
-            /* std::cout << "calibrate:" << std::endl;
-            std::cout << "left: " << left_min << "/" << left_max << std::endl;
-            std::cout << "right: " << right_min << "/" << right_max << std::endl;*/
         } else if (mode.load() == SensorsMode::FeedbackBang) {
             normalize(msg->data[0], msg->data[1]);
             estimate_descrete_line_pose(left_sensor, right_sensor);
@@ -177,7 +180,6 @@ namespace nodes {
 
     void LineNode::estimate_descrete_line_pose(float l_norm, float r_norm) {
         float result = l_norm - r_norm;
-        // std::cout << "result: " <<result  << std::endl;
         if(result > descreteValues.extremeLineReadingDeviation){
             kinematics_->angle(descreteValues.angleAngle, descreteValues.angleSpeed, [](bool sucess){});
         }else if(result < -descreteValues.extremeLineReadingDeviation){

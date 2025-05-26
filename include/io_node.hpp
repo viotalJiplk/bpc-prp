@@ -1,3 +1,10 @@
+// io_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for IO (LEDs and buttons) node.
+
+
 #pragma once
 
 #include <cstdint>

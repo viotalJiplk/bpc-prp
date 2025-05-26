@@ -1,3 +1,10 @@
+// pid.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for PID regulator algorithm.
+
+
 #ifndef PID_HPP
 #define PID_HPP
 

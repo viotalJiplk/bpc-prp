@@ -1,6 +1,9 @@
+// lidar_sensor_node.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/9/25.
-//
+// Header file for LiDAR data filtering node.
+
 
 #ifndef LIDAR_SENSOR_H
 #define LIDAR_SENSOR_H

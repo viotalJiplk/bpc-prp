@@ -1,3 +1,10 @@
+// encoders.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for encoders data processing node (used by kinematics).
+
+
 #pragma once
 
 #include <rclcpp/rclcpp.hpp>

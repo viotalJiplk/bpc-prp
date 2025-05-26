@@ -1,3 +1,10 @@
+// encoders.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Source file for encoders data processing node (used by kinematics).
+
+
 #include "encoders.hpp"
 #include "helper.hpp"
 
@@ -13,15 +20,10 @@ namespace nodes {
         left.store(msg->data[0]);
         right.store(msg->data[1]);
         publish();
-        // TODO add filtration
-        //if (count > 1) {
-            auto encoders = std_msgs::msg::UInt32MultiArray();
-            encoders.data = {left.load(), right.load()};
-            encoderPublisher_->publish(encoders);
-        //    count = 0;
-        //}else {
-        //    count++;
-        //}
+
+        auto encoders = std_msgs::msg::UInt32MultiArray();
+        encoders.data = {left.load(), right.load()};
+        encoderPublisher_->publish(encoders);
 
     }
 
@@ -31,5 +33,4 @@ namespace nodes {
     uint32_t Encoder::getLeftEncoderState() {
         return left.load();
     }
-    // ...
 }

@@ -1,3 +1,9 @@
+// aruco.hpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
+//
+// Header file for ArUco marker detection algorithm.
+
 
 #ifndef ARUCO_HPP
 #define ARUCO_HPP

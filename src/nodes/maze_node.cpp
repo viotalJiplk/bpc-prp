@@ -1,6 +1,10 @@
+// mazeNode.cpp
+// BPC-PRP project 2025
+// xvarec06 & xruzic56
 //
-// Created by root on 4/23/25.
-//
+// Source file for maze escape mission node.
+
+
 #include "mazeNode.hpp"
 #include "helper.hpp"
 
@@ -123,8 +127,6 @@ namespace nodes {
                             IntersectionType detectedIntersection = lidar_node_->getThisIntersection();
                             this->lidarCallback();
                         }
-                        // kinematics_->forward(300, 10, [this](bool success) {
-                        // });
                     });
                 }
             });
