@@ -59,6 +59,9 @@ namespace nodes
         // Subscriber for button numbers and its callbask function
         rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr aruco_subscriber_;
         void aruco_callback_(std_msgs::msg::UInt8_<std::allocator<void>>::SharedPtr msg);
+    
+        // helper function for intersection solving
+        void executeWantedTurn(ArucoTurn wantedTurn);
     };
 }
 

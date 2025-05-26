@@ -60,38 +60,47 @@ namespace nodes {
             IntersectionType detectedIntersection = this->lidar_node_->getIntersectionInfo();
             switch(detectedIntersection) {
                 case IntersectionType::I:
-                    // TODO reaction (kinematics & imu)
-                    // blink forward
-                    // go 1 tile forward
+                    ionode_->led_blink(3, 200); // blink forward (LED on index 3)
+                    imu_node_->forward(); // go 1 tile forward
                     // repeat -- call itself -- always --> after switch statement
                     break;
 
                 case IntersectionType::U:
-                    // TODO reaction (kinematics & imu)
+                    ionode_->led_blink(0, 200); // blink backward (LED on index 0)
+                    imu_node_->turnBack(); // turn
+                    imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::RightTurn:
-                    // TODO reaction (kinematics & imu)
+                    ionode_->led_blink(1, 200); // blink right (LED on index 1)
+                    imu_node_->turnRight(); // turn
+                    imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::LeftTurn:
-                    // TODO reaction (kinematics & imu)
+                    ionode_->led_blink(2, 200); // blink left (LED on index 2)
+                    imu_node_->turnLeft(); // turn
+                    imu_node_->forward(); // go 1 tile forward
                     break;
 
-                case IntersectionType::RightT:
-                    // TODO reaction (kinematics & imu)
+                case IntersectionType::RightT:                   
+                    executeWantedTurn(wantedTurn); // blink and turn
+                    imu_node_->forward(); // go 1 tile forward
                     break;
 
-                case IntersectionType::LeftT:
-                    // TODO reaction (kinematics & imu)
+                case IntersectionType::LeftT:                    
+                    executeWantedTurn(wantedTurn); // blink and turn
+                    imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::TopT:
-                    // TODO reaction (kinematics & imu)
+                    executeWantedTurn(wantedTurn); // blink and turn
+                    imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::AllFour:
-                    // TODO reaction (kinematics & imu)
+                    executeWantedTurn(wantedTurn); // blink and turn
+                    imu_node_->forward(); // go 1 tile forward
                     break;
 
                 case IntersectionType::None:
@@ -190,6 +199,36 @@ namespace nodes {
             }); */
         };
         this->fsmCallback();
+    }
+
+    // apply current strategy on intersection
+    void MazeNode::executeWantedTurn(ArucoTurn wantedTurn) {
+        switch(wantedTurn) {
+            case ArucoTurn::Left:
+                ionode_->led_blink(2, 200); // blink left (LED on index 2)
+                imu_node_->turnLeft();
+                imu_node_->forward();
+                break;
+
+            case ArucoTurn::Right:
+                ionode_->led_blink(1, 200); // blink right (LED on index 1)
+                imu_node_->turnRight();
+                imu_node_->forward();
+                break;
+
+            case ArucoTurn::Forward:
+                ionode_->led_blink(3, 200); // blink forward (LED on index 3)
+                imu_node_->forward();
+                break;
+
+            case ArucoTurn::None:
+            default:
+                // should not happen; 2x longer blink forward
+                ionode_->led_blink(3, 300);
+                ionode_->led_blink(3, 300);
+                imu_node_->stop();
+                break;
+        }
     }
 
     // Save next direction from decoded aruco tag
