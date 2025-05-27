@@ -1,9 +1,9 @@
 \section{Řešení projektu}
 
-Implementace jednotlivých úkolů a dílčích částí řešení probíhala postupně. Nejdříve bude představen globální pohled na architekturu programu, následně chronologicky vytvořené části.
+Implementace jednotlivých úkolů a částí řešení probíhala postupně. Nejdříve bude představen globální pohled na architekturu programu, následně chronologicky vytvořené části.
 
 % program celkově
-Program řídící činnost robota byl implementován v~jazyce C++ a ve své architektuře s~drží zvyklosti systému ROS2 \cite{ros} používat uzly (\textit{ROS nodes}), které mají různé zodpovědnosti. V~našem řešení existuje jeden hlavní uzel (\texttt{main node}), který sbírá informace ze svých vstupních uzlů a publikuje pokyny pro uzly, které sledují jeho výstupy. 
+Program řídící činnost robota byl implementován v~jazyce C++ a ve své architektuře s~drží zvyklosti systému ROS2 \cite{ros} používat uzly (\textit{ROS nodes}), které mají různé zodpovědnosti. V~našem řešení existuje jeden hlavní uzel (\texttt{main node}), který na pokyn uživatele spouští implementované procedury v~ostatních specializovaných uzlech (např. \texttt{line}). Tyto pak mohou opět žádat o služby jiné uzly (např. \texttt{kinematics}).
 
 \begin{figure}[h]
     \centering
@@ -22,8 +22,8 @@ Aby byl robot schopen řízeného pohybu, byl implementován uzel \texttt{kinema
     \begin{tabular}{|l|l|}
         \hline
         \textbf{Vlastnost} & \textbf{Hodnota} \\ \hline
-        Poloměr kola & 35 mm \\ \hline
-        Obvod kola & 22 mm \\ \hline
+        Poloměr kola & 34,6 mm \\ \hline
+        Obvod kola & 217,4 mm \\ \hline
         Rozchod kol & 128 mm \\ \hline
         Pulzy enkodéru & 576 za rotaci \\ \hline
     \end{tabular}
@@ -45,10 +45,10 @@ Obdobně je implementován i pohyb koridorem s~pomocí ultrazvukových senzorů,
 \end{figure}
 
 % lidar
-U~průjezdu chodbou s~pomocí LiDARu jsme opět implementovali i \textit{bang-bang} i PID řízení, pro pozdější pohyb bludištěm ale využíváme pouze PID regulátor (lépe řečeno PD, hodnoty složek jsou totožné s~těmi u~ultrazvukových senzorů). Jelikož LiDARová jednotka robota rotuje a snímá celé jeho okolí, pomyslný kruh je v~naší implementaci rozdělen na 8 výsečí, jak je znázorněno na Obrázku \ref{fig:lidar_obr}. Při běžném pohybu chodbou, kde je jeho cílem držet se v~jejím středu, využívá robot laloků označených sudými čísly a čárkovanými šipkami. Ve chvíli, kdy v~chodbě detekuje nepravidelnost (potenciální křižovatku), využije laloky označené lichými čísly a plnými šipkami pro určení jejího typu a následně své další trasy.
+U~průjezdu chodbou s~pomocí LiDARu jsme opět implementovali i \textit{bang-bang} i PID řízení, pro pozdější pohyb bludištěm (asi šestinou maximální rychlosti motorů) ale využíváme pouze PID regulátor (lépe řečeno PD, hodnoty složek jsou ${K_p=1}$; ${K_i=0}$ a ${K_d=0,2}$). Jelikož LiDARová jednotka robota rotuje a snímá celé jeho okolí, pomyslný kruh je v~naší implementaci rozdělen na 8 výsečí, jak je znázorněno na Obrázku \ref{fig:lidar_obr}. Při běžném pohybu chodbou, kde je jeho cílem držet se v~jejím středu, využívá robot laloků označených sudými čísly a čárkovanými šipkami. Ve chvíli, kdy v~chodbě detekuje nepravidelnost (potenciální křižovatku), využije laloky označené lichými čísly a plnými šipkami pro určení jejího typu a následně své další trasy.
 
 % vizualizace
-Detekovanou vzdálenost, resp. přítomnost nepravidelnosti, robot v~naší implementaci signalizuje pomocí změny barvy světla zabudovaných LED. Změnou barvy světla jedné ze 4 diod také signalizuje vybraný směr další cesty.
+Detekované nepravidelnosti, zatáčky či křižovatky, robot v~naší implementaci signalizuje pomocí změny barvy světla zabudovaných LED. Změnou barvy světla jedné ze 4 diod také signalizuje vybraný směr další cesty.
 
 % aruco
 V~uzlu \texttt{aruco} se nachází implementace poslední dílčí části projektu, a to detekce a získání hodnoty ArUco kódů pomocí robotovy kamery. Největší část implementace obstarává knihovna OpenCV \cite{opencv}, kterou pro detekci a přečtení kódu naše implementace využívá. Uzel přečtenou hodnotu ArUco kódu pouze předává dál, aby ji měla k~dispozici část programu zabývající se řízením trasy robota.
@@ -57,4 +57,4 @@ V~uzlu \texttt{aruco} se nachází implementace poslední dílčí části proje
 Konečným úkolem robota je projet bludištěm, což je v~naší implementaci řešeno dvěma strategiemi. První z~nich pouze určuje, že robot bude sledovat pravou stěnu bludiště (což časem vede k~nalezení cíle, jelikož se v~bludišti nenachází žádné smyčky) a druhá potom využívá přítomnosti ArUco kódů, které napovídají nejkratší cestu k~cíli. V~případě, že druhá strategie selže, např. z~důvodu „přehlédnutí“ kódu, aplikuje se druhá strategie – robot by měl tedy v~každém případě dorazit do cíle.
 
 % ovládání klávesnicí
-V~průběhu řešení projektu byla také navíc implementována možnost ovládat činnosti a jízdu robota s~pomocí klávesnice počítače (na čemž spolupracují uzly \texttt{keyboard} a \texttt{main node}). Různým činnostem byla přiřazena písmena, např. \texttt{L} spouští jízdu s~pomocí LiDARu a \texttt{U} s~pomocí ultrazvukových senzorů. Navíc je možné v~případě potřeby ovládat klávesami \texttt{W}, \texttt{A}, \texttt{S} a \texttt{D} jízdu s~pomocí ultrazvuku ohyby vpřed, vlevo, vpravo a vzad.
+V~průběhu řešení projektu byla také navíc implementována možnost ovládat činnosti a jízdu robota s~pomocí klávesnice počítače (na čemž spolupracují uzly \texttt{keyboard} a \texttt{main node}). Činnostem byla přiřazena písmena, např. \texttt{M} spouští jízdu bludištěm a \texttt{U} koridorem s~pomocí ultrazvukových senzorů. Navíc je možné ovládat klávesami \texttt{W}, \texttt{A}, \texttt{S} a \texttt{D} jízdu vpřed, vlevo, vpravo a vzad.
