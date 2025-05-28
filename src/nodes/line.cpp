@@ -195,8 +195,7 @@ namespace nodes {
         }
     }
 
-    float LineNode::forwardUntilLineCallback(float left_value, float right_value)
-    {
+    void LineNode::forwardUntilLineCallback(float left_value, float right_value) {
         left_value = this->normalizeData(left_value, untilLineValues.NormalLeftMin, untilLineValues.NormalLeftMax);
         right_value = this->normalizeData(right_value, untilLineValues.NormalRightMin, untilLineValues.NormalRightMax);
         std::cout << left_value << ", " << right_value << std::endl;
@@ -206,7 +205,7 @@ namespace nodes {
             auto callback = this->untilLineCallbackEnd;
             this->untilLineCallbackEnd = [](){};
             callback();
-        }
+        } 
     }
 
     void LineNode::forwardUntilLine(std::function<void(void)> callback){

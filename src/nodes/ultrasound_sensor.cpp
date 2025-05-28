@@ -76,7 +76,7 @@ namespace nodes {
         rightSum -= rightMax;
         middleSum -= middleMax;
 
-        filtered_msg.data = {leftSum/(FIELDLEN-1), middleSum/(FIELDLEN-1),rightSum/(FIELDLEN-1)};
+        filtered_msg.data = { (uint8_t)(leftSum/(FIELDLEN-1)), (uint8_t)(middleSum/(FIELDLEN-1)),(uint8_t)(rightSum/(FIELDLEN-1))};
 
         ultrasound_sensors_filtered_publisher_->publish(filtered_msg);
         mutex_.unlock();
