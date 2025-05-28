@@ -138,17 +138,23 @@ namespace nodes {
         ArucoWanted wantedTurn = this->wantedTurn_.load(); //this could lead to raceconditions
         uint8_t data = msg->data;
         if (data == 0){
-            wantedTurn.exit = ArucoTurn::Forward;
+            wantedTurn.treasure = ArucoTurn::Forward;
+            //wantedTurn.exit = ArucoTurn::Forward;
         }else if (data == 1){
+            //wantedTurn.exit = ArucoTurn::Left;
             wantedTurn.exit = ArucoTurn::Left;
         }else if (data == 2){
+            //wantedTurn.exit = ArucoTurn::Right;
             wantedTurn.exit = ArucoTurn::Right;
         } else if (data == 10){
-            wantedTurn.treasure = ArucoTurn::Forward;
+            //wantedTurn.treasure = ArucoTurn::Forward;
+            wantedTurn.exit = ArucoTurn::Forward;
         }else if (data == 11){
-            wantedTurn.treasure = ArucoTurn::Left;
+            //wantedTurn.treasure = ArucoTurn::Left;
+            wantedTurn.exit = ArucoTurn::Left;
         }else if (data == 12){
-            wantedTurn.treasure = ArucoTurn::Right;
+            //wantedTurn.treasure = ArucoTurn::Right;
+            wantedTurn.exit = ArucoTurn::Right;
         }
         this->wantedTurn_.store(wantedTurn);
     }
