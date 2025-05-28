@@ -15,6 +15,7 @@
 #include "encoders.hpp"
 #include "kinematics.hpp"
 #include <stack>
+#include <chrono>
 
 struct Encoders{
     uint32_t l; //left
@@ -66,7 +67,11 @@ namespace nodes {
         std::atomic<uint32_t> rEncoder;
         std::shared_ptr<nodes::Motors> motors_;
         std::shared_ptr<nodes::Encoder> encoders_;
+        std::atomic<int16_t> previousLeftMotorSpeed;
+        std::atomic<int16_t> previousRightMotorSpeed;
+        std::atomic<std::chrono::steady_clock::time_point> timestamp;
         rclcpp::Subscription<std_msgs::msg::UInt32MultiArray>::SharedPtr encodersSubscriber_;
         void on_encoder_callback(std_msgs::msg::UInt32MultiArray_<std::allocator<void>>::SharedPtr msg);
+        void setMotorsSpeedLimited(int16_t left, int16_t right);
     };
 }

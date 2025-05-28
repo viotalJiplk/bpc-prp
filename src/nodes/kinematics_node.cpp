@@ -54,6 +54,9 @@ namespace nodes {
         plan_.hasFinished = true;
         encodersSubscriber_ = this->create_subscription<std_msgs::msg::UInt32MultiArray>(
                 Topic::encoders_publisher, 1, std::bind(&KinematicsNode::on_encoder_callback, this, std::placeholders::_1));
+        this->previousLeftMotorSpeed.store(0);
+        this->previousRightMotorSpeed.store(0);
+        this->timestamp.store(std::chrono::steady_clock::now());
     }
 
     void KinematicsNode::on_encoder_callback(std_msgs::msg::UInt32MultiArray_<std::allocator<void>>::SharedPtr msg) {
@@ -65,28 +68,40 @@ namespace nodes {
         bool localFinished = false;
         std::function<void(bool)> localCallback = [&](bool) {};
         if (plan_.isInfinite) {
-            motors_->setMotorsSpeed(plan_.lMotor, plan_.rMotor);
+            this->setMotorsSpeedLimited(plan_.lMotor, plan_.rMotor);
         }else if ((!plan_.hasFinished)) {
             localCallback = plan_.callback;
             bool leftFinished = hasFinished(plan_.start.l, leftMotor, plan_.change.l);
             bool rightFinished = hasFinished(plan_.start.r, rightMotor, plan_.change.r);
             if (leftFinished || rightFinished) {
                 localFinished = true;
-                motors_->setMotorsSpeed(0,0);
+                this->setMotorsSpeedLimited(0,0);
                 plan_.hasFinished = true;
                 plan_.lMotor = 0;
                 plan_.rMotor = 0;
             }else {
-                motors_->setMotorsSpeed(plan_.lMotor, plan_.rMotor);
+                this->setMotorsSpeedLimited(plan_.lMotor, plan_.rMotor);
             }
         }else {
-            motors_->setMotorsSpeed(0, 0);
+            this->setMotorsSpeedLimited(0, 0);
         }
         planMutex.unlock();
         if (localFinished) {
             localCallback(true);
         }
     }
+
+    void KinematicsNode::setMotorsSpeedLimited(int16_t left, int16_t right){
+        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+        std::chrono::duration<double> diff = now - this->timestamp.load();
+        if (left != this->previousLeftMotorSpeed.load() or left != this->previousRightMotorSpeed.load() or diff.count() > 0.8){
+            this->previousLeftMotorSpeed = left;
+            this->previousRightMotorSpeed = right;
+            this->timestamp.store(now);
+            this->motors_->setMotorsSpeed(left, right);
+        }
+    }
+
     void KinematicsNode::forward(uint32_t length, int16_t speed, std::function<void(bool)> callback){
         algorithms::Coordinates coordinates;
         coordinates.x = length;
@@ -138,7 +153,7 @@ namespace nodes {
         plan_paused.rEncoder = this->rEncoder;
         plan_paused.plan = plan_;
         planStack.push(plan_paused);
-        motors_->setMotorsSpeed(0,0);
+        this->setMotorsSpeedLimited(0,0);
         plan_.hasFinished = true;
         plan_.lMotor = 0;
         plan_.rMotor = 0;
