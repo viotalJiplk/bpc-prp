@@ -23,7 +23,6 @@ find_package(SDL2 REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
 set(SRC
-        ${CMAKE_SOURCE_DIR}/src/example.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/io_node.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/encoders.cpp
         ${CMAKE_SOURCE_DIR}/src/nodes/motors.cpp
