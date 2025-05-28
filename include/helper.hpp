@@ -17,6 +17,7 @@ enum class IntersectionType {
     LeftT,
     RightT,
     TopT,
+    BottomT,
     AllFour,
     LeftTurn,
     RightTurn,

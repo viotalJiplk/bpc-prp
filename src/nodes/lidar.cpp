@@ -246,7 +246,10 @@ namespace nodes {
         } else if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueBack > pidLidarValues.intersection)) {
             resultType = IntersectionType::TopT;
             this->ioNode_->showIntersection(resultType);
-        }else if (valueLeft > pidLidarValues.intersection and valueFront > pidLidarValues.intersectionOut){
+        } else if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)){
+            resultType = IntersectionType::BottomT;
+            this->ioNode_->showIntersection(resultType);
+        } else if (valueLeft > pidLidarValues.intersection and valueFront > pidLidarValues.intersectionOut){
             resultType = IntersectionType::LeftTurn;
             this->ioNode_->showIntersection(resultType);
         } else if (valueRight > pidLidarValues.intersection and valueFront > pidLidarValues.intersectionOut)
@@ -282,7 +285,11 @@ namespace nodes {
             //    resultType = IntersectionType::U;
             //    this_intersection_ = resultType;
             //    this->ioNode_->showIntersection(resultType);
-            }else if (valueLeft > pidLidarValues.intersection and valueFront < pidLidarValues.frontStop)
+            } else if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)){
+                resultType = IntersectionType::BottomT;
+                this_intersection_ = resultType;
+                this->ioNode_->showIntersection(resultType);
+            } else if (valueLeft > pidLidarValues.intersection and valueFront < pidLidarValues.frontStop)
             {
                 resultType = IntersectionType::LeftTurn;
                 this_intersection_ = resultType;
@@ -329,6 +336,13 @@ namespace nodes {
                 or (valueFront > pidLidarValues.intersection))) {
                 this->ioNode_->showIntersection(IntersectionType::None);
                 this_intersection_ = IntersectionType::None;
+            } else if (this_intersection_ == IntersectionType::BottomT and (
+                    (valueLeft < pidLidarValues.intersectionOut)
+                    or (valueRight < pidLidarValues.intersectionOut)
+                    or (valueFront < pidLidarValues.intersectionOut)
+                    or (valueBack > pidLidarValues.intersection))) {
+                    this->ioNode_->showIntersection(IntersectionType::None);
+                    this_intersection_ = IntersectionType::None;
             } else if (this_intersection_ == IntersectionType::LeftTurn and (
                 (valueRight > pidLidarValues.intersection)
                 or (valueLeft < pidLidarValues.intersectionOut)
