@@ -64,7 +64,7 @@ namespace nodes {
                             });
                 } else if (detectedIntersection == IntersectionType::TopT)
                 {
-                    this->ultrasound_node_->untilFront( 0.38, [this](){
+                    this->ultrasound_node_->untilFront( 0.28, [this](){
                         ArucoWanted wantedTurn = this->wantedTurn_.exchange({ArucoTurn::None, ArucoTurn::None});
                         if (wantedTurn.exit == ArucoTurn::Left){
                             this->kinematics_->turnLeft(10, [this](bool sucess) {

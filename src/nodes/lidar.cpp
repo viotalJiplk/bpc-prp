@@ -77,7 +77,7 @@ struct pidLidar pidLidarValues = {
     .frontStop = 0.1,
     .extremePreference = 0.3,
     .maxSumSide = 0.25,
-    .maxSumFront = 0.35,
+    .maxSumFront = 0.31,
 };
 
 namespace nodes {
@@ -281,10 +281,10 @@ namespace nodes {
                 resultType = IntersectionType::TopT;
                 this_intersection_ = resultType;
                 this->ioNode_->showIntersection(resultType);
-            // } else if ((valueLeft < pidLidarValues.intersectionOut) and (valueRight < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.backStop)) {
-            //    resultType = IntersectionType::U;
-            //    this_intersection_ = resultType;
-            //    this->ioNode_->showIntersection(resultType);
+            } else if ((valueLeft < pidLidarValues.intersectionOut) and (valueRight < pidLidarValues.intersectionOut) and (valueFront < pidLidarValues.backStop)) {
+               resultType = IntersectionType::U;
+               this_intersection_ = resultType;
+               this->ioNode_->showIntersection(resultType);
             } else if ((valueLeft > pidLidarValues.intersection) and (valueRight > pidLidarValues.intersection) and (valueFront > pidLidarValues.intersection)){
                 resultType = IntersectionType::BottomT;
                 this_intersection_ = resultType;

@@ -61,8 +61,8 @@ struct extreme {
 };
 
 struct extreme extremeValues = {
-    .middleError = 0.07,
-    .leftRightError = 0.08,
+    .middleError = 0.09,
+    .leftRightError = 0.1,
 };
 
 namespace nodes {

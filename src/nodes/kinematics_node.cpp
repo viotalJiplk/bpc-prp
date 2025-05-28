@@ -94,7 +94,7 @@ namespace nodes {
     void KinematicsNode::setMotorsSpeedLimited(int16_t left, int16_t right){
         std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
         std::chrono::duration<double> diff = now - this->timestamp.load();
-        if (left != this->previousLeftMotorSpeed.load() or left != this->previousRightMotorSpeed.load() or diff.count() > 0.8){
+        if (left != this->previousLeftMotorSpeed.load() or left != this->previousRightMotorSpeed.load() or diff.count() > 0.5){
             this->previousLeftMotorSpeed = left;
             this->previousRightMotorSpeed = right;
             this->timestamp.store(now);
@@ -249,12 +249,12 @@ namespace nodes {
         }
     }
     void KinematicsNode::turnLeft(int16_t speed, std::function<void(bool)> callback){
-        this->angle(M_PI/2.0, speed, [callback](bool sucess) {
+        this->angle(M_PI/2.0-0.3, speed, [callback](bool sucess) {
                         callback(sucess);
         });
     }
     void KinematicsNode::turnRight(int16_t speed, std::function<void(bool)> callback){
-        this->angle(-M_PI/2.0, speed, [callback](bool sucess) {
+        this->angle(-M_PI/2.0 - 0.2, speed, [callback](bool sucess) {
                         callback(sucess);
         });
     }
